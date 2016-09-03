@@ -15,6 +15,7 @@ module Lib
 import           Control.Monad.Except
 import           Control.Monad.IO.Class             (liftIO)
 import           Data.Maybe
+import Data.Pool (Pool)
 import           Data.Proxy
 import           Data.Text
 
@@ -35,7 +36,6 @@ data SearchType = FirstName Text
                   | BlogTitle Text
                   | RowId Int
 
-
 type BlogApi = PostApi
               :<|> UserApi
 
@@ -45,8 +45,8 @@ apihandlers conn = postHandlers conn
 blogApi :: Proxy BlogApi
 blogApi = Proxy
 
-server :: Connection -> Server BlogApi
+server :: Pool Connection -> Server BlogApi
 server = apihandlers
 
-app :: Connection -> Application
+app :: Pool Connection -> Application
 app conn = serve blogApi $ server conn

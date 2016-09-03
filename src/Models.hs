@@ -16,6 +16,7 @@ import Data.Time.Clock (UTCTime)
 import GHC.Generics
 import qualified Data.Text as T
 
+
 data Author = Author {
   id :: !Int
   , first_name :: !T.Text
@@ -52,7 +53,6 @@ instance FromJSON BlogPost
 instance ToJSON BlogPost
 instance FromRow BlogPost where
   fromRow = BlogPost <$> field <*> field <*> field <*> field <*> field <*> field <*> field <*> field <*> field
-
 
 instance ToRow BlogPost where
   toRow p =  [fieldA title

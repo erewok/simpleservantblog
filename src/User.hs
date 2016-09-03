@@ -1,6 +1,6 @@
 {-# LANGUAGE DataKinds         #-}
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE LambdaCase        #-}
+{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeFamilies      #-}
 {-# LANGUAGE TypeOperators     #-}
 
@@ -10,21 +10,22 @@ module User
     ) where
 
 
-import           Control.Monad.IO.Class (liftIO)
-import Control.Monad.Except
-import Data.Maybe
-import Data.Proxy
-import Data.Text
+import           Control.Monad.Except
+import           Control.Monad.IO.Class             (liftIO)
+import           Data.Maybe
+import           Data.Pool                          (withResource)
+import           Data.Proxy
+import           Data.Text
 
-import Database.PostgreSQL.Simple
-import Database.PostgreSQL.Simple.FromRow (fromRow)
+import           Database.PostgreSQL.Simple
+import           Database.PostgreSQL.Simple.FromRow (fromRow)
 
-import Servant
+import           Servant
 
 import           Network.Wai
-import           Network.Wai.Handler.Warp as Warp
+import           Network.Wai.Handler.Warp           as Warp
 
-import Models (Author)
+import           Models                             (Author)
 
 data SearchType = FirstName Text
                   | LastName Text
@@ -39,9 +40,9 @@ type UserApi = "user" :> ReqBody '[JSON] Author :> Post '[JSON] [Author]
 userHandlers conn = userAddH
                    :<|> userFNameSearchH
                    :<|> userLNameSearchH
-  where userAddH = addUser conn
-        userFNameSearchH name = getUser conn (FirstName name)
-        userLNameSearchH name = getUser conn (LastName name)
+  where userAddH newUser = withResource conn $ flip addUser newUser
+        userFNameSearchH name = withResource conn $ flip getUser (FirstName name)
+        userLNameSearchH name = withResource conn $ flip getUser (LastName name)
 
 addUser :: Connection -> Author -> Handler [Author]
 addUser conn newUser = do

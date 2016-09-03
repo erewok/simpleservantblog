@@ -17,6 +17,7 @@ import           Data.Maybe
 import           Data.Proxy
 import           Data.Text
 
+import           Data.Pool                          (withResource)
 import           Database.PostgreSQL.Simple
 import           Database.PostgreSQL.Simple.FromRow (fromRow)
 
@@ -33,11 +34,11 @@ type PostApi = "post" :> Get '[JSON] [BlogPost]
   :<|> "post" :> ReqBody '[JSON] BlogPost :> Post '[JSON] BlogPost
 
 postHandlers conn = blogPostListH
-                   :<|> blogPostDetailH
-                   :<|> blogPostAddH
-  where blogPostListH = listPosts conn
-        blogPostDetailH = getPost conn
-        blogPostAddH = addPost conn
+              :<|> blogPostDetailH
+              :<|> blogPostAddH
+  where blogPostListH = withResource conn listPosts
+        blogPostDetailH postId = withResource conn $ flip getPost postId
+        blogPostAddH newPost = withResource conn $ flip addPost newPost
 
 listPosts :: Connection -> Handler [BlogPost]
 listPosts conn = do
