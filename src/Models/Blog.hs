@@ -2,7 +2,7 @@
 {-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module Models (
+module Models.Blog (
   Author
   , BlogPost
   ) where

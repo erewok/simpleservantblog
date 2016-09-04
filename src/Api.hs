@@ -4,7 +4,7 @@
 {-# LANGUAGE TypeFamilies      #-}
 {-# LANGUAGE TypeOperators     #-}
 
-module Lib
+module Api
     ( BlogApi
     , blogApi
     , server
@@ -27,14 +27,8 @@ import           Servant
 import           Network.Wai
 import           Network.Wai.Handler.Warp           as Warp
 
-import           Models
-import           Post
-import           User
-
-data SearchType = FirstName Text
-                  | LastName Text
-                  | BlogTitle Text
-                  | RowId Int
+import           Api.Post
+import           Api.User
 
 type BlogApi = PostApi
               :<|> UserApi

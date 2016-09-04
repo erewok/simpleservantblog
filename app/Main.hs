@@ -5,8 +5,8 @@ import           Data.Pool                (withResource)
 import           Network.Wai.Handler.Warp as Warp
 import           System.Environment       (lookupEnv)
 
+import qualified Api                      as A
 import qualified Config                   as C
-import qualified Lib                      as L
 
 
 main :: IO ()
@@ -24,4 +24,4 @@ main = do
   let cfg = C.Config { C.getPool = pool
                      , C.getEnv =  environment}
       logger = C.setLogger environment
-  Warp.run port $ logger $ L.app pool
+  Warp.run port $ logger $ A.app pool

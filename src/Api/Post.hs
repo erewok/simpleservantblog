@@ -4,7 +4,7 @@
 {-# LANGUAGE TypeFamilies      #-}
 {-# LANGUAGE TypeOperators     #-}
 
-module Post
+module Api.Post
     (
     PostApi
     , postHandlers
@@ -26,7 +26,7 @@ import           Servant
 import           Network.Wai
 import           Network.Wai.Handler.Warp           as Warp
 
-import           Models                             (BlogPost)
+import           Models.Blog                        (BlogPost)
 
 
 type PostApi = "post" :> Get '[JSON] [BlogPost]

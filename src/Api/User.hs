@@ -4,7 +4,7 @@
 {-# LANGUAGE TypeFamilies      #-}
 {-# LANGUAGE TypeOperators     #-}
 
-module User
+module Api.User
     ( UserApi
     , userHandlers
     ) where
@@ -25,7 +25,7 @@ import           Servant
 import           Network.Wai
 import           Network.Wai.Handler.Warp           as Warp
 
-import           Models                             (Author)
+import           Models.Blog                        (Author)
 
 data SearchType = FirstName Text
                   | LastName Text
