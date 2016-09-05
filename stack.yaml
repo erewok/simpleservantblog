@@ -2,13 +2,22 @@
 # For more information, see: http://docs.haskellstack.org/en/stable/yaml_configuration/
 
 # Specifies the GHC version and set of packages available (e.g., lts-3.5, nightly-2015-09-21, ghc-7.10.2)
-resolver: nightly-2016-08-06
+resolver: nightly-2016-08-25
 
 # Local packages, usually specified by relative directory name
 packages:
 - '.'
+- location:
+    git: https://www.github.com/mattjbray/elm-export
+    commit: 8868c1f09597f44c2e18e014cd9fbcf8320c3fea
+  extra-dep: True
+- location:
+    git: https://www.github.com/mattjbray/servant-elm
+    commit: e13c8def8127ea339e9801d804638854947193e8
+  extra-dep: True
 # Packages to be pulled from upstream that are not in the resolver (e.g., acme-missiles-0.3)
-extra-deps: []
+extra-deps:
+  - wai-make-assets-0.1.1
 
 # Override default flag values for local packages and extra-deps
 flags: {}
