@@ -33,8 +33,8 @@ instance FromRow Author where
 
 
 instance ToRow Author where
-  toRow p =  [fieldA first_name
-             , fieldA last_name
+  toRow p =  [fieldA firstName
+             , fieldA lastName
              , fieldA email]
     where
       fieldA = toField . ($ p)
@@ -62,7 +62,7 @@ instance ToRow BlogPost where
              , fieldA (fromJust . synopsis)
              , toField $ published p
              , fieldA body
-             , toField $ author_id p
+             , toField $ authorId p
              , toField $ created p
              , toField $ modified p
              , toField $ pubdate p]

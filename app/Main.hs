@@ -24,4 +24,4 @@ main = do
   let cfg = C.Config { C.getPool = pool
                      , C.getEnv =  environment}
       logger = C.setLogger environment
-  Warp.run port $ logger $ A.app pool
+  A.withAssetsApp pool >>= Warp.run port <$> logger

@@ -52,9 +52,9 @@ addUser conn newUser = do
 getUser :: Connection -> SearchType -> Handler [Author]
 getUser conn searchValue = case searchValue of
     FirstName fname -> do
-      let q = "select from author where first_name = ?"
+      let q = "select from author where firstName = ?"
       liftIO $ query conn q (Only fname)
     LastName lname -> do
-      let q = "select from author where last_name = ?"
+      let q = "select from author where lastName = ?"
       liftIO $ query conn q (Only lname)
     _ -> return []

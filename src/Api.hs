@@ -6,9 +6,9 @@
 
 module Api
     ( BlogApi
-    , blogApi
     , server
     , app
+    , withAssetsApp
     ) where
 
 
@@ -26,15 +26,22 @@ import           Servant
 
 import           Network.Wai
 import           Network.Wai.Handler.Warp           as Warp
+import           Network.Wai.MakeAssets
 
 import           Api.Post
 import           Api.User
 
+
 type BlogApi = PostApi
               :<|> UserApi
 
+type WithAssets = BlogApi :<|> Raw
+
 apihandlers conn = postHandlers conn
                   :<|> userHandlers conn
+
+withAssets :: Proxy WithAssets
+withAssets = Proxy
 
 blogApi :: Proxy BlogApi
 blogApi = Proxy
@@ -44,3 +51,12 @@ server = apihandlers
 
 app :: Pool Connection -> Application
 app conn = serve blogApi $ server conn
+
+withAssetsApp :: Pool Connection -> IO Application
+withAssetsApp conn =
+  serve withAssets <$> withAssetsServer conn
+
+withAssetsServer :: Pool Connection -> IO (Server WithAssets)
+withAssetsServer conn = do
+  assets <- serveAssets
+  return $ apihandlers conn :<|> assets
