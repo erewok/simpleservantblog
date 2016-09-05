@@ -45,6 +45,7 @@ data Environment
 -- | This returns a 'Middleware' based on the environment that we're in.
 setLogger :: Environment -> Middleware
 setLogger Test = id
+setLogger Local = logStdoutDev
 setLogger _    = logStdout
 
 

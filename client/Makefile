@@ -2,8 +2,8 @@
 	elm make Main.elm
 	mv index.html ../assets/
 
-Api.elm: GenerateElm.hs ../server/src/Api.hs
-	(cd ../ ; stack exec -- runhaskell -iserver/src frontend/GenerateElm.hs)
+Api.elm: GenerateElm.hs ../src/Api.hs
+	(cd ../ ; stack exec -- runhaskell -isrc client/GenerateElm.hs)
 
 run-tests: tests.js
 	node tests.js

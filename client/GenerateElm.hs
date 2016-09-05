@@ -9,5 +9,5 @@ main = do
   let code = intercalate "\n\n" $
         "module Api exposing (..)" :
         defElmImports :
-        generateElmForAPI api
-  writeFile "frontend/Api.elm" code
+        generateElmForAPI blogApi
+  writeFile "client/Api.elm" code

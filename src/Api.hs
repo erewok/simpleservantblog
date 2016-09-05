@@ -6,6 +6,8 @@
 
 module Api
     ( BlogApi
+    , blogApi
+    , withAssets
     , server
     , app
     , withAssetsApp

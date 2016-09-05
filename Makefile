@@ -5,10 +5,10 @@ setup: client-setup server-setup
 build: client-build server-build
 
 client-setup:
-	(cd frontend ; elm package install -y)
+	(cd client ; elm package install -y)
 
 client-build:
-	(cd frontend ; make)
+	(cd client ; make)
 
 server-setup:
 	stack setup
@@ -18,7 +18,7 @@ server-build:
 	stack build
 
 server-start: server-build
-	stack exec server
+	stack exec simpleservantblog-exe
 
 server-start-reserve:
 	stack exec -- simpleservantblog-exe
