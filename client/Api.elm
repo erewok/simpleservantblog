@@ -1,7 +1,5 @@
 module Api exposing (..)
 
-import Date exposing (..)
-import Exts.Date exposing (..)
 import Json.Decode exposing ((:=))
 import Json.Decode.Extra exposing ((|:))
 import Json.Encode
@@ -11,29 +9,29 @@ import Task
 
 
 type alias BlogPost =
-  { id : Int
-  , title : String
-  , synopsis : Maybe String
-  , published : Bool
-  , body : String
+  { bid : Int
   , authorId : Int
+  , title : String
+  , body : Maybe String
+  , published : Bool
   , created : Date
-  , modified : Date
-  , pubdate : Date
+  , modified : Maybe Date
+  , pubdate : Maybe Date
+  , synopsis : Maybe String
   }
 
 decodeBlogPost : Json.Decode.Decoder BlogPost
 decodeBlogPost =
   Json.Decode.succeed BlogPost
-    |: ("id" := Json.Decode.int)
-    |: ("title" := Json.Decode.string)
-    |: ("synopsis" := Json.Decode.maybe Json.Decode.string)
-    |: ("published" := Json.Decode.bool)
-    |: ("body" := Json.Decode.string)
+    |: ("bid" := Json.Decode.int)
     |: ("authorId" := Json.Decode.int)
+    |: ("title" := Json.Decode.string)
+    |: ("body" := Json.Decode.maybe Json.Decode.string)
+    |: ("published" := Json.Decode.bool)
     |: ("created" := Json.Decode.Extra.date)
-    |: ("modified" := Json.Decode.Extra.date)
-    |: ("pubdate" := Json.Decode.Extra.date)
+    |: ("modified" := Json.Decode.maybe Json.Decode.Extra.date)
+    |: ("pubdate" := Json.Decode.maybe Json.Decode.Extra.date)
+    |: ("synopsis" := Json.Decode.maybe Json.Decode.string)
 
 getPost : Task.Task Http.Error (List (BlogPost))
 getPost =
@@ -75,15 +73,15 @@ getPostById id =
 encodeBlogPost : BlogPost -> Json.Encode.Value
 encodeBlogPost x =
   Json.Encode.object
-    [ ( "id", Json.Encode.int x.id )
-    , ( "title", Json.Encode.string x.title )
-    , ( "synopsis", (Maybe.withDefault Json.Encode.null << Maybe.map Json.Encode.string) x.synopsis )
-    , ( "published", Json.Encode.bool x.published )
-    , ( "body", Json.Encode.string x.body )
+    [ ( "bid", Json.Encode.int x.bid )
     , ( "authorId", Json.Encode.int x.authorId )
+    , ( "title", Json.Encode.string x.title )
+    , ( "body", (Maybe.withDefault Json.Encode.null << Maybe.map Json.Encode.string) x.body )
+    , ( "published", Json.Encode.bool x.published )
     , ( "created", (Json.Encode.string << Exts.Date.toISOString) x.created )
-    , ( "modified", (Json.Encode.string << Exts.Date.toISOString) x.modified )
-    , ( "pubdate", (Json.Encode.string << Exts.Date.toISOString) x.pubdate )
+    , ( "modified", (Maybe.withDefault Json.Encode.null << Maybe.map (Json.Encode.string << Exts.Date.toISOString)) x.modified )
+    , ( "pubdate", (Maybe.withDefault Json.Encode.null << Maybe.map (Json.Encode.string << Exts.Date.toISOString)) x.pubdate )
+    , ( "synopsis", (Maybe.withDefault Json.Encode.null << Maybe.map Json.Encode.string) x.synopsis )
     ]
 
 postPost : BlogPost -> Task.Task Http.Error (BlogPost)
@@ -105,7 +103,7 @@ postPost body =
       (Http.send Http.defaultSettings request)
 
 type alias Author =
-  { id : Int
+  { aid : Int
   , firstName : String
   , lastName : String
   , email : String
@@ -114,7 +112,7 @@ type alias Author =
 encodeAuthor : Author -> Json.Encode.Value
 encodeAuthor x =
   Json.Encode.object
-    [ ( "id", Json.Encode.int x.id )
+    [ ( "aid", Json.Encode.int x.aid )
     , ( "firstName", Json.Encode.string x.firstName )
     , ( "lastName", Json.Encode.string x.lastName )
     , ( "email", Json.Encode.string x.email )
@@ -123,7 +121,7 @@ encodeAuthor x =
 decodeAuthor : Json.Decode.Decoder Author
 decodeAuthor =
   Json.Decode.succeed Author
-    |: ("id" := Json.Decode.int)
+    |: ("aid" := Json.Decode.int)
     |: ("firstName" := Json.Decode.string)
     |: ("lastName" := Json.Decode.string)
     |: ("email" := Json.Decode.string)

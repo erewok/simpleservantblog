@@ -25,7 +25,7 @@ import           Servant
 import           Network.Wai
 import           Network.Wai.Handler.Warp           as Warp
 
-import           Models.Blog                        (Author)
+import           Models.Author                      (Author)
 
 data SearchType = FirstName Text
                   | LastName Text
