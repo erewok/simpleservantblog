@@ -30,4 +30,6 @@ homePage = return $ docTypeHtml $ do
         H.div ! A.class_ "one-half column" ! A.style "margin-top: 25%" $ do
           H.h4 "Basic Page"
           H.p "This index.html page is a placeholder with the CSS, font and favicon. It's just waiting for you to add some content!"
-      H.script ! A.type_ "text/javascript" $ "Elm.Main.fullscreen()"
+      H.div ! A.id "elm" $ ""
+      H.script ! A.type_ "text/javascript" $
+        "var node = document.getElementById('elm'); var app = Elm.Main.embed(node);"
