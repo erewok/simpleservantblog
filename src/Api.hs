@@ -17,7 +17,7 @@ module Api
 import           Control.Monad.Except
 import           Control.Monad.IO.Class             (liftIO)
 import           Data.Maybe
-import Data.Pool (Pool)
+import           Data.Pool                          (Pool)
 import           Data.Proxy
 import           Data.Text
 
@@ -30,29 +30,30 @@ import           Network.Wai
 import           Network.Wai.Handler.Warp           as Warp
 import           Network.Wai.MakeAssets
 
-import Html.Home
 import           Api.Post
 import           Api.User
+import           Html.Home
 
 
 -- This one is separate so elm can generate for it
 type BlogApi = PostApi
               :<|> UserApi
 type WithHtml = HomePage :<|> BlogApi
-type WithAssets =  WithHtml :<|> Raw
+type WithAssets =  WithHtml
+                  :<|> Raw
 
 apihandlers conn = homePage
                   :<|> postHandlers conn
                   :<|> userHandlers conn
-
-withAssets :: Proxy WithAssets
-withAssets = Proxy
 
 blogApi :: Proxy BlogApi
 blogApi = Proxy
 
 withHtml :: Proxy WithHtml
 withHtml = Proxy
+
+withAssets :: Proxy WithAssets
+withAssets = Proxy
 
 server :: Pool Connection -> Server WithHtml
 server = apihandlers
