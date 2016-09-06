@@ -125,7 +125,7 @@ viewPost post =
            , text " - "
            , text (toString post.synopsis)
            , text (toString post.published)
-           , text (post.body)
+           , text (toString post.body)
            , text (toString post.authorId)
            , text (toString post.created)
            , text (toString post.modified)

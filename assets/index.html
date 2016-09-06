@@ -9081,8 +9081,8 @@ var _pellagic_puffbomb$simpleservantblog$Api$encodeAuthor = function (x) {
 			[
 				{
 				ctor: '_Tuple2',
-				_0: 'id',
-				_1: _elm_lang$core$Json_Encode$int(x.id)
+				_0: 'aid',
+				_1: _elm_lang$core$Json_Encode$int(x.aid)
 			},
 				{
 				ctor: '_Tuple2',
@@ -9107,8 +9107,13 @@ var _pellagic_puffbomb$simpleservantblog$Api$encodeBlogPost = function (x) {
 			[
 				{
 				ctor: '_Tuple2',
-				_0: 'id',
-				_1: _elm_lang$core$Json_Encode$int(x.id)
+				_0: 'bid',
+				_1: _elm_lang$core$Json_Encode$int(x.bid)
+			},
+				{
+				ctor: '_Tuple2',
+				_0: 'authorId',
+				_1: _elm_lang$core$Json_Encode$int(x.authorId)
 			},
 				{
 				ctor: '_Tuple2',
@@ -9117,28 +9122,18 @@ var _pellagic_puffbomb$simpleservantblog$Api$encodeBlogPost = function (x) {
 			},
 				{
 				ctor: '_Tuple2',
-				_0: 'synopsis',
+				_0: 'body',
 				_1: function (_p0) {
 					return A2(
 						_elm_lang$core$Maybe$withDefault,
 						_elm_lang$core$Json_Encode$null,
 						A2(_elm_lang$core$Maybe$map, _elm_lang$core$Json_Encode$string, _p0));
-				}(x.synopsis)
+				}(x.body)
 			},
 				{
 				ctor: '_Tuple2',
 				_0: 'published',
 				_1: _elm_lang$core$Json_Encode$bool(x.published)
-			},
-				{
-				ctor: '_Tuple2',
-				_0: 'body',
-				_1: _elm_lang$core$Json_Encode$string(x.body)
-			},
-				{
-				ctor: '_Tuple2',
-				_0: 'authorId',
-				_1: _elm_lang$core$Json_Encode$int(x.authorId)
 			},
 				{
 				ctor: '_Tuple2',
@@ -9152,23 +9147,49 @@ var _pellagic_puffbomb$simpleservantblog$Api$encodeBlogPost = function (x) {
 				ctor: '_Tuple2',
 				_0: 'modified',
 				_1: function (_p2) {
-					return _elm_lang$core$Json_Encode$string(
-						_krisajenkins$elm_exts$Exts_Date$toISOString(_p2));
+					return A2(
+						_elm_lang$core$Maybe$withDefault,
+						_elm_lang$core$Json_Encode$null,
+						A2(
+							_elm_lang$core$Maybe$map,
+							function (_p3) {
+								return _elm_lang$core$Json_Encode$string(
+									_krisajenkins$elm_exts$Exts_Date$toISOString(_p3));
+							},
+							_p2));
 				}(x.modified)
 			},
 				{
 				ctor: '_Tuple2',
 				_0: 'pubdate',
-				_1: function (_p3) {
-					return _elm_lang$core$Json_Encode$string(
-						_krisajenkins$elm_exts$Exts_Date$toISOString(_p3));
+				_1: function (_p4) {
+					return A2(
+						_elm_lang$core$Maybe$withDefault,
+						_elm_lang$core$Json_Encode$null,
+						A2(
+							_elm_lang$core$Maybe$map,
+							function (_p5) {
+								return _elm_lang$core$Json_Encode$string(
+									_krisajenkins$elm_exts$Exts_Date$toISOString(_p5));
+							},
+							_p4));
 				}(x.pubdate)
+			},
+				{
+				ctor: '_Tuple2',
+				_0: 'synopsis',
+				_1: function (_p6) {
+					return A2(
+						_elm_lang$core$Maybe$withDefault,
+						_elm_lang$core$Json_Encode$null,
+						A2(_elm_lang$core$Maybe$map, _elm_lang$core$Json_Encode$string, _p6));
+				}(x.synopsis)
 			}
 			]));
 };
 var _pellagic_puffbomb$simpleservantblog$Api$BlogPost = F9(
 	function (a, b, c, d, e, f, g, h, i) {
-		return {id: a, title: b, synopsis: c, published: d, body: e, authorId: f, created: g, modified: h, pubdate: i};
+		return {bid: a, authorId: b, title: c, body: d, published: e, created: f, modified: g, pubdate: h, synopsis: i};
 	});
 var _pellagic_puffbomb$simpleservantblog$Api$decodeBlogPost = A2(
 	_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
@@ -9189,18 +9210,27 @@ var _pellagic_puffbomb$simpleservantblog$Api$decodeBlogPost = A2(
 								A2(
 									_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
 									_elm_lang$core$Json_Decode$succeed(_pellagic_puffbomb$simpleservantblog$Api$BlogPost),
-									A2(_elm_lang$core$Json_Decode_ops[':='], 'id', _elm_lang$core$Json_Decode$int)),
-								A2(_elm_lang$core$Json_Decode_ops[':='], 'title', _elm_lang$core$Json_Decode$string)),
-							A2(
-								_elm_lang$core$Json_Decode_ops[':='],
-								'synopsis',
-								_elm_lang$core$Json_Decode$maybe(_elm_lang$core$Json_Decode$string))),
-						A2(_elm_lang$core$Json_Decode_ops[':='], 'published', _elm_lang$core$Json_Decode$bool)),
-					A2(_elm_lang$core$Json_Decode_ops[':='], 'body', _elm_lang$core$Json_Decode$string)),
-				A2(_elm_lang$core$Json_Decode_ops[':='], 'authorId', _elm_lang$core$Json_Decode$int)),
-			A2(_elm_lang$core$Json_Decode_ops[':='], 'created', _elm_community$elm_json_extra$Json_Decode_Extra$date)),
-		A2(_elm_lang$core$Json_Decode_ops[':='], 'modified', _elm_community$elm_json_extra$Json_Decode_Extra$date)),
-	A2(_elm_lang$core$Json_Decode_ops[':='], 'pubdate', _elm_community$elm_json_extra$Json_Decode_Extra$date));
+									A2(_elm_lang$core$Json_Decode_ops[':='], 'bid', _elm_lang$core$Json_Decode$int)),
+								A2(_elm_lang$core$Json_Decode_ops[':='], 'authorId', _elm_lang$core$Json_Decode$int)),
+							A2(_elm_lang$core$Json_Decode_ops[':='], 'title', _elm_lang$core$Json_Decode$string)),
+						A2(
+							_elm_lang$core$Json_Decode_ops[':='],
+							'body',
+							_elm_lang$core$Json_Decode$maybe(_elm_lang$core$Json_Decode$string))),
+					A2(_elm_lang$core$Json_Decode_ops[':='], 'published', _elm_lang$core$Json_Decode$bool)),
+				A2(_elm_lang$core$Json_Decode_ops[':='], 'created', _elm_community$elm_json_extra$Json_Decode_Extra$date)),
+			A2(
+				_elm_lang$core$Json_Decode_ops[':='],
+				'modified',
+				_elm_lang$core$Json_Decode$maybe(_elm_community$elm_json_extra$Json_Decode_Extra$date))),
+		A2(
+			_elm_lang$core$Json_Decode_ops[':='],
+			'pubdate',
+			_elm_lang$core$Json_Decode$maybe(_elm_community$elm_json_extra$Json_Decode_Extra$date))),
+	A2(
+		_elm_lang$core$Json_Decode_ops[':='],
+		'synopsis',
+		_elm_lang$core$Json_Decode$maybe(_elm_lang$core$Json_Decode$string)));
 var _pellagic_puffbomb$simpleservantblog$Api$getPost = function () {
 	var request = {
 		verb: 'GET',
@@ -9262,7 +9292,7 @@ var _pellagic_puffbomb$simpleservantblog$Api$postPost = function (body) {
 };
 var _pellagic_puffbomb$simpleservantblog$Api$Author = F4(
 	function (a, b, c, d) {
-		return {id: a, firstName: b, lastName: c, email: d};
+		return {aid: a, firstName: b, lastName: c, email: d};
 	});
 var _pellagic_puffbomb$simpleservantblog$Api$decodeAuthor = A2(
 	_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
@@ -9273,7 +9303,7 @@ var _pellagic_puffbomb$simpleservantblog$Api$decodeAuthor = A2(
 			A2(
 				_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
 				_elm_lang$core$Json_Decode$succeed(_pellagic_puffbomb$simpleservantblog$Api$Author),
-				A2(_elm_lang$core$Json_Decode_ops[':='], 'id', _elm_lang$core$Json_Decode$int)),
+				A2(_elm_lang$core$Json_Decode_ops[':='], 'aid', _elm_lang$core$Json_Decode$int)),
 			A2(_elm_lang$core$Json_Decode_ops[':='], 'firstName', _elm_lang$core$Json_Decode$string)),
 		A2(_elm_lang$core$Json_Decode_ops[':='], 'lastName', _elm_lang$core$Json_Decode$string)),
 	A2(_elm_lang$core$Json_Decode_ops[':='], 'email', _elm_lang$core$Json_Decode$string));
@@ -9359,7 +9389,8 @@ var _pellagic_puffbomb$simpleservantblog$Main$viewPost = function (post) {
 				_elm_lang$core$Basics$toString(post.synopsis)),
 				_elm_lang$html$Html$text(
 				_elm_lang$core$Basics$toString(post.published)),
-				_elm_lang$html$Html$text(post.body),
+				_elm_lang$html$Html$text(
+				_elm_lang$core$Basics$toString(post.body)),
 				_elm_lang$html$Html$text(
 				_elm_lang$core$Basics$toString(post.authorId)),
 				_elm_lang$html$Html$text(
