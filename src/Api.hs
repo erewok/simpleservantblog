@@ -30,16 +30,19 @@ import           Network.Wai
 import           Network.Wai.Handler.Warp           as Warp
 import           Network.Wai.MakeAssets
 
+import Html.Home
 import           Api.Post
 import           Api.User
 
 
+-- This one is separate so elm can generate for it
 type BlogApi = PostApi
               :<|> UserApi
+type WithHtml = HomePage :<|> BlogApi
+type WithAssets =  WithHtml :<|> Raw
 
-type WithAssets = BlogApi :<|> Raw
-
-apihandlers conn = postHandlers conn
+apihandlers conn = homePage
+                  :<|> postHandlers conn
                   :<|> userHandlers conn
 
 withAssets :: Proxy WithAssets
@@ -48,11 +51,14 @@ withAssets = Proxy
 blogApi :: Proxy BlogApi
 blogApi = Proxy
 
-server :: Pool Connection -> Server BlogApi
+withHtml :: Proxy WithHtml
+withHtml = Proxy
+
+server :: Pool Connection -> Server WithHtml
 server = apihandlers
 
 app :: Pool Connection -> Application
-app conn = serve blogApi $ server conn
+app conn = serve withHtml $ server conn
 
 withAssetsApp :: Pool Connection -> IO Application
 withAssetsApp conn =

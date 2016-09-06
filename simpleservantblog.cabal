@@ -19,10 +19,12 @@ library
                      , Config
                      , Api.Post
                      , Api.User
+                     , Html.Home
                      , Models.Post
                      , Models.Author
   build-depends:       base >= 4.7 && < 5
                      , aeson
+                     , blaze-html
                      , bytestring
                      , elm-export
                      , monad-logger
@@ -30,6 +32,7 @@ library
                      , postgresql-simple
                      , resource-pool
                      , servant
+                     , servant-blaze
                      , servant-elm
                      , servant-server
                      , text

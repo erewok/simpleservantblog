@@ -39,15 +39,6 @@ type alias PostId =
 type alias AuthorId =
     Int
 
---
--- init =
---   let
---     model =
---       { error = Nothing
---       , posts = []
---       }
---   in
---     model ! []
 
 init : ( Posts, Cmd Msg )
 init =
@@ -58,9 +49,7 @@ init =
         ( state, retrieve )
 
 
-
 -- UPDATE
-
 
 
 type Msg
@@ -111,7 +100,7 @@ retrieve = Api.getPost
 
 view : Posts -> Html Msg
 view state =
-    div []
+    div [ class "post-container" ]
         <| (List.map viewPost state.posts)
         -- ++ [ input [ onInput (FromUi << AddPostInputChange) ] []
         --    , button [ onClick (FromUi AddPostButton) ] [ text "add post" ]
@@ -120,7 +109,7 @@ view state =
 
 viewPost : BlogPost -> Html Msg
 viewPost post =
-    div []
+    div [ class "post-content"]
         <| [ text (post.title)
            , text " - "
            , text (toString post.synopsis)

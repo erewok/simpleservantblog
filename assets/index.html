@@ -9380,7 +9380,9 @@ var _pellagic_puffbomb$simpleservantblog$Main$viewPost = function (post) {
 	return A2(
 		_elm_lang$html$Html$div,
 		_elm_lang$core$Native_List.fromArray(
-			[]),
+			[
+				_elm_lang$html$Html_Attributes$class('post-content')
+			]),
 		_elm_lang$core$Native_List.fromArray(
 			[
 				_elm_lang$html$Html$text(post.title),
@@ -9405,7 +9407,9 @@ var _pellagic_puffbomb$simpleservantblog$Main$view = function (state) {
 	return A2(
 		_elm_lang$html$Html$div,
 		_elm_lang$core$Native_List.fromArray(
-			[]),
+			[
+				_elm_lang$html$Html_Attributes$class('post-container')
+			]),
 		A2(_elm_lang$core$List$map, _pellagic_puffbomb$simpleservantblog$Main$viewPost, state.posts));
 };
 var _pellagic_puffbomb$simpleservantblog$Main$Posts = F2(
