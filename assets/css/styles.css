@@ -1,0 +1,18 @@
+.post-container {
+  margin-top: 3%;
+  margin-left: 3%;
+  text-align: center;
+}
+@media (min-width: 400px) {
+  .post-container {
+    text-align: left;
+  }
+}
+
+.post-content > .row {
+  padding: 1em 2em;
+
+}
+.sidebar {
+  padding-left: 2em;
+}

@@ -1,6 +1,6 @@
 ../assets/index.html: Api.elm Main.elm
 	elm make Main.elm --output elm.js
-	mv elm.js ../assets/
+	mv elm.js ../assets/js
 
 Api.elm: GenerateElm.hs ../src/Api.hs
 	(cd ../ ; stack exec -- runhaskell -isrc client/GenerateElm.hs)

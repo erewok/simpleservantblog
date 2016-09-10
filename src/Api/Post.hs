@@ -26,7 +26,7 @@ import           Servant
 import           Network.Wai
 import           Network.Wai.Handler.Warp           as Warp
 
-import           Models.Post                    (BlogPost)
+import           Models.Post                    (BlogPost, blogPostColumns)
 
 
 type PostApi = "post" :> Get '[JSON] [BlogPost]
@@ -42,13 +42,13 @@ postHandlers conn = blogPostListH
 
 listPosts :: Connection -> Handler [BlogPost]
 listPosts conn = do
-  let q = "select * from post"
-  liftIO $ query_ conn q
+  let q = "select ? from post"
+  liftIO $ query conn q (Only blogPostColumns)
 
 getPost :: Connection -> Int -> Handler BlogPost
 getPost conn postId = do
-  let q = "select * from post where id = ?"
-  result <- liftIO $ query conn q (Only postId)
+  let q = "select ? from post where id = ?"
+  result <- liftIO $ query conn q (blogPostColumns, postId)
   case result of
     (x:_) -> return x
     []    -> throwError err404

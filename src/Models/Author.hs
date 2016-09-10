@@ -5,6 +5,7 @@
 
 module Models.Author (
   Author
+  , authorColumns
   ) where
 
 import Prelude (Int, Eq, Show, Bool, (.), ($))
@@ -20,9 +21,9 @@ import qualified Data.Text as T
 import           Servant.Elm
 
 
-type AuthorId = Int
+authorColumns = "id, firstname, lastname, email"
 data Author = Author {
-  aid :: !AuthorId
+  aid :: !Int
   , firstName :: !T.Text
   , lastName :: !T.Text
   , email :: !T.Text

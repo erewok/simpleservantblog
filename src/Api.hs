@@ -40,7 +40,7 @@ type BlogApi = PostApi
               :<|> UserApi
 type WithHtml = HomePage :<|> BlogApi
 type WithAssets =  WithHtml
-                  :<|> Raw
+                  :<|> "assets" :> Raw
 
 apihandlers conn = homePage
                   :<|> postHandlers conn

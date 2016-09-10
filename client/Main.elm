@@ -10,6 +10,7 @@ import Html.Events exposing (..)
 import Http
 import Task exposing (Task, perform)
 import Api exposing (..)
+import Page exposing (..)
 
 
 main : Program Never
@@ -22,6 +23,8 @@ main =
         }
 
 -- MODEL
+
+type Model = PostIndex | PostList | PostDetail | AboutPage | ProjectsPage
 
 type alias Posts =
     { posts : List (BlogPost)
@@ -61,12 +64,13 @@ type Msg
 
 type FromServer
     = Initial Posts
-    --| PostDetail BlogPost
 
--- type FromUi
---     = AddPostInputChange String
---     | AddPostButton
---     | SelectPost
+type FromUi
+    = SelectPostIndex
+    | SelectPostList
+    | SelectPostDetail
+    | SelectAboutPage
+    | SelectProjectsPage
 
 
 update : Msg -> Posts -> ( Posts, Cmd Msg )
@@ -98,25 +102,56 @@ retrieve = Api.getPost
   |> Task.mapError toString
   |> Task.perform Error DataFetchedAll
 
+
 view : Posts -> Html Msg
 view state =
-    div [ class "post-container" ]
-        <| (List.map viewPost state.posts)
+    div [ class "post-container row" ]
+        <| postIndex ++
+           (List.map viewPost state.posts) ++
+           (List.map viewPost state.posts)
+
         -- ++ [ input [ onInput (FromUi << AddPostInputChange) ] []
         --    , button [ onClick (FromUi AddPostButton) ] [ text "add post" ]
         --    ]
 
+fromJustStr : Maybe String -> String
+fromJustStr someval = case someval of
+  Nothing -> ""
+  Just t -> t
+
+fromJustDate : Maybe Date -> String
+fromJustDate somedate = case somedate of
+  Nothing -> ""
+  Just date -> toString (day date) ++ " "
+              ++ toString (month date) ++ " "
+              ++ toString (year date)
+
 
 viewPost : BlogPost -> Html Msg
-viewPost post =
-    div [ class "post-content"]
-        <| [ text (post.title)
-           , text " - "
-           , text (toString post.synopsis)
-           , text (toString post.published)
-           , text (toString post.body)
-           , text (toString post.authorId)
-           , text (toString post.created)
-           , text (toString post.modified)
-           , text (toString post.pubdate)
-           ]
+viewPost post = case post.published of
+  True ->
+    div [ class "post-content" ] (postTitleAndSynopsis post)
+  False -> text ""
+
+postIndex : List (Html a)
+postIndex = [ p [] [ text "This is a series of posts on constructing this blog. All posts are listed below."]
+            , div [class "six columns "] [text ""]
+            ]
+
+postTitleAndSynopsis : BlogPost -> List (Html a)
+postTitleAndSynopsis post = [(postTitle post)] ++
+                            [ div [ class "row post-synopsis" ] [
+                                p [] [ text (fromJustStr post.synopsis)]]
+                            ]
+
+postTitle : BlogPost -> Html a
+postTitle post = div [ class "row post-title" ] [
+                      h3 [ class "" ] [ text (post.title) ]
+                    , span [ class "" ] [ text (fromJustDate post.pubdate)]
+                    ]
+
+
+postBody : BlogPost -> List (Html a)
+postBody post = [ div [ class "row post-body", style [("margin-top", "5px;")]] [
+                    p [] [text (fromJustStr post.body)] ]
+                ]

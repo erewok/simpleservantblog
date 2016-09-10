@@ -9416,41 +9416,358 @@ var _pellagic_puffbomb$simpleservantblog$Api$getUserByLastName = function (lastN
 		A2(_evancz$elm_http$Http$send, _evancz$elm_http$Http$defaultSettings, request));
 };
 
-var _pellagic_puffbomb$simpleservantblog$Main$viewPost = function (post) {
+var _pellagic_puffbomb$simpleservantblog$Page$ProjectsPage = {ctor: 'ProjectsPage'};
+var _pellagic_puffbomb$simpleservantblog$Page$AboutPage = {ctor: 'AboutPage'};
+var _pellagic_puffbomb$simpleservantblog$Page$PostDetail = {ctor: 'PostDetail'};
+var _pellagic_puffbomb$simpleservantblog$Page$PostList = {ctor: 'PostList'};
+var _pellagic_puffbomb$simpleservantblog$Page$PostIndex = {ctor: 'PostIndex'};
+var _pellagic_puffbomb$simpleservantblog$Page$Home = {ctor: 'Home'};
+var _pellagic_puffbomb$simpleservantblog$Page$pageSkeleton = A2(
+	_elm_lang$html$Html$div,
+	_elm_lang$core$Native_List.fromArray(
+		[
+			_elm_lang$html$Html_Attributes$class('container')
+		]),
+	_elm_lang$core$Native_List.fromArray(
+		[
+			A2(
+			_elm_lang$html$Html$div,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$html$Html_Attributes$class('row')
+				]),
+			_elm_lang$core$Native_List.fromArray(
+				[
+					A2(
+					_elm_lang$html$Html$div,
+					_elm_lang$core$Native_List.fromArray(
+						[
+							_elm_lang$html$Html_Attributes$class('three columns'),
+							_elm_lang$html$Html_Attributes$style(
+							_elm_lang$core$Native_List.fromArray(
+								[
+									{ctor: '_Tuple2', _0: 'margin-top', _1: '2%'}
+								]))
+						]),
+					_elm_lang$core$Native_List.fromArray(
+						[
+							A2(
+							_elm_lang$html$Html$a,
+							_elm_lang$core$Native_List.fromArray(
+								[
+									_elm_lang$html$Html_Events$onClick(_pellagic_puffbomb$simpleservantblog$Page$Home),
+									_elm_lang$html$Html_Attributes$class('button'),
+									_elm_lang$html$Html_Attributes$style(
+									_elm_lang$core$Native_List.fromArray(
+										[
+											{ctor: '_Tuple2', _0: 'border', _1: 'none'}
+										]))
+								]),
+							_elm_lang$core$Native_List.fromArray(
+								[
+									A2(
+									_elm_lang$html$Html$h5,
+									_elm_lang$core$Native_List.fromArray(
+										[
+											_elm_lang$html$Html_Attributes$class('u-pull-right')
+										]),
+									_elm_lang$core$Native_List.fromArray(
+										[
+											_elm_lang$html$Html$text('EKADANTA')
+										]))
+								]))
+						])),
+					A2(
+					_elm_lang$html$Html$div,
+					_elm_lang$core$Native_List.fromArray(
+						[
+							_elm_lang$html$Html_Attributes$class('nine columns'),
+							_elm_lang$html$Html_Attributes$style(
+							_elm_lang$core$Native_List.fromArray(
+								[
+									{ctor: '_Tuple2', _0: 'margin-top', _1: '2%'}
+								]))
+						]),
+					_elm_lang$core$Native_List.fromArray(
+						[
+							A2(
+							_elm_lang$html$Html$div,
+							_elm_lang$core$Native_List.fromArray(
+								[
+									_elm_lang$html$Html_Attributes$class('top-nav')
+								]),
+							_elm_lang$core$Native_List.fromArray(
+								[
+									A2(
+									_elm_lang$html$Html$div,
+									_elm_lang$core$Native_List.fromArray(
+										[
+											_elm_lang$html$Html_Attributes$class('two columns')
+										]),
+									_elm_lang$core$Native_List.fromArray(
+										[
+											A2(
+											_elm_lang$html$Html$a,
+											_elm_lang$core$Native_List.fromArray(
+												[
+													_elm_lang$html$Html_Events$onClick(_pellagic_puffbomb$simpleservantblog$Page$PostList),
+													_elm_lang$html$Html_Attributes$class('button'),
+													_elm_lang$html$Html_Attributes$style(
+													_elm_lang$core$Native_List.fromArray(
+														[
+															{ctor: '_Tuple2', _0: 'border', _1: 'none'}
+														]))
+												]),
+											_elm_lang$core$Native_List.fromArray(
+												[
+													_elm_lang$html$Html$text('Blog')
+												]))
+										])),
+									A2(
+									_elm_lang$html$Html$div,
+									_elm_lang$core$Native_List.fromArray(
+										[
+											_elm_lang$html$Html_Attributes$class('one column')
+										]),
+									_elm_lang$core$Native_List.fromArray(
+										[
+											_elm_lang$html$Html$text('')
+										])),
+									A2(
+									_elm_lang$html$Html$div,
+									_elm_lang$core$Native_List.fromArray(
+										[
+											_elm_lang$html$Html_Attributes$class('two columns')
+										]),
+									_elm_lang$core$Native_List.fromArray(
+										[
+											A2(
+											_elm_lang$html$Html$a,
+											_elm_lang$core$Native_List.fromArray(
+												[
+													_elm_lang$html$Html_Events$onClick(_pellagic_puffbomb$simpleservantblog$Page$AboutPage),
+													_elm_lang$html$Html_Attributes$class('button'),
+													_elm_lang$html$Html_Attributes$style(
+													_elm_lang$core$Native_List.fromArray(
+														[
+															{ctor: '_Tuple2', _0: 'border', _1: 'none'}
+														]))
+												]),
+											_elm_lang$core$Native_List.fromArray(
+												[
+													_elm_lang$html$Html$text('About')
+												]))
+										])),
+									A2(
+									_elm_lang$html$Html$div,
+									_elm_lang$core$Native_List.fromArray(
+										[
+											_elm_lang$html$Html_Attributes$class('one column')
+										]),
+									_elm_lang$core$Native_List.fromArray(
+										[
+											_elm_lang$html$Html$text('')
+										])),
+									A2(
+									_elm_lang$html$Html$div,
+									_elm_lang$core$Native_List.fromArray(
+										[
+											_elm_lang$html$Html_Attributes$class('two columns')
+										]),
+									_elm_lang$core$Native_List.fromArray(
+										[
+											A2(
+											_elm_lang$html$Html$a,
+											_elm_lang$core$Native_List.fromArray(
+												[
+													_elm_lang$html$Html_Events$onClick(_pellagic_puffbomb$simpleservantblog$Page$ProjectsPage),
+													_elm_lang$html$Html_Attributes$class('button'),
+													_elm_lang$html$Html_Attributes$style(
+													_elm_lang$core$Native_List.fromArray(
+														[
+															{ctor: '_Tuple2', _0: 'border', _1: 'none'}
+														]))
+												]),
+											_elm_lang$core$Native_List.fromArray(
+												[
+													_elm_lang$html$Html$text('Projects')
+												]))
+										]))
+								]))
+						]))
+				]))
+		]));
+
+var _pellagic_puffbomb$simpleservantblog$Main$postIndex = _elm_lang$core$Native_List.fromArray(
+	[
+		A2(
+		_elm_lang$html$Html$p,
+		_elm_lang$core$Native_List.fromArray(
+			[]),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_elm_lang$html$Html$text('This is a series of posts on constructing this blog. All posts are listed below.')
+			])),
+		A2(
+		_elm_lang$html$Html$div,
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_elm_lang$html$Html_Attributes$class('six columns ')
+			]),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_elm_lang$html$Html$text('')
+			]))
+	]);
+var _pellagic_puffbomb$simpleservantblog$Main$fromJustDate = function (somedate) {
+	var _p0 = somedate;
+	if (_p0.ctor === 'Nothing') {
+		return '';
+	} else {
+		var _p1 = _p0._0;
+		return A2(
+			_elm_lang$core$Basics_ops['++'],
+			_elm_lang$core$Basics$toString(
+				_elm_lang$core$Date$day(_p1)),
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				' ',
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					_elm_lang$core$Basics$toString(
+						_elm_lang$core$Date$month(_p1)),
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						' ',
+						_elm_lang$core$Basics$toString(
+							_elm_lang$core$Date$year(_p1))))));
+	}
+};
+var _pellagic_puffbomb$simpleservantblog$Main$postTitle = function (post) {
 	return A2(
 		_elm_lang$html$Html$div,
 		_elm_lang$core$Native_List.fromArray(
 			[
-				_elm_lang$html$Html_Attributes$class('post-content')
+				_elm_lang$html$Html_Attributes$class('row post-title')
 			]),
 		_elm_lang$core$Native_List.fromArray(
 			[
-				_elm_lang$html$Html$text(post.title),
-				_elm_lang$html$Html$text(' - '),
-				_elm_lang$html$Html$text(
-				_elm_lang$core$Basics$toString(post.synopsis)),
-				_elm_lang$html$Html$text(
-				_elm_lang$core$Basics$toString(post.published)),
-				_elm_lang$html$Html$text(
-				_elm_lang$core$Basics$toString(post.body)),
-				_elm_lang$html$Html$text(
-				_elm_lang$core$Basics$toString(post.authorId)),
-				_elm_lang$html$Html$text(
-				_elm_lang$core$Basics$toString(post.created)),
-				_elm_lang$html$Html$text(
-				_elm_lang$core$Basics$toString(post.modified)),
-				_elm_lang$html$Html$text(
-				_elm_lang$core$Basics$toString(post.pubdate))
+				A2(
+				_elm_lang$html$Html$h3,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Attributes$class('')
+					]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text(post.title)
+					])),
+				A2(
+				_elm_lang$html$Html$span,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Attributes$class('')
+					]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text(
+						_pellagic_puffbomb$simpleservantblog$Main$fromJustDate(post.pubdate))
+					]))
 			]));
+};
+var _pellagic_puffbomb$simpleservantblog$Main$fromJustStr = function (someval) {
+	var _p2 = someval;
+	if (_p2.ctor === 'Nothing') {
+		return '';
+	} else {
+		return _p2._0;
+	}
+};
+var _pellagic_puffbomb$simpleservantblog$Main$postTitleAndSynopsis = function (post) {
+	return A2(
+		_elm_lang$core$Basics_ops['++'],
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_pellagic_puffbomb$simpleservantblog$Main$postTitle(post)
+			]),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				A2(
+				_elm_lang$html$Html$div,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Attributes$class('row post-synopsis')
+					]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						A2(
+						_elm_lang$html$Html$p,
+						_elm_lang$core$Native_List.fromArray(
+							[]),
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$html$Html$text(
+								_pellagic_puffbomb$simpleservantblog$Main$fromJustStr(post.synopsis))
+							]))
+					]))
+			]));
+};
+var _pellagic_puffbomb$simpleservantblog$Main$viewPost = function (post) {
+	var _p3 = post.published;
+	if (_p3 === true) {
+		return A2(
+			_elm_lang$html$Html$div,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$html$Html_Attributes$class('post-content')
+				]),
+			_pellagic_puffbomb$simpleservantblog$Main$postTitleAndSynopsis(post));
+	} else {
+		return _elm_lang$html$Html$text('');
+	}
+};
+var _pellagic_puffbomb$simpleservantblog$Main$postBody = function (post) {
+	return _elm_lang$core$Native_List.fromArray(
+		[
+			A2(
+			_elm_lang$html$Html$div,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$html$Html_Attributes$class('row post-body'),
+					_elm_lang$html$Html_Attributes$style(
+					_elm_lang$core$Native_List.fromArray(
+						[
+							{ctor: '_Tuple2', _0: 'margin-top', _1: '5px;'}
+						]))
+				]),
+			_elm_lang$core$Native_List.fromArray(
+				[
+					A2(
+					_elm_lang$html$Html$p,
+					_elm_lang$core$Native_List.fromArray(
+						[]),
+					_elm_lang$core$Native_List.fromArray(
+						[
+							_elm_lang$html$Html$text(
+							_pellagic_puffbomb$simpleservantblog$Main$fromJustStr(post.body))
+						]))
+				]))
+		]);
 };
 var _pellagic_puffbomb$simpleservantblog$Main$view = function (state) {
 	return A2(
 		_elm_lang$html$Html$div,
 		_elm_lang$core$Native_List.fromArray(
 			[
-				_elm_lang$html$Html_Attributes$class('post-container')
+				_elm_lang$html$Html_Attributes$class('post-container row')
 			]),
-		A2(_elm_lang$core$List$map, _pellagic_puffbomb$simpleservantblog$Main$viewPost, state.posts));
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			_pellagic_puffbomb$simpleservantblog$Main$postIndex,
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				A2(_elm_lang$core$List$map, _pellagic_puffbomb$simpleservantblog$Main$viewPost, state.posts),
+				A2(_elm_lang$core$List$map, _pellagic_puffbomb$simpleservantblog$Main$viewPost, state.posts))));
 };
 var _pellagic_puffbomb$simpleservantblog$Main$Posts = F2(
 	function (a, b) {
@@ -9460,6 +9777,11 @@ var _pellagic_puffbomb$simpleservantblog$Main$Post = F2(
 	function (a, b) {
 		return {content: a, error: b};
 	});
+var _pellagic_puffbomb$simpleservantblog$Main$ProjectsPage = {ctor: 'ProjectsPage'};
+var _pellagic_puffbomb$simpleservantblog$Main$AboutPage = {ctor: 'AboutPage'};
+var _pellagic_puffbomb$simpleservantblog$Main$PostDetail = {ctor: 'PostDetail'};
+var _pellagic_puffbomb$simpleservantblog$Main$PostList = {ctor: 'PostList'};
+var _pellagic_puffbomb$simpleservantblog$Main$PostIndex = {ctor: 'PostIndex'};
 var _pellagic_puffbomb$simpleservantblog$Main$Error = function (a) {
 	return {ctor: 'Error', _0: a};
 };
@@ -9481,8 +9803,8 @@ var _pellagic_puffbomb$simpleservantblog$Main$init = function () {
 }();
 var _pellagic_puffbomb$simpleservantblog$Main$update = F2(
 	function (message, s) {
-		var _p0 = message;
-		switch (_p0.ctor) {
+		var _p4 = message;
+		switch (_p4.ctor) {
 			case 'NoOp':
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
@@ -9494,11 +9816,11 @@ var _pellagic_puffbomb$simpleservantblog$Main$update = F2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					_elm_lang$core$Native_Utils.update(
 						s,
-						{posts: _p0._0, error: _elm_lang$core$Maybe$Nothing}),
+						{posts: _p4._0, error: _elm_lang$core$Maybe$Nothing}),
 					_elm_lang$core$Native_List.fromArray(
 						[]));
 			case 'FromServer':
-				var _p1 = _p0._0;
+				var _p5 = _p4._0;
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					_elm_lang$core$Native_Utils.update(
@@ -9512,7 +9834,7 @@ var _pellagic_puffbomb$simpleservantblog$Main$update = F2(
 					_elm_lang$core$Native_Utils.update(
 						s,
 						{
-							error: _elm_lang$core$Maybe$Just(_p0._0)
+							error: _elm_lang$core$Maybe$Just(_p4._0)
 						}),
 					_elm_lang$core$Native_List.fromArray(
 						[]));
@@ -9523,7 +9845,7 @@ var _pellagic_puffbomb$simpleservantblog$Main$main = {
 		{
 			init: _pellagic_puffbomb$simpleservantblog$Main$init,
 			update: _pellagic_puffbomb$simpleservantblog$Main$update,
-			subscriptions: function (_p2) {
+			subscriptions: function (_p6) {
 				return _elm_lang$core$Platform_Sub$none;
 			},
 			view: _pellagic_puffbomb$simpleservantblog$Main$view
@@ -9536,13 +9858,13 @@ var _pellagic_puffbomb$simpleservantblog$Main$toServer = F2(
 	function (tag, task) {
 		return A3(
 			_elm_lang$core$Task$perform,
-			function (_p3) {
+			function (_p7) {
 				return _pellagic_puffbomb$simpleservantblog$Main$Error(
-					_elm_lang$core$Basics$toString(_p3));
+					_elm_lang$core$Basics$toString(_p7));
 			},
-			function (_p4) {
+			function (_p8) {
 				return _pellagic_puffbomb$simpleservantblog$Main$FromServer(
-					tag(_p4));
+					tag(_p8));
 			},
 			task);
 	});
@@ -9550,6 +9872,11 @@ var _pellagic_puffbomb$simpleservantblog$Main$NoOp = {ctor: 'NoOp'};
 var _pellagic_puffbomb$simpleservantblog$Main$Initial = function (a) {
 	return {ctor: 'Initial', _0: a};
 };
+var _pellagic_puffbomb$simpleservantblog$Main$SelectProjectsPage = {ctor: 'SelectProjectsPage'};
+var _pellagic_puffbomb$simpleservantblog$Main$SelectAboutPage = {ctor: 'SelectAboutPage'};
+var _pellagic_puffbomb$simpleservantblog$Main$SelectPostDetail = {ctor: 'SelectPostDetail'};
+var _pellagic_puffbomb$simpleservantblog$Main$SelectPostList = {ctor: 'SelectPostList'};
+var _pellagic_puffbomb$simpleservantblog$Main$SelectPostIndex = {ctor: 'SelectPostIndex'};
 
 var Elm = {};
 Elm['Main'] = Elm['Main'] || {};
