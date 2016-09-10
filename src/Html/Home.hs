@@ -27,22 +27,7 @@ homePage = return $ docTypeHtml $ do
     H.link ! A.href "/assets/highlight/styles/github.css" ! A.rel "stylesheet"
     H.script ! A.src "/assets/highlight/highlight.pack.js" $ ""
     H.script ! A.type_ "text/javascript" ! A.src "assets/js/elm.js" $ ""
-  H.body $
-    H.div ! A.class_ "container" $ do
-      H.div ! A.class_ "row" $ do
-        H.div ! A.class_ "three columns" ! A.style "margin-top: 2%" $
-          H.a ! A.class_ "button" ! A.style "border: none;" ! href "#" $
-            H.h5 ! A.class_ "u-pull-right" $ "EKADANTA"
-        H.div ! A.class_ "nine columns" ! A.style "margin-top: 2%" $
-          H.div ! A.class_ "top-nav" $ do
-            H.div ! A.class_ "two columns" $
-              H.a ! A.class_ "button" ! A.style "border: none;" ! href "#" $ "blog"
-            H.div ! A.class_ "one column" $ ""
-            H.div ! A.class_ "two columns" $
-              H.a ! A.class_ "button" ! A.style "border: none;" ! href "about" $ "about"
-            H.div ! A.class_ "one column" $ ""
-            H.div ! A.class_ "two columns" $
-              H.a ! A.class_ "button" ! A.style "border: none;"  ! href "projects" $ "projects"
-      H.div ! A.id "elm" $ ""
-      H.script ! A.type_ "text/javascript" $
-        "var node = document.getElementById('elm'); var app = Elm.Main.embed(node);"
+  H.body $ do
+    H.div ! A.id "elm" $ ""
+    H.script ! A.type_ "text/javascript" $
+      "var node = document.getElementById('elm'); var app = Elm.Main.embed(node);"
