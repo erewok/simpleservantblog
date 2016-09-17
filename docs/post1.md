@@ -4,13 +4,18 @@ This is the beginning of a series of posts on creating this blog in Haskell.
 
 There is not going to be much original content in here. Instead a lot of this material is available in other articles, blog posts, and repositories. Instead, this series merely demonstrates using one specific stack of components to follow a really common, well-worn path in the world of web applications: we are going to create a blog, a typical CRUD application, using Postgresql, Servant, and Elm.
 
-The motivation in writing this series of posts is to highlight these interesting tools and show how certain common problems may be solved with them. Lastly, Haskell has a reputation for being an academic language, but it has lots to teach even lowly, everyday programmers such as the author of this series. Thus, we are writing this for an audience that may be otherwise intimidated by the theoretical approach and academic culture that thrives in the Haskell community. Haskell is certainly a diverse community with many people doing interesting work on the cutting edge of programming language theory; those people are pushing boundaries and their work is highly appreciated, but this series is unlikely to serve them.
+The motivation in writing this series of posts is to highlight these interesting tools and show how certain common problems may be solved with them. No experience with Haskell should be necessary to follow along with this tutorial.
+
+Haskell has a reputation for being an academic language, but it has lots to teach even lowly, everyday programmers such as the author of this series. Thus, we are writing this for an audience that may be otherwise intimidated by the theoretical approach and academic culture that thrives in the Haskell community. Haskell is certainly a diverse community with many people doing interesting work on the cutting edge of programming language theory; those people are pushing boundaries and their work is highly appreciated, but sometimes it can be nice to open the door to the people who want to get up and running quickly just to see what all of the hype is about and whether or not it holds up. This series is for those people.
+
 
 ### Caveats
 
-Articles like this often go out of date over time. We are using a specific set of components here, and these will change and adapt over time. Many of the tools we use are part of quickly-moving ecosystems, so we apologize in advance if you come across this in the future and struggle because some of these components are old and their APIs have changed.
+Articles like this often go out of date over time. We are using a specific set of components here, and these will change and adapt. Many of the tools we use are part of quickly-moving ecosystems, so we apologize in advance if you come across this in the future and struggle because some of these components are old and their APIs have changed.
 
 In addition, the author of this blog is a self-taught hacker type, someone who just plods along attempting to solve the specific problems he encounters. We make no attempt to argue that the solutions presented herein are the canonical, best answers to the some of the problems we encounter, and we encourage feedback if we err, which we likely will do, or if we misrepresent things, or suggest dangerous or careless practices.
+
+Moreover, this series attempts to be a soup-to-nuts set of articles on building and deploying a Haskell/Elm application, and it covers so much territory that it will likely get stuff wrong.
 
 Please file an issue on the [simpleservantblog repo](https://github.com/pellagic-puffbomb/simpleservantblog) with any problems you come across or with any suggestions or corrections.
 
@@ -26,7 +31,7 @@ Cheers.
 5. A minimal frontend with Elm
 6. Getting a bit fancier with Elm
 7. Docker, Nginx, and Deploying your Haskell Application
-8. Authentication, Authorization, and Sessions without Sessions
+8. Authentication, Authorization, and Session-less Sessions
 9. Moving Toward a more full-fledged CMS
 
 
@@ -45,17 +50,17 @@ This section talks about installing and setting up Postgresql, a minimal Haskell
 
 ## Postgresql
 
-First, we will be running a local copy of Postgresql. This series of posts is using Postgresql 9.5, which you can find at [postgresql.org](https://www.postgresql.org/).
+We will be running a local copy of Postgresql. This series of posts is using Postgresql 9.5, which you can find at [postgresql.org](https://www.postgresql.org/).
 
-Once you have it installed and running, you will need a database and a user. There are lots of great tutorials on installing Postgresql for various operating systems, and these often include creating a new user and a new database. I encourage you to seek out a more comprehensive tutorial on these things for your specific operating system.
+Once you have it installed and running, you will need a database and a database user. There are lots of great tutorials on installing Postgresql for various operating systems, and these often include creating a new user and a new database. I encourage you to seek out a more comprehensive tutorial on these things for your specific operating system. Even so, what follows is a quick cheat sheet for creating a new user and a new database using Postgresql 9.5.
 
-Even so, following is a quick cheat sheet for creating a new user and a new database using Postgresql 9.5. Locate the Postgresql installation directory and inside you should find the `bin` directory. If you add that directory to your PATH, we should be able to issue the following commands (swapping out `yourUserName` for the username you'd like to have):
+Locate your Postgresql installation directory and inside you should find the `bin` directory. If you add that directory to your PATH, we should be able to issue the following commands (swapping out `yourUserName` for the username you'd like to have):
 
 ```
 createuser -P -s -e -d yourUserName
 ```
 
-You should be prompted for a password, which you will need to authenticate later on for this username.
+You should be prompted for a password, which you will need to remember to authenticate later on for this username.
 
 Note: if `createuser` is not in your PATH, you will have to find the location where Postgresql has been installed on your system. Alternately, you may be able to open a shell with `psql` (as user `postgresql`) and issue SQL commands such as the following:
 
@@ -74,11 +79,11 @@ Once again, substitute your username created above and a database name that you 
 
 ## Haskell Stack
 
-If you do not have minimal Haskell tooling on your computer, you will need `stack`. You can find instructions to install it here: https://docs.haskellstack.org/en/stable/README/
+If you do not have minimal Haskell tooling on your computer, you will need `stack`. You can find instructions on installing it here: https://docs.haskellstack.org/en/stable/README/
 
 ### Text Editors
 
-A footnote here on text-editors: the author of this series is using the [atom editor](https://atom.io/), which has excellent tooling for Haskell, Elm, CSS, Html, and others. If you have never edited Haskell source code, we recommend installing [atom](https://atom.io/) and then installing [ide-haskell](https://atom.io/packages/ide-haskell). Follow the `ide-haskell` instructions on installing the binary executables, and then install the other suggested Haskell-atom packages and, finally, start your editor by navigating to the root directory of this project and running:
+A footnote here on text-editors: the author of this series is using the [atom editor](https://atom.io/), which has excellent tooling for Haskell, Elm, CSS, Html, and others. If you have never edited Haskell source code, we recommend installing [atom](https://atom.io/) and then installing [ide-haskell](https://atom.io/packages/ide-haskell). Follow the `ide-haskell` instructions on installing the binary executables, and then install the other Atom/Haskell packages recommended by `ide-haskell`. Finally, start your text editor by navigating to the root directory of this project and running:
 
 ```
 $ atom .

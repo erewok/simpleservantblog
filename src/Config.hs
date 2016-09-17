@@ -49,24 +49,27 @@ setLogger Local = logStdoutDev
 setLogger _    = logStdout
 
 
+makeConnString :: IO (Maybe BS.ByteString)
+makeConnString = runMaybeT $ do
+      let keys = [ "host="
+                 , " port="
+                 , " user="
+                 , " password="
+                 , " dbname="
+                 ]
+          envs = [ "DB_HOST"
+                  , "DB_PORT"
+                  , "DB_USER"
+                  , "DB_PASSWD"
+                  , "DB_NAME"
+                  ]
+      envVars <- traverse (MaybeT . lookupEnv) envs
+      return $ mconcat . zipWith (<>) keys $ BS.pack <$> envVars
+
 -- see: http://codeundreamedof.blogspot.com/2015/01/a-connection-pool-for-postgresql-in.html
 makePool :: IO (Pool Connection)
 makePool = do
-  connString <- runMaybeT $ do
-        let keys = [ "host="
-                   , " port="
-                   , " user="
-                   , " password="
-                   , " dbname="
-                   ]
-            envs = [ "DB_HOST"
-                    , "DB_PORT"
-                    , "DB_USER"
-                    , "DB_PASSWD"
-                    , "DB_NAME"
-                    ]
-        envVars <- traverse (MaybeT . lookupEnv) envs
-        return $ mconcat . zipWith (<>) keys $ BS.pack <$> envVars
+  connString <- makeConnString
   case connString of
     Nothing -> throwIO (userError "Database Configuration not present in environment.")
     Just info -> createPool (connectPostgreSQL info) close 1 10 10

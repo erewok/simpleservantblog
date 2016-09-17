@@ -1,21 +1,18 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 module Models.Author (
-  Author
+  Author(..)
   , authorColumns
   ) where
 
 import Prelude (Int, Eq, Show, Bool, (.), ($))
 import Control.Applicative ((<$>), (<*>))
 import           Data.Aeson
-import           Data.Maybe
 import           Database.PostgreSQL.Simple.ToField (toField)
 import           Database.PostgreSQL.Simple.FromRow (field, FromRow, fromRow)
 import           Database.PostgreSQL.Simple.ToRow (ToRow, toRow)
-import           Data.Time.Clock (UTCTime)
 import           GHC.Generics
 import qualified Data.Text as T
 import           Servant.Elm

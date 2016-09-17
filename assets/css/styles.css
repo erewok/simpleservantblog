@@ -11,8 +11,14 @@
 
 .post-content > .row {
   padding: 1em 2em;
-
 }
+.post-body {
+  margin-top: 5px;
+}
+.top-nav button {
+  border: none;
+}
+
 .sidebar {
   padding-left: 2em;
 }
