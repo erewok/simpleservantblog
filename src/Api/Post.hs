@@ -46,12 +46,12 @@ postHandlers conn = blogPostListH
 listPosts :: Connection -> Handler [BlogPost]
 listPosts conn = do
   let q = "select * from post where pubdate is not null"
-  liftIO $ query_ conn q -- (Only blogPostColumns)
+  liftIO $ query_ conn q
 
 getPost :: Connection -> Int -> Handler BlogPost
 getPost conn postId = do
-  let q = "select ? from post where id = ?"
-  result <- liftIO $ query conn q (blogPostColumns, postId)
+  let q = "select * from post where id = ? and pubdate is not null"
+  result <- liftIO $ query conn q (Only postId)
   case result of
     (x:_) -> return x
     []    -> throwError err404
@@ -74,7 +74,7 @@ getPostSeries conn seriesId = do
   series <- case series' of
     [] -> throwError err404
     (x:_) -> pure x
-  let q2 = "select ? from post where seriesid = ?"
+  let q2 = "select ? from post where seriesid = ? order by ordinal asc"
   result <- liftIO $ query conn q2 (blogPostColumns, seriesId)
   case result of
     [] -> throwError err404

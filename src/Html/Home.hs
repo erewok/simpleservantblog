@@ -23,11 +23,11 @@ homePage = return $ docTypeHtml $ do
     H.link ! A.href "assets/css/normalize.css" ! A.rel "stylesheet" ! A.type_ "text/css"
     H.link ! A.href "assets/css/skeleton.css" ! A.rel "stylesheet" ! A.type_ "text/css"
     H.link ! A.href "assets/css/styles.css" ! A.rel "stylesheet" ! A.type_ "text/css"
+    H.link ! A.href "/assets/highlight/styles/default.css" ! A.rel "stylesheet" ! A.type_ "text/css"
     H.link ! A.href "assets/images/favicon.ico" ! A.rel "icon"
-    H.link ! A.href "/assets/highlight/styles/github.css" ! A.rel "stylesheet"
     H.script ! A.src "/assets/highlight/highlight.pack.js" $ ""
     H.script ! A.type_ "text/javascript" ! A.src "assets/js/elm.js" $ ""
   H.body $ do
     H.div ! A.id "elm" $ ""
     H.script ! A.type_ "text/javascript" $
-      "var node = document.getElementById('elm'); var app = Elm.Main.embed(node);"
+      "var node = document.getElementById('elm'); var app = Elm.Main.embed(node); hljs.initHighlightingOnLoad();"

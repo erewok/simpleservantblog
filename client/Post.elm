@@ -31,10 +31,15 @@ viewPostSummary post =  div [ class "post-content" ] (postTitleAndSynopsis post)
 viewPost : BlogPost -> Html Msg
 viewPost post =  div [ class "post-content" ] (postBody post)
 
-postIndex : List (Html a)
-postIndex = [ p [] [ text "This is a series of posts on constructing this blog. All posts are listed below."]
-            , div [class "six columns "] [text ""]
-            ]
+seriesIndex : BlogSeriesWithPosts -> List (Html a)
+seriesIndex series = [ div [class "series-index"] [
+                        ol [] (List.map seriesIndexItem series.posts)
+                      ]
+                    ]
+
+seriesIndexItem : BlogPost -> Html a
+seriesIndexItem post = li [][ a [] [ text post.title ] ]
+
 
 postTitleAndSynopsis : BlogPost -> List (Html Msg)
 postTitleAndSynopsis post = [(postTitle post)] ++
@@ -45,7 +50,7 @@ postTitleAndSynopsis post = [(postTitle post)] ++
 postTitle : BlogPost -> Html Msg
 postTitle post = div [ class "row" ] [
                       h3 [ class "post-title" ] [
-                        a [onClick (FromFrontend (SeePostDetail post.bid))] [ text (post.title) ]
+                        a [onClick (FromFrontend (SeePostDetail post.bid)), href "#"] [ text (post.title) ]
                       ]
                     , span [ class "" ] [ text (fromJustDate post.pubdate)]
                     ]

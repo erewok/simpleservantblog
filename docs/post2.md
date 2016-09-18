@@ -1,6 +1,6 @@
 # Introduction
 
-In the previous post in this series, we installed Postgresql 9.5 and set up a new user and a database. After that, we installed Haskell Stack and the Elm platform, and we cloned the repo for this project. If you have these tools on your system (and a local Postgresql with a database and user you can use), then you are ready to move onto this section, where will create our tables and start writing some Haskell to interact with them.
+In the previous post in this series, we installed Postgresql 9.5 and set up a new user and a database. After that, we installed Haskell Stack and the Elm platform, and we cloned the repo for this project. If you have these tools on your system (and a local Postgresql with a database and user you can use), then you are ready to move onto this section, where we will create our tables and start writing some Haskell to interact with them.
 
 
 # Index
@@ -25,24 +25,6 @@ You should have `stack` installed on your system and in your PATH as well, and y
 ```
 $ git checkout chapter2
 ```
----
-**Caveat**
-
-Before we install dependencies, there is one large caveat here: I am on OSX and I have installed multiple Postgresql versions with `homebrew`, so my Postgresql 9.5 is in a non-traditional spot. As a result, in my `stack.yaml`, I have to include `extra-lib-dirs` in order to install a Postgresql binding called `libpq` so it can find the right Postgresql 9.5 tools in my PATH.
-
-There is a line in my `stack.yaml` that looks like this:
-
-```
-extra-lib-dirs: [/usr/local/opt/libiconv/lib, /usr/local/lib, /usr/lib]
-```
-
-**You will likely not need this**. My recommendation is to start by editing `stack.yaml` and commenting out this line:
-```
-# extra-lib-dirs: [/usr/local/opt/libiconv/lib, /usr/local/lib, /usr/lib]
-```
-
-If you are on OSX and you have installed stuff with `homebrew` and you're running into problems, you may have the same issue that I had, but I recommend researching it for solutions.
----
 
 When you are ready to install project dependencies, run the following:
 
@@ -54,9 +36,9 @@ $ stack install --only-dependencies
 
 ### First Models File: Author.hs
 
-After stack has installed our project dependencies, we can start writing some code. It's always a good idea to begin by first considering the structure of our data, so in web apps we start with the model definitions. These will represent both the tables that store our data and the objects we interact with in our code.
+After stack has installed our project dependencies, we can start writing some code. It''s always a good idea to begin by first considering the structure of our data, so in web apps we start with the model definitions. These will represent both the tables that store our data and the objects we interact with in our code.
 
-We are working on a blog, but blog posts require authors, so let's start with our `Author` models first.
+We are working on a blog, but blog posts require authors, so let''s start with our `Author` models first.
 
 We begin our module with some useful GHC 8 language pragmas and then the imports our file requires.
 
@@ -88,24 +70,24 @@ import           Servant.Elm
 ```
 At the very top are some GHC language pragmas: these are extensions available in GHC, and we are going to gloss over them here, suffice it to say that these go *above* the name of our module and its imports.
 
-Haskell modules always have the `module` name at the top below any pragmas: this module is called `Models.Author` because it is in the directory `Models` and it is named `Author.hs`. `Models.Author` is how this file will be referenced in our project's `cabal file` and it's also how it will be imported by other modules.
+Haskell modules always have the `module` name at the top below any pragmas: this module is called `Models.Author` because it is in the directory `Models` and it is named `Author.hs`. `Models.Author` is how this file will be referenced in our project''s `cabal file` and it''s also how it will be imported by other modules.
 
 We have also included a few imports from the `postgresql-simple` library we installed previously, and we have included some other interesting and useful tools, including the following:
 
 **`Data.Aeson`**:
 
-This is a wonderful and extremely fast JSON-serialization library. Throughout this project, we're going to rely heavily on `Data.Aeson`.
+This is a wonderful and extremely fast JSON-serialization library. Throughout this project, we''re going to rely heavily on `Data.Aeson`.
 
 
 **`GHC.Generics`**:
 
-We are going to create some new data types to represent records in our tables. In other words, we're going to take a row from our database and turn it into something we are calling a `Author` and then we're going to do the reverse: send that `Author` directly back to the database where it will again become a database record.
+We are going to create some new data types to represent records in our tables. In other words, we''re going to take a row from our database and turn it into something we are calling a `Author` and then we''re going to do the reverse: send that `Author` directly back to the database where it will again become a database record.
 
 In addition, our API is going to speak JSON, so it would also be pretty cool to automatically turn our `BlogPost` and `Author` things into JSON and them from JSON back into `BlogPost`s and `Author`s. `GHC.Generics` along with the language pragma `{-# LANGUAGE DeriveGeneric #-}` allows us to automatically create instances of `FromJSON` and `ToJSON` (from the `aeson` library) for our data types, which simply means that the compiler automagically knows how to turn the things we have defined *into* JSON and then from JSON *back into the things we defined*, which is pretty cool.
 
 **`Servant.Elm`**:
 
-We're not doing much with this yet, so we'll talk about it later. Simply include it for now.
+We''re not doing much with this yet, so we''ll talk about it later. Simply include it for now.
 
 ### Defining the Author Table
 
@@ -124,7 +106,7 @@ data Author = Author {
 ```
 Our Author table will have four columns named similarly to the above, but in our application, we will generally be dealing with `Author` things, so we will to define how to get one of these `Author` things from our database for us and how to put it back. We do that by defining `FromRow` and `ToRow` (from the `postgresql-simple` library) instances for our object.
 
-Note: the "bang pattern" (`!`) in our fields means that those fields are *strict*, not lazy. It forces evaluation of its field instead of leaving it to be evaluated later. This is recommended for data types such as `Int`, `Text`, and others. If this doesn't make much sense, don't sweat it. The code above will also work without it.
+Note: the "bang pattern" (`!`) in our fields means that those fields are *strict*, not lazy. It forces evaluation of its field instead of leaving it to be evaluated later. This is recommended for data types such as `Int`, `Text`, and others. If this doesn''t make much sense, don''t sweat it. The code above will also work without it.
 
 #### Our FromRow Instance
 
@@ -171,7 +153,7 @@ Here, we gather all of these pieces of data into a list and this list represents
 
 A quick detour: a Haskell record such as our `Author` definition has what look like field-names, but these are really just functions. Calling these functions corresponds to accessing that piece of data in the record.
 
-Here's a really basic introduction to Haskell records:
+Here''s a really basic introduction to Haskell records:
 
 ```
 $ stack ghci
@@ -199,11 +181,11 @@ Thus, our `ToRow` instance is calling all of the functions necessary to get the 
 ...
 ```
 
-If you are completely unfamiliar with Haskell, that `$` may look odd (and probably `<$>` and `<*>` above which I have ignored do too). The `$` simply means "apply this function to this argument". Another way to look at it is like this: `toField` is a function that takes one argument, but Haskell doesn't use parentheses for function calls, so when we write the following: `toField firstName p`, the compiler rejects this saying:
+If you are completely unfamiliar with Haskell, that `$` may look odd (and probably `<$>` and `<*>` above which I have ignored do too). The `$` simply means "apply this function to this argument". Another way to look at it is like this: `toField` is a function that takes one argument, but Haskell doesn''t use parentheses for function calls, so when we write the following: `toField firstName p`, the compiler rejects this saying:
 
 ```haskell
 
-Couldn't match expected type ‘Author
+Couldn''t match expected type ‘Author
                                 -> Database.PostgreSQL.Simple.ToField.Action’
               with actual type ‘Database.PostgreSQL.Simple.ToField.Action’
 • The function ‘toField’ is applied to two arguments,
@@ -216,7 +198,7 @@ In other words, we have accidentally applied the `toField` to two arguments inst
 
 There are two solutions to this problem of passing too many arguments, we can use parentheses to group things, or we can use `$` instead:
 
-``haskell
+```haskell
 
    toField $ firstName p
 -- the following is equivalent:
@@ -225,7 +207,7 @@ There are two solutions to this problem of passing too many arguments, we can us
 
 At any rate, once we have assembled all of the `field`s into a list, we now have a representation of a row in the `author` table.
 
-Finally, we can now use generics to define our convenience JSON converters and an Elm one, which we'll use later to save ourselves a bunch of work in Elm. (If you would like to take the time to write the `FromJSON` and `ToJSON` instances by hand, I recommend reading [this excellent tutorial](https://artyom.me/aeson) on `aeson`.)
+Finally, we can now use generics to define our convenience JSON converters and an Elm one, which we''ll use later to save ourselves a bunch of work in Elm. (If you would like to take the time to write the `FromJSON` and `ToJSON` instances by hand, I recommend reading [this excellent tutorial](https://artyom.me/aeson) on `aeson`.)
 
 *src/Models/Author.hs*:
 
@@ -237,23 +219,23 @@ instance ToJSON Author
 authorColumns = "id, firstname, lastname, email"
 ```
 
-That last definition is a convenience for querying, which we'll also use later on too.
+That last definition is a convenience for querying, which we''ll also use later on too.
 
 ### Compiling with Stack Build
 
-We have now completed one of the modules of our project, so let's try to build it:
+We have now completed one of the modules of our project, so let''s try to build it:
 
 ```
 $ stack build
 ```
 
-If all goes well, you should see no compiler errors. If something went wrong, you will have to fix it before work can continue. Make sure that your module includes the code we've entered here. This is the agony and the ecstasy of working in Haskell: the compiler is extremely unforgiving, but it eventually becomes your best friend. After your modules compile, they are likely to work.
+If all goes well, you should see no compiler errors. If something went wrong, you will have to fix it before work can continue. Make sure that your module includes the code we''ve entered here. This is the agony and the ecstasy of working in Haskell: the compiler is extremely unforgiving, but it eventually becomes your best friend. After your modules compile, they are likely to work.
 
 ### Defining the Blog Post Tables
 
-Now that we have a way of representing our `author` table, we'd like to create a `blogpost` table because each record there will be linked to a record in the `author` table.
+Now that we have a way of representing our `author` table, we''d like to create a `blogpost` table because each record there will be linked to a record in the `author` table.
 
-What follows is very similar to what we've seen before:
+What follows is very similar to what we''ve seen before:
 
 *src/Models/Post.hs*:
 
@@ -310,11 +292,11 @@ instance ToRow BlogPost where
 
 There are two potentially interesting things in here. First, we have chosen to represent some of our fields in the following way: ` seriesId :: Maybe Int`. You may have guessed these are *nullable* fields.
 
-Haskell will never let us put a `Null` in this field if it is defined to be an `Int`. Thus, I must define this field as a `Maybe Int`, in order to indicate that it can be either one of two things: a number wrapped in a constructor, `Just 5`, or the value `Nothing`. Any time I interact with this field I must explicitly check whether it is a `Just n` or `Nothing`. If you have explored Haskell before you have most likely come across the `Maybe` type: it's very useful.
+Haskell will never let us put a `Null` in this field if it is defined to be an `Int`. Thus, I must define this field as a `Maybe Int`, in order to indicate that it can be either one of two things: a number wrapped in a constructor, `Just 5`, or the value `Nothing`. Any time I interact with this field I must explicitly check whether it is a `Just n` or `Nothing`. If you have explored Haskell before you have most likely come across the `Maybe` type: it''s very useful.
 
-Note: we didn't add bang patterns to the `Maybe` types. To see why, try to add one and `stack build` the project.
+Note: we didn''t add bang patterns to the `Maybe` types. To see why, try to add one and `stack build` the project.
 
-In addition, I have also defined some of my fields to be `UTCTime`: these correspond to Postgresql's `timestamp with time zone` data type.
+In addition, I have also defined some of my fields to be `UTCTime`: these correspond to Postgresql''s `timestamp with time zone` data type.
 
 Finally, we also derive our other instances and throw in the convenience column list, so our later queries will match up nicely with our `BlogPost` value constructor:
 
@@ -358,7 +340,7 @@ CREATE TABLE post (
 );
 ```
 
-Let's use Haskell now to enter some data!
+Let''s use Haskell now to enter some data!
 
 ## Connecting and Querying
 

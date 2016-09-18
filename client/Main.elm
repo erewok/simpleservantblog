@@ -18,21 +18,27 @@ import Types exposing (..)
 main : Program Never
 main =
     program
-        { init = init
-        , update = update
+        { init = init2
+        , update = update2
         , subscriptions = \_ -> Sub.none
-        , view = view
+        , view = view2
         }
 
-
-init : ( Content, Cmd Msg )
+init : (Content, Cmd Msg)
 init =
-    let
-        state =
-            { content = PostList [], error = Nothing }
+  let
+    state =
+      { content = PostList [], error = Nothing}
     in
-        ( state, retrieve Home)
+      ( state, retrieve Home)
 
+init2 : (BlogContent, Cmd Msg)
+init2 =
+  let
+    state =
+      { posts = PostList [], detail = Nothing }
+    in
+      ( state, retrieve Home)
 
 update : Msg -> Content -> ( Content, Cmd Msg )
 update message s =
@@ -42,11 +48,11 @@ update message s =
       FromBackend backend ->
         case backend of
           PostList posts ->
-            { s | content = (PostList posts) , error = Nothing } ! []
+            { s | content = PostList posts , error = Nothing } ! []
           Series series ->
-            { s | content = (Series series) , error = Nothing } ! []
+            { s | content = Series series , error = Nothing } ! []
           PostDetail post ->
-            { s | content = (PostDetail post) , error = Nothing } ! []
+            { s | error = Nothing, content = PostDetail post } ! []
           BackendError error ->
             { s | error = Just error } ! []
       FromFrontend frontend ->
@@ -63,6 +69,38 @@ update message s =
             { s | error = Nothing } ! [retrieve SeeAboutPage]
       Error msg ->
         { s | error = Just msg } ! []
+
+update2 : Msg -> BlogContent -> ( BlogContent, Cmd Msg )
+update2 message s =
+    case message of
+      NoOp ->
+        s ! []
+      FromBackend backend ->
+        case backend of
+          PostList posts ->
+            { s | posts = PostList posts
+            , detail = Nothing } ! []
+          Series series ->
+            { s | posts = Series series
+            , detail = Nothing } ! []
+          PostDetail post ->
+            { s | detail = Just post } ! []
+          BackendError error ->
+            { s | posts = BackendError error } ! []
+      FromFrontend frontend ->
+        case frontend of
+          Home ->
+            { s | posts = PostList [], detail = Nothing } ! [retrieve Home]
+          SeePostList ->
+            { s | posts = PostList [], detail = Nothing } ! [retrieve SeePostList]
+          SeePostSeries seriesId ->
+            { s | detail = Nothing } ! [retrieve (SeePostSeries seriesId)]
+          SeePostDetail postId ->
+            { s | detail = Nothing } ! [retrieve (SeePostDetail postId)]
+          SeeAboutPage ->
+            { s | detail = Nothing } ! [retrieve SeeAboutPage]
+      Error msg ->
+        { s | posts = BackendError msg } ! []
 
 
 -- VIEW
@@ -125,3 +163,31 @@ view state = case state.content of
     , div [ class "error row" ]
       <| [text "Something went wrong", text error]
     ]
+
+view2 : BlogContent -> Html Msg
+view2 state = case state.detail of
+  -- if there is a post-detail, show that
+  Just post -> div [] [ pageSkeleton
+      , div [ class "post-container row" ]
+        <| [text "this is a post detail"] ++
+          [viewPost post]
+      ]
+  Nothing -> case state.posts of
+    Series series -> div [] [ pageSkeleton
+        , div [ class "post-container row" ]
+            <| [text "this is a series of posts"] ++ []
+        ]
+    PostList posts -> div [] [ pageSkeleton
+      , div [ class "post-container row" ]
+          <| [text "this is a post list"] ++
+            (List.map viewPostSummary posts)
+      ]
+    PostDetail post -> div [] [ pageSkeleton
+      , div [ class "post-container row" ]
+        <| [text "this is a post detail"] ++
+           [viewPost post]
+      ]
+    BackendError error -> div [] [pageSkeleton
+      , div [ class "error row" ]
+        <| [text "Something went wrong", text error]
+      ]

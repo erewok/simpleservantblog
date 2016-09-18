@@ -8,6 +8,11 @@ type alias Content =
   , error : Maybe String
 }
 
+type alias BlogContent =
+  { posts : Backend
+  , detail : Maybe BlogPost
+}
+
 type Msg
     = NoOp
       | FromBackend Backend
