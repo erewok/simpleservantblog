@@ -367,3 +367,24 @@ gchi> import Database.PostgreSQL.Simple
 ghci> let connStr = "host=localhost port=5432 user=youUser password=yourUserPassword dbname=yourDbName"
 ghci> conn <- connectPostgreSQL connStr
 ```
+
+Now, let''s put an author and a post into the database and try to get it back out. We need to put the `author` in first because `post` has a non-nullable foreign-key to author.
+
+```
+ghci> let q1 = "insert into author (firstName, lastName, email) VALUES ('first', 'last', 'email@email.com')"
+gchi> result1 <- execute_ conn q1
+ghci> let q2 = "insert into post (authorid, title, body, created) VALUES (1, 'first post', 'here's a first post!', timestamp '2016-10-01')"
+gchi> result2 <- execute_ conn q2
+ghci> let q3 = "select * from post"
+gchi> result <- query_ conn q :: IO [BlogPost]
+gchi> :t result
+result :: [BlogPost]
+gchi> last result
+BlogPost {bid = 1, authorId = 1, seriesId = Nothing, title = "first post", body = Just "here's a first post!", synopsis = Nothing, created = 2016-10-01 07:00:00 UTC, modified = Nothing, pubdate = Nothing, ordinal = Nothing}
+```
+
+This is pretty cool: we can insert and query values from the database. Note: I had to tell `query_` (a function from `postgresql-simple` that executes a query and does not take any arguments) that the table it was querying would produce a type of `[BlogPost]`.
+
+# Wrapup
+
+In the next section, we''ll start utilizing the `servant` library to serve data from our API, which will work as the foundation for our blog.

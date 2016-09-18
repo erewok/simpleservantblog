@@ -169,23 +169,20 @@ view2 state = case state.detail of
   -- if there is a post-detail, show that
   Just post -> div [] [ pageSkeleton
       , div [ class "post-container row" ]
-        <| [text "this is a post detail"] ++
-          [viewPost post]
+        <| [viewPost post]
       ]
   Nothing -> case state.posts of
     Series series -> div [] [ pageSkeleton
         , div [ class "post-container row" ]
-            <| [text "this is a series of posts"] ++ []
+            <| (seriesIndex series) ++ (List.map viewPostSummary series.posts)
         ]
     PostList posts -> div [] [ pageSkeleton
       , div [ class "post-container row" ]
-          <| [text "this is a post list"] ++
-            (List.map viewPostSummary posts)
+          <| (List.map viewPostSummary posts)
       ]
     PostDetail post -> div [] [ pageSkeleton
       , div [ class "post-container row" ]
-        <| [text "this is a post detail"] ++
-           [viewPost post]
+        <| [viewPost post]
       ]
     BackendError error -> div [] [pageSkeleton
       , div [ class "error row" ]

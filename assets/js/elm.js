@@ -10051,21 +10051,16 @@ var _pellagic_puffbomb$simpleservantblog$Main$view2 = function (state) {
 						[
 							_elm_lang$html$Html_Attributes$class('post-container row')
 						]),
-					A2(
-						_elm_lang$core$Basics_ops['++'],
-						_elm_lang$core$Native_List.fromArray(
-							[
-								_elm_lang$html$Html$text('this is a post detail')
-							]),
-						_elm_lang$core$Native_List.fromArray(
-							[
-								_pellagic_puffbomb$simpleservantblog$Post$viewPost(_p0._0)
-							])))
+					_elm_lang$core$Native_List.fromArray(
+						[
+							_pellagic_puffbomb$simpleservantblog$Post$viewPost(_p0._0)
+						]))
 				]));
 	} else {
 		var _p1 = state.posts;
 		switch (_p1.ctor) {
 			case 'Series':
+				var _p2 = _p1._0;
 				return A2(
 					_elm_lang$html$Html$div,
 					_elm_lang$core$Native_List.fromArray(
@@ -10081,12 +10076,8 @@ var _pellagic_puffbomb$simpleservantblog$Main$view2 = function (state) {
 								]),
 							A2(
 								_elm_lang$core$Basics_ops['++'],
-								_elm_lang$core$Native_List.fromArray(
-									[
-										_elm_lang$html$Html$text('this is a series of posts')
-									]),
-								_elm_lang$core$Native_List.fromArray(
-									[])))
+								_pellagic_puffbomb$simpleservantblog$Post$seriesIndex(_p2),
+								A2(_elm_lang$core$List$map, _pellagic_puffbomb$simpleservantblog$Post$viewPostSummary, _p2.posts)))
 						]));
 			case 'PostList':
 				return A2(
@@ -10102,13 +10093,7 @@ var _pellagic_puffbomb$simpleservantblog$Main$view2 = function (state) {
 								[
 									_elm_lang$html$Html_Attributes$class('post-container row')
 								]),
-							A2(
-								_elm_lang$core$Basics_ops['++'],
-								_elm_lang$core$Native_List.fromArray(
-									[
-										_elm_lang$html$Html$text('this is a post list')
-									]),
-								A2(_elm_lang$core$List$map, _pellagic_puffbomb$simpleservantblog$Post$viewPostSummary, _p1._0)))
+							A2(_elm_lang$core$List$map, _pellagic_puffbomb$simpleservantblog$Post$viewPostSummary, _p1._0))
 						]));
 			case 'PostDetail':
 				return A2(
@@ -10124,16 +10109,10 @@ var _pellagic_puffbomb$simpleservantblog$Main$view2 = function (state) {
 								[
 									_elm_lang$html$Html_Attributes$class('post-container row')
 								]),
-							A2(
-								_elm_lang$core$Basics_ops['++'],
-								_elm_lang$core$Native_List.fromArray(
-									[
-										_elm_lang$html$Html$text('this is a post detail')
-									]),
-								_elm_lang$core$Native_List.fromArray(
-									[
-										_pellagic_puffbomb$simpleservantblog$Post$viewPost(_p1._0)
-									])))
+							_elm_lang$core$Native_List.fromArray(
+								[
+									_pellagic_puffbomb$simpleservantblog$Post$viewPost(_p1._0)
+								]))
 						]));
 			default:
 				return A2(
@@ -10159,8 +10138,8 @@ var _pellagic_puffbomb$simpleservantblog$Main$view2 = function (state) {
 	}
 };
 var _pellagic_puffbomb$simpleservantblog$Main$view = function (state) {
-	var _p2 = state.content;
-	switch (_p2.ctor) {
+	var _p3 = state.content;
+	switch (_p3.ctor) {
 		case 'PostDetail':
 			return A2(
 				_elm_lang$html$Html$div,
@@ -10183,7 +10162,7 @@ var _pellagic_puffbomb$simpleservantblog$Main$view = function (state) {
 								]),
 							_elm_lang$core$Native_List.fromArray(
 								[
-									_pellagic_puffbomb$simpleservantblog$Post$viewPost(_p2._0)
+									_pellagic_puffbomb$simpleservantblog$Post$viewPost(_p3._0)
 								])))
 					]));
 		case 'PostList':
@@ -10206,7 +10185,7 @@ var _pellagic_puffbomb$simpleservantblog$Main$view = function (state) {
 								[
 									_elm_lang$html$Html$text('this is a post list')
 								]),
-							A2(_elm_lang$core$List$map, _pellagic_puffbomb$simpleservantblog$Post$viewPostSummary, _p2._0)))
+							A2(_elm_lang$core$List$map, _pellagic_puffbomb$simpleservantblog$Post$viewPostSummary, _p3._0)))
 					]));
 		case 'Series':
 			return A2(
@@ -10248,7 +10227,7 @@ var _pellagic_puffbomb$simpleservantblog$Main$view = function (state) {
 						_elm_lang$core$Native_List.fromArray(
 							[
 								_elm_lang$html$Html$text('Something went wrong'),
-								_elm_lang$html$Html$text(_p2._0)
+								_elm_lang$html$Html$text(_p3._0)
 							]))
 					]));
 	}
@@ -10292,24 +10271,24 @@ var _pellagic_puffbomb$simpleservantblog$Main$getAll = A3(
 	A2(_elm_lang$core$Task$mapError, _elm_lang$core$Basics$toString, _pellagic_puffbomb$simpleservantblog$Api$getPost));
 var _pellagic_puffbomb$simpleservantblog$Main$getAboutPage = _pellagic_puffbomb$simpleservantblog$Main$getAll;
 var _pellagic_puffbomb$simpleservantblog$Main$retrieve = function (frontendRequest) {
-	var _p3 = frontendRequest;
-	switch (_p3.ctor) {
+	var _p4 = frontendRequest;
+	switch (_p4.ctor) {
 		case 'Home':
 			return _pellagic_puffbomb$simpleservantblog$Main$getAll;
 		case 'SeePostList':
 			return _pellagic_puffbomb$simpleservantblog$Main$getAll;
 		case 'SeePostSeries':
-			return _pellagic_puffbomb$simpleservantblog$Main$getSeries(_p3._0);
+			return _pellagic_puffbomb$simpleservantblog$Main$getSeries(_p4._0);
 		case 'SeePostDetail':
-			return _pellagic_puffbomb$simpleservantblog$Main$getPost(_p3._0);
+			return _pellagic_puffbomb$simpleservantblog$Main$getPost(_p4._0);
 		default:
 			return _pellagic_puffbomb$simpleservantblog$Main$getAboutPage;
 	}
 };
 var _pellagic_puffbomb$simpleservantblog$Main$update2 = F2(
 	function (message, s) {
-		var _p4 = message;
-		switch (_p4.ctor) {
+		var _p5 = message;
+		switch (_p5.ctor) {
 			case 'NoOp':
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
@@ -10317,15 +10296,15 @@ var _pellagic_puffbomb$simpleservantblog$Main$update2 = F2(
 					_elm_lang$core$Native_List.fromArray(
 						[]));
 			case 'FromBackend':
-				var _p5 = _p4._0;
-				switch (_p5.ctor) {
+				var _p6 = _p5._0;
+				switch (_p6.ctor) {
 					case 'PostList':
 						return A2(
 							_elm_lang$core$Platform_Cmd_ops['!'],
 							_elm_lang$core$Native_Utils.update(
 								s,
 								{
-									posts: _pellagic_puffbomb$simpleservantblog$Types$PostList(_p5._0),
+									posts: _pellagic_puffbomb$simpleservantblog$Types$PostList(_p6._0),
 									detail: _elm_lang$core$Maybe$Nothing
 								}),
 							_elm_lang$core$Native_List.fromArray(
@@ -10336,7 +10315,7 @@ var _pellagic_puffbomb$simpleservantblog$Main$update2 = F2(
 							_elm_lang$core$Native_Utils.update(
 								s,
 								{
-									posts: _pellagic_puffbomb$simpleservantblog$Types$Series(_p5._0),
+									posts: _pellagic_puffbomb$simpleservantblog$Types$Series(_p6._0),
 									detail: _elm_lang$core$Maybe$Nothing
 								}),
 							_elm_lang$core$Native_List.fromArray(
@@ -10347,7 +10326,7 @@ var _pellagic_puffbomb$simpleservantblog$Main$update2 = F2(
 							_elm_lang$core$Native_Utils.update(
 								s,
 								{
-									detail: _elm_lang$core$Maybe$Just(_p5._0)
+									detail: _elm_lang$core$Maybe$Just(_p6._0)
 								}),
 							_elm_lang$core$Native_List.fromArray(
 								[]));
@@ -10357,14 +10336,14 @@ var _pellagic_puffbomb$simpleservantblog$Main$update2 = F2(
 							_elm_lang$core$Native_Utils.update(
 								s,
 								{
-									posts: _pellagic_puffbomb$simpleservantblog$Types$BackendError(_p5._0)
+									posts: _pellagic_puffbomb$simpleservantblog$Types$BackendError(_p6._0)
 								}),
 							_elm_lang$core$Native_List.fromArray(
 								[]));
 				}
 			case 'FromFrontend':
-				var _p6 = _p4._0;
-				switch (_p6.ctor) {
+				var _p7 = _p5._0;
+				switch (_p7.ctor) {
 					case 'Home':
 						return A2(
 							_elm_lang$core$Platform_Cmd_ops['!'],
@@ -10404,7 +10383,7 @@ var _pellagic_puffbomb$simpleservantblog$Main$update2 = F2(
 							_elm_lang$core$Native_List.fromArray(
 								[
 									_pellagic_puffbomb$simpleservantblog$Main$retrieve(
-									_pellagic_puffbomb$simpleservantblog$Types$SeePostSeries(_p6._0))
+									_pellagic_puffbomb$simpleservantblog$Types$SeePostSeries(_p7._0))
 								]));
 					case 'SeePostDetail':
 						return A2(
@@ -10415,7 +10394,7 @@ var _pellagic_puffbomb$simpleservantblog$Main$update2 = F2(
 							_elm_lang$core$Native_List.fromArray(
 								[
 									_pellagic_puffbomb$simpleservantblog$Main$retrieve(
-									_pellagic_puffbomb$simpleservantblog$Types$SeePostDetail(_p6._0))
+									_pellagic_puffbomb$simpleservantblog$Types$SeePostDetail(_p7._0))
 								]));
 					default:
 						return A2(
@@ -10434,7 +10413,7 @@ var _pellagic_puffbomb$simpleservantblog$Main$update2 = F2(
 					_elm_lang$core$Native_Utils.update(
 						s,
 						{
-							posts: _pellagic_puffbomb$simpleservantblog$Types$BackendError(_p4._0)
+							posts: _pellagic_puffbomb$simpleservantblog$Types$BackendError(_p5._0)
 						}),
 					_elm_lang$core$Native_List.fromArray(
 						[]));
@@ -10442,8 +10421,8 @@ var _pellagic_puffbomb$simpleservantblog$Main$update2 = F2(
 	});
 var _pellagic_puffbomb$simpleservantblog$Main$update = F2(
 	function (message, s) {
-		var _p7 = message;
-		switch (_p7.ctor) {
+		var _p8 = message;
+		switch (_p8.ctor) {
 			case 'NoOp':
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
@@ -10451,15 +10430,15 @@ var _pellagic_puffbomb$simpleservantblog$Main$update = F2(
 					_elm_lang$core$Native_List.fromArray(
 						[]));
 			case 'FromBackend':
-				var _p8 = _p7._0;
-				switch (_p8.ctor) {
+				var _p9 = _p8._0;
+				switch (_p9.ctor) {
 					case 'PostList':
 						return A2(
 							_elm_lang$core$Platform_Cmd_ops['!'],
 							_elm_lang$core$Native_Utils.update(
 								s,
 								{
-									content: _pellagic_puffbomb$simpleservantblog$Types$PostList(_p8._0),
+									content: _pellagic_puffbomb$simpleservantblog$Types$PostList(_p9._0),
 									error: _elm_lang$core$Maybe$Nothing
 								}),
 							_elm_lang$core$Native_List.fromArray(
@@ -10470,7 +10449,7 @@ var _pellagic_puffbomb$simpleservantblog$Main$update = F2(
 							_elm_lang$core$Native_Utils.update(
 								s,
 								{
-									content: _pellagic_puffbomb$simpleservantblog$Types$Series(_p8._0),
+									content: _pellagic_puffbomb$simpleservantblog$Types$Series(_p9._0),
 									error: _elm_lang$core$Maybe$Nothing
 								}),
 							_elm_lang$core$Native_List.fromArray(
@@ -10482,7 +10461,7 @@ var _pellagic_puffbomb$simpleservantblog$Main$update = F2(
 								s,
 								{
 									error: _elm_lang$core$Maybe$Nothing,
-									content: _pellagic_puffbomb$simpleservantblog$Types$PostDetail(_p8._0)
+									content: _pellagic_puffbomb$simpleservantblog$Types$PostDetail(_p9._0)
 								}),
 							_elm_lang$core$Native_List.fromArray(
 								[]));
@@ -10492,14 +10471,14 @@ var _pellagic_puffbomb$simpleservantblog$Main$update = F2(
 							_elm_lang$core$Native_Utils.update(
 								s,
 								{
-									error: _elm_lang$core$Maybe$Just(_p8._0)
+									error: _elm_lang$core$Maybe$Just(_p9._0)
 								}),
 							_elm_lang$core$Native_List.fromArray(
 								[]));
 				}
 			case 'FromFrontend':
-				var _p9 = _p7._0;
-				switch (_p9.ctor) {
+				var _p10 = _p8._0;
+				switch (_p10.ctor) {
 					case 'Home':
 						return A2(
 							_elm_lang$core$Platform_Cmd_ops['!'],
@@ -10529,7 +10508,7 @@ var _pellagic_puffbomb$simpleservantblog$Main$update = F2(
 							_elm_lang$core$Native_List.fromArray(
 								[
 									_pellagic_puffbomb$simpleservantblog$Main$retrieve(
-									_pellagic_puffbomb$simpleservantblog$Types$SeePostSeries(_p9._0))
+									_pellagic_puffbomb$simpleservantblog$Types$SeePostSeries(_p10._0))
 								]));
 					case 'SeePostDetail':
 						return A2(
@@ -10540,7 +10519,7 @@ var _pellagic_puffbomb$simpleservantblog$Main$update = F2(
 							_elm_lang$core$Native_List.fromArray(
 								[
 									_pellagic_puffbomb$simpleservantblog$Main$retrieve(
-									_pellagic_puffbomb$simpleservantblog$Types$SeePostDetail(_p9._0))
+									_pellagic_puffbomb$simpleservantblog$Types$SeePostDetail(_p10._0))
 								]));
 					default:
 						return A2(
@@ -10559,7 +10538,7 @@ var _pellagic_puffbomb$simpleservantblog$Main$update = F2(
 					_elm_lang$core$Native_Utils.update(
 						s,
 						{
-							error: _elm_lang$core$Maybe$Just(_p7._0)
+							error: _elm_lang$core$Maybe$Just(_p8._0)
 						}),
 					_elm_lang$core$Native_List.fromArray(
 						[]));
@@ -10596,7 +10575,7 @@ var _pellagic_puffbomb$simpleservantblog$Main$main = {
 		{
 			init: _pellagic_puffbomb$simpleservantblog$Main$init2,
 			update: _pellagic_puffbomb$simpleservantblog$Main$update2,
-			subscriptions: function (_p10) {
+			subscriptions: function (_p11) {
 				return _elm_lang$core$Platform_Sub$none;
 			},
 			view: _pellagic_puffbomb$simpleservantblog$Main$view2
