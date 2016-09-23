@@ -1,10 +1,18 @@
-.post-container {
-  margin-top: 3%;
-  margin-left: 3%;
+a {
+  text-decoration: none;
+}
+#page-header {
   text-align: center;
 }
-@media (min-width: 400px) {
+#page-footer {
+  margin-top: 10rem;
+  text-align: center;
+}
+@media (min-width: 550px) {
   .post-container {
+    text-align: left;
+  }
+  #page-header {
     text-align: left;
   }
 }

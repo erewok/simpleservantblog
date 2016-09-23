@@ -1,7 +1,6 @@
 {-# LANGUAGE DataKinds         #-}
 {-# LANGUAGE LambdaCase        #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE TypeOperators     #-}
 
 module Html.Home where
 
@@ -15,19 +14,44 @@ import           Servant.HTML.Blaze
 type HomePage = Get '[HTML] Html
 
 homePage :: Handler Html
-homePage = return $ docTypeHtml $ do
-  H.head $ do
-    H.title "Simple Servant Blog"
-    H.meta ! A.name "viewport" ! A.content "width=device-width, initial-scale=1"
-    H.link ! A.href "//fonts.googleapis.com/css?family=Raleway:400,300,600" ! A.rel "stylesheet" ! A.type_ "text/css"
-    H.link ! A.href "assets/css/normalize.css" ! A.rel "stylesheet" ! A.type_ "text/css"
-    H.link ! A.href "assets/css/skeleton.css" ! A.rel "stylesheet" ! A.type_ "text/css"
-    H.link ! A.href "assets/css/styles.css" ! A.rel "stylesheet" ! A.type_ "text/css"
-    H.link ! A.href "/assets/highlight/styles/default.css" ! A.rel "stylesheet" ! A.type_ "text/css"
-    H.link ! A.href "assets/images/favicon.ico" ! A.rel "icon"
-    H.script ! A.src "/assets/highlight/highlight.pack.js" $ ""
-    H.script ! A.type_ "text/javascript" ! A.src "assets/js/elm.js" $ ""
-  H.body $ do
-    H.div ! A.id "elm" $ ""
-    H.script ! A.type_ "text/javascript" $
-      "var node = document.getElementById('elm'); var app = Elm.Main.embed(node); hljs.initHighlightingOnLoad();"
+homePage = return $ docTypeHtml $ pageSkeleton $ do
+      H.div ! A.id "elm" ! A.class_ "main" $ ""
+      H.script ! A.type_ "text/javascript" $
+       "var node = document.getElementById('elm'); var app = Elm.Main.embed(node); hljs.initHighlightingOnLoad();"
+
+pageSkeleton :: H.Html -> H.Html
+pageSkeleton content = do
+         H.head $ do
+           H.title "Ekadanta.co / erik aker"
+           H.meta ! A.name "viewport" ! A.content "width=device-width, initial-scale=1"
+           H.link ! A.href "//fonts.googleapis.com/css?family=Raleway:400,300,600" ! A.rel "stylesheet" ! A.type_ "text/css"
+           H.link ! A.href "assets/css/normalize.css" ! A.rel "stylesheet" ! A.type_ "text/css"
+           H.link ! A.href "assets/css/skeleton.css" ! A.rel "stylesheet" ! A.type_ "text/css"
+           H.link ! A.href "assets/css/styles.css" ! A.rel "stylesheet" ! A.type_ "text/css"
+           H.link ! A.href "/assets/highlight/styles/default.css" ! A.rel "stylesheet" ! A.type_ "text/css"
+           H.link ! A.href "/assets/images/favicon.ico" ! A.rel "icon"
+           H.script ! A.src "/assets/highlight/highlight.pack.js" $ ""
+           H.script ! A.type_ "text/javascript" ! A.src "assets/js/elm.js" $ ""
+         H.body $
+           H.div ! A.class_ "container" $ do
+             H.header ! A.id "page-header" ! A.class_ "top-nav" $
+               H.div ! A.class_ "row" $ do
+                 H.div ! A.class_ "four columns" ! A.style "margin-top: 2%" $
+                   H.a ! A.class_ "button" ! A.style "border: none;" ! href "/" $
+                     H.h5 "EKADANTA"
+                 H.div ! A.class_ "two columns" ! A.style "margin-top: 2%" $ ""
+                 H.div ! A.class_ "two columns" ! A.style "margin-top: 2%" $
+                   H.a ! A.class_ "button" ! A.style "border: none;" ! href "/about" $ "about"
+                 H.div ! A.class_ "two columns" ! A.style "margin-top: 2%" $
+                   H.a ! A.class_ "button" ! A.style "border: none;" ! href "https://twitter.com/erewok" $ "@erewok"
+                 H.div ! A.class_ "two columns" ! A.style "margin-top: 2%" $
+                   H.a ! A.class_ "button" ! A.style "border: none;"  ! href "https://github.com/pellagic-puffbomb" $
+                     H.img ! A.src "/assets/images/GitHub-Mark-32px.png"
+             content
+             pageFooter
+
+
+pageFooter :: H.Html
+pageFooter = H.footer ! A.id "page-footer" $
+  H.div ! A.class_ "row" $
+    H.p "Copyright (c) 2016 Erik Aker"

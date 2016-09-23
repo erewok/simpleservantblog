@@ -20,6 +20,7 @@ library
                      , Api.Post
                      , Api.User
                      , Html.Home
+                     , Html.About
                      , Models.Post
                      , Models.Author
   build-depends:       base >= 4.7 && < 5

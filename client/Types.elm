@@ -3,11 +3,6 @@ module Types exposing(..)
 import Api exposing(..)
 
 
-type alias Content =
-  { content : Backend
-  , error : Maybe String
-}
-
 type alias BlogContent =
   { posts : Backend
   , detail : Maybe BlogPost

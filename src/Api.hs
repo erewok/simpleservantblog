@@ -33,16 +33,15 @@ import           Network.Wai.MakeAssets
 import           Api.Post
 import           Api.User
 import           Html.Home
+import           Html.About
 
 
 -- This one is separate so elm can generate for it
-type BlogApi = PostApi
-              :<|> UserApi
-type WithHtml = HomePage :<|> BlogApi
-type WithAssets =  WithHtml
-                  :<|> "assets" :> Raw
+type BlogApi = PostApi :<|> UserApi
+type WithHtml = HomePage :<|> "about" :> AboutPage :<|> BlogApi
+type WithAssets =  WithHtml :<|> "assets" :> Raw
 
-apihandlers conn = homePage
+apihandlers conn = homePage :<|> aboutPage
                   :<|> postHandlers conn
                   :<|> userHandlers conn
 

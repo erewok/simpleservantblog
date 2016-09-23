@@ -54,7 +54,7 @@ We will be running a local copy of Postgresql. This series of posts is using Pos
 
 Once you have it installed and running, you will need a database and a database user. There are lots of great tutorials on installing Postgresql for various operating systems, and these often include creating a new user and a new database. I encourage you to seek out a more comprehensive tutorial on these things for your specific operating system. Even so, what follows is a quick cheat sheet for creating a new user and a new database using Postgresql 9.5.
 
-Locate your Postgresql installation directory and inside you should find the `bin` directory. If you add that directory to your PATH, we should be able to issue the following commands (swapping out `yourUserName` for the username you'd like to have):
+Locate your Postgresql installation directory and inside you should find the `bin` directory. If you add that directory to your PATH, we should be able to issue the following commands (swapping out `yourUserName` for the username you''d like to have):
 
 ```
 createuser -P -s -e -d yourUserName
@@ -65,7 +65,7 @@ You should be prompted for a password, which you will need to remember to authen
 Note: if `createuser` is not in your PATH, you will have to find the location where Postgresql has been installed on your system. Alternately, you may be able to open a shell with `psql` (as user `postgresql`) and issue SQL commands such as the following:
 
 ```
-CREATE USER yourUserName with password 'PASSWORD';
+CREATE USER yourUserName with password ''PASSWORD'';
 ```
 
 After creating your user, you can now create a new database with the `createdb` command and make your user the owner of that database:
