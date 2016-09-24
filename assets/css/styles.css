@@ -1,6 +1,11 @@
 a {
   text-decoration: none;
+  color: #2268DD;
 }
+body {
+    background: #DFDFCF;
+}
+
 #page-header {
   text-align: center;
 }
@@ -16,7 +21,11 @@ a {
     text-align: left;
   }
 }
+.main {
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
 
+}
 .post-content > .row {
   padding: 1em 2em;
 }
@@ -26,7 +35,24 @@ a {
 .top-nav button {
   border: none;
 }
-
 .sidebar {
   padding-left: 2em;
+}
+#about-page {
+  padding: 20px 20px 20px 20px
+}
+.about-page-photo-overlay {
+  min-height: 340px;
+  background-color: rgba(245, 245, 245, 0.3);
+}
+.about-page-photo {
+  background: url(../images/apairatbeachsm2.jpg);
+  background-repeat: no-repeat;
+  /*background-size: contain;*/
+  background-position: center center;
+}
+.about-page-content {
+  min-height: 340px;
+  background-color: rgba(245, 245, 245, 0.3);
+  padding-left: 1rem;
 }
