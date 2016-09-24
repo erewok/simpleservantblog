@@ -9679,7 +9679,6 @@ var _pellagic_puffbomb$simpleservantblog$Types$Series = function (a) {
 var _pellagic_puffbomb$simpleservantblog$Types$PostList = function (a) {
 	return {ctor: 'PostList', _0: a};
 };
-var _pellagic_puffbomb$simpleservantblog$Types$SeeAboutPage = {ctor: 'SeeAboutPage'};
 var _pellagic_puffbomb$simpleservantblog$Types$SeePostDetail = function (a) {
 	return {ctor: 'SeePostDetail', _0: a};
 };
@@ -10002,7 +10001,6 @@ var _pellagic_puffbomb$simpleservantblog$Main$getAll = A3(
 	_pellagic_puffbomb$simpleservantblog$Types$Error,
 	_pellagic_puffbomb$simpleservantblog$Main$postsToMessage,
 	A2(_elm_lang$core$Task$mapError, _elm_lang$core$Basics$toString, _pellagic_puffbomb$simpleservantblog$Api$getPost));
-var _pellagic_puffbomb$simpleservantblog$Main$getAboutPage = _pellagic_puffbomb$simpleservantblog$Main$getAll;
 var _pellagic_puffbomb$simpleservantblog$Main$retrieve = function (frontendRequest) {
 	var _p3 = frontendRequest;
 	switch (_p3.ctor) {
@@ -10012,10 +10010,8 @@ var _pellagic_puffbomb$simpleservantblog$Main$retrieve = function (frontendReque
 			return _pellagic_puffbomb$simpleservantblog$Main$getAll;
 		case 'SeePostSeries':
 			return _pellagic_puffbomb$simpleservantblog$Main$getSeries(_p3._0);
-		case 'SeePostDetail':
-			return _pellagic_puffbomb$simpleservantblog$Main$getPost(_p3._0);
 		default:
-			return _pellagic_puffbomb$simpleservantblog$Main$getAboutPage;
+			return _pellagic_puffbomb$simpleservantblog$Main$getPost(_p3._0);
 	}
 };
 var _pellagic_puffbomb$simpleservantblog$Main$update = F2(
@@ -10118,7 +10114,7 @@ var _pellagic_puffbomb$simpleservantblog$Main$update = F2(
 									_pellagic_puffbomb$simpleservantblog$Main$retrieve(
 									_pellagic_puffbomb$simpleservantblog$Types$SeePostSeries(_p6._0))
 								]));
-					case 'SeePostDetail':
+					default:
 						return A2(
 							_elm_lang$core$Platform_Cmd_ops['!'],
 							_elm_lang$core$Native_Utils.update(
@@ -10128,16 +10124,6 @@ var _pellagic_puffbomb$simpleservantblog$Main$update = F2(
 								[
 									_pellagic_puffbomb$simpleservantblog$Main$retrieve(
 									_pellagic_puffbomb$simpleservantblog$Types$SeePostDetail(_p6._0))
-								]));
-					default:
-						return A2(
-							_elm_lang$core$Platform_Cmd_ops['!'],
-							_elm_lang$core$Native_Utils.update(
-								s,
-								{detail: _elm_lang$core$Maybe$Nothing}),
-							_elm_lang$core$Native_List.fromArray(
-								[
-									_pellagic_puffbomb$simpleservantblog$Main$retrieve(_pellagic_puffbomb$simpleservantblog$Types$SeeAboutPage)
 								]));
 				}
 			default:

@@ -29,24 +29,25 @@ import           Network.Wai.Handler.Warp           as Warp
 import           Models.Post
 
 
-type PostApi = "post" :> Get '[JSON] [BlogPost]
+type PostApi = "post" :> Get '[JSON] [PostOverview]
   :<|> "post" :> Capture "id" Int  :> Get  '[JSON] BlogPost
   :<|> "post" :> ReqBody '[JSON] BlogPost :> Post '[JSON] BlogPost
-  :<|> "post" :> "series" :> Capture "id" Int  :> Get  '[JSON] BlogSeriesWithPosts
+  :<|> "post" :> "series" :> Capture "id" Int  :> Get  '[JSON] [BlogPost]
+  :<|> "series" :> Capture "id" Int  :> Get  '[JSON] BlogSeries
 
 postHandlers conn = blogPostListH
               :<|> blogPostDetailH
               :<|> blogPostAddH
               :<|> blogPostSeriesH
+              :<|> blogSeriesH
   where blogPostListH = withResource conn listPosts
         blogPostDetailH postId = withResource conn $ flip getPost postId
         blogPostAddH newPost = withResource conn $ flip addPost newPost
         blogPostSeriesH seriesId = withResource conn $ flip getPostSeries seriesId
+        blogSeriesH seriesId = withResource conn $ flip getSeries seriesId
 
-listPosts :: Connection -> Handler [BlogPost]
-listPosts conn = do
-  let q = "select * from post where pubdate is not null"
-  liftIO $ query_ conn q
+listPosts :: Connection -> Handler [PostOverview]
+listPosts conn = liftIO $ query_ conn postOverviewAllQuery
 
 getPost :: Connection -> Int -> Handler BlogPost
 getPost conn postId = do
@@ -55,6 +56,9 @@ getPost conn postId = do
   case result of
     (x:_) -> return x
     []    -> throwError err404
+
+getPostSeries :: Connection -> Int -> Handler [BlogPost]
+getPostSeries conn seriesId = liftIO $ query conn seriesPostsQuery (Only seriesId)
 
 addPost :: Connection -> BlogPost -> Handler BlogPost
 addPost conn newPost = do
@@ -68,23 +72,10 @@ addPost' conn newPost = do
   let q = "insert into post values (?, ?, ?)"
   query conn q newPost
 
-getPostSeries :: Connection -> Int -> Handler BlogSeriesWithPosts
-getPostSeries conn seriesId = do
-  series' <- liftIO $ getSeries conn seriesId
-  series <- case series' of
-    [] -> throwError err404
-    (x:_) -> pure x
-  let q2 = "select ? from post where seriesid = ? order by ordinal asc"
-  result <- liftIO $ query conn q2 (blogPostColumns, seriesId)
-  case result of
-    [] -> throwError err404
-    posts -> return BlogSeriesWithPosts {bsid = sid series
-                                        , sname = name series
-                                        , sdescription = description series
-                                        , parent = parentid series
-                                        , posts = posts}
-
-getSeries :: Connection -> Int -> IO [BlogSeries]
+getSeries :: Connection -> Int -> Handler BlogSeries
 getSeries conn seriesId = do
-  let q1 = "select id, name, description, parentid from series where seriesid = ?"
-  query conn q1 (Only seriesId)
+  let q = "select id, name, description, parentid from series where seriesid = ?"
+  result <- liftIO $ query conn q (Only seriesId)
+  case result of
+    (x:_) -> return x
+    []    -> throwError err404

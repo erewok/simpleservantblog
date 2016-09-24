@@ -75,9 +75,6 @@ update message s =
                 SeePostDetail postId ->
                     { s | detail = Nothing } ! [ retrieve (SeePostDetail postId) ]
 
-                SeeAboutPage ->
-                    { s | detail = Nothing } ! [ retrieve SeeAboutPage ]
-
         Error msg ->
             { s | posts = BackendError msg } ! []
 
@@ -100,14 +97,6 @@ retrieve frontendRequest =
 
         SeePostDetail postId ->
             getPost postId
-
-        SeeAboutPage ->
-            getAboutPage
-
-
-getAboutPage : Cmd Msg
-getAboutPage =
-    getAll
 
 
 postsToMessage : Posts -> Msg

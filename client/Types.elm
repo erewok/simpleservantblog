@@ -1,35 +1,30 @@
-module Types exposing(..)
+module Types exposing (..)
 
-import Api exposing(..)
+import Api exposing (..)
 
 
 type alias BlogContent =
-  { posts : Backend
-  , detail : Maybe BlogPost
-}
+    { posts : Backend
+    , detail : Maybe BlogPost
+    }
+
 
 type Msg
     = NoOp
-      | FromBackend Backend
-      | FromFrontend Frontend
-      | Error String
-
-type Backend = PostList Posts
-             | Series BlogSeriesWithPosts
-             | PostDetail BlogPost
-             | BackendError String
-
-type Frontend = Home
-                 | SeePostList
-                 | SeePostSeries Int
-                 | SeePostDetail Int
-                 | SeeAboutPage
-
-type alias Posts = List (BlogPost)
+    | FromBackend Backend
+    | FromFrontend Frontend
+    | Error String
 
 
--- type alias PageComponents =
---   { header : Html a
---   , footer : Html a
---   , sidbar : Html a
---   , main : Content}
+type Backend
+    = PostList (List PostOverview)
+    | SeriesDetail BlogSeries
+    | SeriesPosts (List BlogPost)
+    | PostDetail BlogPost
+    | BackendError String
+
+
+type Frontend
+    = Home
+    | SeePostList
+    | SeePostDetail Int
