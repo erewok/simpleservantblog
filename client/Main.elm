@@ -69,9 +69,6 @@ update message s =
                 SeePostList ->
                     { s | posts = PostList [], detail = Nothing } ! [ retrieve SeePostList ]
 
-                SeePostSeries seriesId ->
-                    { s | detail = Nothing } ! [ retrieve (SeePostSeries seriesId) ]
-
                 SeePostDetail postId ->
                     { s | detail = Nothing } ! [ retrieve (SeePostDetail postId) ]
 
@@ -92,9 +89,6 @@ retrieve frontendRequest =
         SeePostList ->
             getAll
 
-        SeePostSeries seriesId ->
-            getSeries seriesId
-
         SeePostDetail postId ->
             getPost postId
 
@@ -109,11 +103,6 @@ postToMessage post =
     FromBackend (PostDetail post)
 
 
-seriesToMessage : BlogSeriesWithPosts -> Msg
-seriesToMessage series =
-    FromBackend (Series series)
-
-
 getAll : Cmd Msg
 getAll =
     Api.getPost
@@ -126,13 +115,6 @@ getPost postId =
     Api.getPostById postId
         |> Task.mapError toString
         |> Task.perform Error postToMessage
-
-
-getSeries : Int -> Cmd Msg
-getSeries seriesId =
-    Api.getPostSeriesById seriesId
-        |> Task.mapError toString
-        |> Task.perform Error seriesToMessage
 
 
 view : BlogContent -> Html Msg

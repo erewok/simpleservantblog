@@ -24,7 +24,23 @@ type Backend
     | BackendError String
 
 
+type alias BlogPostId =
+    Int
+
+
+type alias SeriesId =
+    Int
+
+
 type Frontend
     = Home
     | SeePostList
-    | SeePostDetail Int
+    | SeePostDetail BlogPostId SeriesId
+
+
+type alias SeriesDigest =
+    { previous : List BlogPost
+    , current : BlogPost
+    , next : List BlogPost
+    , series : BlogSeries
+    }

@@ -45,7 +45,7 @@ viewPost post =
     div [ class "post-content" ] (postBody post)
 
 
-seriesIndex : BlogSeriesWithPosts -> List (Html a)
+seriesIndex : SeriesDigest -> List (Html a)
 seriesIndex series =
     [ div [ class "series-index" ]
         [ ol [] (List.map seriesIndexItem series.posts)
@@ -53,9 +53,9 @@ seriesIndex series =
     ]
 
 
-seriesIndexItem : BlogPost -> Html a
+seriesIndexItem : SeriesDigest -> Html a
 seriesIndexItem post =
-    li [] [ a [ onClick (FromFrontend (SeePostDetail post.bid)), href "#" ] [ text post.title ] ]
+    li [] [ a [ onClick (FromFrontend (SeePostDetail post.bid post.seriesId)), href "#" ] [ text post.title ] ]
 
 
 postTitleAndSynopsis : BlogPost -> List (Html Msg)
@@ -71,7 +71,7 @@ postTitle : BlogPost -> Html Msg
 postTitle post =
     div [ class "row" ]
         [ h3 [ class "post-title" ]
-            [ a [ onClick (FromFrontend (SeePostDetail post.bid)), href "#" ] [ text (post.title) ]
+            [ a [ onClick (FromFrontend ( SeePostDetail post.bid, post.seriesId )), href "#" ] [ text (post.title) ]
             ]
         , span [ class "" ] [ text (fromJustDate post.pubdate) ]
         ]
