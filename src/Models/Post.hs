@@ -5,7 +5,8 @@
 
 module Models.Post (
   BlogSeries(..)
-  , BlogPost
+  , BlogPost(..)
+  , PostSeries(..)
   , PostOverview(..)
   , postOverviewAllQuery
   , seriesPostsQuery
@@ -32,7 +33,7 @@ import           Servant.Elm
 
 -- PostOverview
 data PostOverview = PostOverview {
-  psid                 :: !Int
+  pid                 :: !Int
   , ptitle             :: !T.Text
   , psynopsis          :: Maybe T.Text
   , ppubdate           :: Maybe UTCTime
@@ -57,11 +58,21 @@ postOverviewAllQuery = Query $ B.unwords [
 
 seriesPostsQuery :: Query
 seriesPostsQuery = Query $ B.unwords [
-                              "select p.id, p.authorid, p.seriesid, p.title, p.body, p.synopsis, "
-                              , "p.created, p.modified, p.pubdate, p.ordinal "
-                              , "from post p where p.seriesid = ? and p.pubdate is NOT NULL "
-                              , "order by p.ordinal"
+                              "select id, authorid, seriesid, title, body, synopsis, "
+                              , "created, modified, pubdate, ordinal "
+                              , "from post where seriesid = (select seriesid from post p where p.id = ?) "
+                              ,  "and pubdate is NOT NULL "
+                              , "order by ordinal"
                               ]
+data PostSeries = PostSeries {
+  previous :: [BlogPost]
+  , current :: BlogPost
+  , next :: [BlogPost]
+  , series :: BlogSeries
+} deriving (Eq, Show, Generic)
+instance ElmType PostSeries
+instance ToJSON PostSeries
+
 
 --
 -- Table Definitions --

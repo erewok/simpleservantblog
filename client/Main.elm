@@ -9,8 +9,10 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Http
 import Task exposing (Task, perform)
+import Navigation
 import Api exposing (..)
 import Post exposing (..)
+import Series exposing (..)
 import Types exposing (..)
 
 
@@ -24,16 +26,16 @@ main =
         }
 
 
-init : ( BlogContent, Cmd Msg )
+init : ( Model, Cmd Msg )
 init =
     let
         state =
-            { posts = PostList [], detail = Nothing }
+            { content = PostList [], error = Nothing }
     in
-        ( state, retrieve Home )
+        ( state, retrieveAll )
 
 
-update : Msg -> BlogContent -> ( BlogContent, Cmd Msg )
+update : Msg -> Model -> ( Model, Cmd Msg )
 update message s =
     case message of
         NoOp ->
@@ -43,57 +45,69 @@ update message s =
             case backend of
                 PostList posts ->
                     { s
-                        | posts = PostList posts
-                        , detail = Nothing
+                        | content = PostList posts
+                        , error = Nothing
                     }
                         ! []
 
-                Series series ->
+                SeriesPosts series ->
                     { s
-                        | posts = Series series
-                        , detail = Nothing
+                        | content = SeriesPosts series
+                        , error = Nothing
                     }
                         ! []
 
                 PostDetail post ->
-                    { s | detail = Just post } ! []
+                    { s
+                        | content = PostDetail post
+                        , error = Nothing
+                    }
+                        ! []
 
-                BackendError error ->
-                    { s | posts = BackendError error } ! []
+                BackendError msg ->
+                    { s | content = BackendError msg, error = Just msg } ! []
 
         FromFrontend frontend ->
             case frontend of
-                Home ->
-                    { s | posts = PostList [], detail = Nothing } ! [ retrieve Home ]
-
                 SeePostList ->
-                    { s | posts = PostList [], detail = Nothing } ! [ retrieve SeePostList ]
+                    { s | content = PostList [], error = Nothing } ! [ retrieveAll ]
 
                 SeePostDetail postId ->
-                    { s | detail = Nothing } ! [ retrieve (SeePostDetail postId) ]
+                    { s | error = Nothing } ! [ retrievePost postId ]
+
+                SeeSeriesPostDetail postId ->
+                    { s | error = Nothing } ! [ retrieveSeriesPost postId ]
 
         Error msg ->
-            { s | posts = BackendError msg } ! []
+            { s | content = BackendError msg, error = Just msg } ! []
 
 
 
 -- VIEW
 
 
-retrieve : Frontend -> Cmd Msg
-retrieve frontendRequest =
-    case frontendRequest of
-        Home ->
-            getAll
-
-        SeePostList ->
-            getAll
-
-        SeePostDetail postId ->
-            getPost postId
+retrieveAll : Cmd Msg
+retrieveAll =
+    Api.getPost
+        |> Task.mapError toString
+        |> Task.perform Error postsToMessage
 
 
-postsToMessage : Posts -> Msg
+retrieveSeriesPost : BlogPostId -> Cmd Msg
+retrieveSeriesPost postId =
+    Api.getSeriesPostById postId
+        |> Task.mapError toString
+        |> Task.perform Error seriesPostsToMessage
+
+
+retrievePost : BlogPostId -> Cmd Msg
+retrievePost postId =
+    Api.getPostById postId
+        |> Task.mapError toString
+        |> Task.perform Error postToMessage
+
+
+postsToMessage : List PostOverview -> Msg
 postsToMessage posts =
     FromBackend (PostList posts)
 
@@ -103,53 +117,37 @@ postToMessage post =
     FromBackend (PostDetail post)
 
 
-getAll : Cmd Msg
-getAll =
-    Api.getPost
-        |> Task.mapError toString
-        |> Task.perform Error postsToMessage
+seriesPostsToMessage : PostSeries -> Msg
+seriesPostsToMessage series =
+    FromBackend (SeriesPosts series)
 
 
-getPost : Int -> Cmd Msg
-getPost postId =
-    Api.getPostById postId
-        |> Task.mapError toString
-        |> Task.perform Error postToMessage
-
-
-view : BlogContent -> Html Msg
+view : Model -> Html Msg
 view state =
-    case state.detail of
+    case state.content of
         -- if there is a post-detail, show that
-        Just post ->
+        PostList posts ->
+            div []
+                [ div [ class "post-main row" ] <|
+                    (List.map viewPostSummary posts)
+                ]
+
+        SeriesPosts seriesPost ->
+            div []
+                [ div [ class "post-main row" ] <|
+                    [ viewSeriesPost seriesPost ]
+                ]
+
+        PostDetail post ->
             div []
                 [ div [ class "post-main row" ] <|
                     [ viewPost post ]
                 ]
 
-        Nothing ->
-            case state.posts of
-                Series series ->
-                    div []
-                        [ div [ class "post-main row" ] <|
-                            (seriesIndex series)
-                                ++ (List.map viewPostSummary series.posts)
-                        ]
-
-                PostList posts ->
-                    div []
-                        [ div [ class "post-main row" ] <|
-                            (List.map viewPostSummary posts)
-                        ]
-
-                PostDetail post ->
-                    div []
-                        [ div [ class "post-main row" ] <|
-                            [ viewPost post ]
-                        ]
-
-                BackendError error ->
-                    div []
-                        [ div [ class "error row" ] <|
-                            [ text "Something went wrong", text error ]
-                        ]
+        BackendError error ->
+            div []
+                [ div [ class "error row" ] <|
+                    [ h4 [] [ text "Something went wrong" ]
+                    , p [] [ text error ]
+                    ]
+                ]

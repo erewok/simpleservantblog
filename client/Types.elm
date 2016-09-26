@@ -3,25 +3,34 @@ module Types exposing (..)
 import Api exposing (..)
 
 
-type alias BlogContent =
-    { posts : Backend
-    , detail : Maybe BlogPost
+type alias Model =
+    { content : Backend
+    , error : Maybe String
     }
-
-
-type Msg
-    = NoOp
-    | FromBackend Backend
-    | FromFrontend Frontend
-    | Error String
 
 
 type Backend
     = PostList (List PostOverview)
-    | SeriesDetail BlogSeries
-    | SeriesPosts (List BlogPost)
+    | SeriesPosts PostSeries
     | PostDetail BlogPost
     | BackendError String
+
+
+type Frontend
+    = SeePostList
+    | SeePostDetail BlogPostId
+    | SeeSeriesPostDetail BlogPostId
+
+
+
+-- frontend other:
+-- | SeeSeriesList
+
+
+type ContentTypes
+    = AllPosts
+    | OnePost
+    | OneSeriesPost
 
 
 type alias BlogPostId =
@@ -29,18 +38,11 @@ type alias BlogPostId =
 
 
 type alias SeriesId =
-    Int
+    Maybe Int
 
 
-type Frontend
-    = Home
-    | SeePostList
-    | SeePostDetail BlogPostId SeriesId
-
-
-type alias SeriesDigest =
-    { previous : List BlogPost
-    , current : BlogPost
-    , next : List BlogPost
-    , series : BlogSeries
-    }
+type Msg
+    = NoOp
+    | FromBackend Backend
+    | FromFrontend Frontend
+    | Error String

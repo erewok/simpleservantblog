@@ -13,7 +13,7 @@ import Task
 
 
 type alias PostOverview =
-  { psid : Int
+  { pid : Int
   , ptitle : String
   , psynopsis : Maybe String
   , ppubdate : Maybe Date
@@ -26,7 +26,7 @@ type alias PostOverview =
 decodePostOverview : Json.Decode.Decoder PostOverview
 decodePostOverview =
   Json.Decode.succeed PostOverview
-    |: ("psid" := Json.Decode.int)
+    |: ("pid" := Json.Decode.int)
     |: ("ptitle" := Json.Decode.string)
     |: ("psynopsis" := Json.Decode.maybe Json.Decode.string)
     |: ("ppubdate" := Json.Decode.maybe Json.Decode.Extra.date)
@@ -132,25 +132,12 @@ postPost body =
       decodeBlogPost
       (Http.send Http.defaultSettings request)
 
-getPostSeriesById : Int -> Task.Task Http.Error (List (BlogPost))
-getPostSeriesById id =
-  let
-    request =
-      { verb =
-          "GET"
-      , headers =
-          [("Content-Type", "application/json")]
-      , url =
-          "/" ++ "post"
-          ++ "/" ++ "series"
-          ++ "/" ++ (id |> toString |> Http.uriEncode)
-      , body =
-          Http.empty
-      }
-  in
-    Http.fromJson
-      (Json.Decode.list decodeBlogPost)
-      (Http.send Http.defaultSettings request)
+type alias PostSeries =
+  { previous : List BlogPost
+  , current : BlogPost
+  , next : List BlogPost
+  , series : BlogSeries
+  }
 
 type alias BlogSeries =
   { sid : Int
@@ -159,6 +146,14 @@ type alias BlogSeries =
   , parentid : Maybe Int
   }
 
+decodePostSeries : Json.Decode.Decoder PostSeries
+decodePostSeries =
+  Json.Decode.succeed PostSeries
+    |: ("previous" := Json.Decode.list decodeBlogPost)
+    |: ("current" := decodeBlogPost)
+    |: ("next" := Json.Decode.list decodeBlogPost)
+    |: ("series" := decodeBlogSeries)
+
 decodeBlogSeries : Json.Decode.Decoder BlogSeries
 decodeBlogSeries =
   Json.Decode.succeed BlogSeries
@@ -166,6 +161,26 @@ decodeBlogSeries =
     |: ("name" := Json.Decode.string)
     |: ("description" := Json.Decode.string)
     |: ("parentid" := Json.Decode.maybe Json.Decode.int)
+
+getSeriesPostById : Int -> Task.Task Http.Error (PostSeries)
+getSeriesPostById id =
+  let
+    request =
+      { verb =
+          "GET"
+      , headers =
+          [("Content-Type", "application/json")]
+      , url =
+          "/" ++ "series"
+          ++ "/" ++ "post"
+          ++ "/" ++ (id |> toString |> Http.uriEncode)
+      , body =
+          Http.empty
+      }
+  in
+    Http.fromJson
+      decodePostSeries
+      (Http.send Http.defaultSettings request)
 
 getSeriesById : Int -> Task.Task Http.Error (BlogSeries)
 getSeriesById id =

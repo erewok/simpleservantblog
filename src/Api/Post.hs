@@ -10,14 +10,14 @@ module Api.Post
     , postHandlers
     ) where
 
-
 import           Control.Monad.Except
 import           Control.Monad.IO.Class             (liftIO)
+import qualified Data.List                          as L
 import           Data.Maybe
-import           Data.Proxy
-import           Data.Text
-
 import           Data.Pool                          (withResource)
+import           Data.Proxy
+import           Data.Text                          hiding (dropWhile, filter,
+                                                     head, takeWhile)
 import           Database.PostgreSQL.Simple
 import           Database.PostgreSQL.Simple.FromRow (fromRow)
 
@@ -32,19 +32,16 @@ import           Models.Post
 type PostApi = "post" :> Get '[JSON] [PostOverview]
   :<|> "post" :> Capture "id" Int  :> Get  '[JSON] BlogPost
   :<|> "post" :> ReqBody '[JSON] BlogPost :> Post '[JSON] BlogPost
-  :<|> "post" :> "series" :> Capture "id" Int  :> Get  '[JSON] [BlogPost]
-  :<|> "series" :> Capture "id" Int  :> Get  '[JSON] BlogSeries
+  :<|> "series" :> "post" :> Capture "id" Int  :> Get  '[JSON] PostSeries
 
 postHandlers conn = blogPostListH
               :<|> blogPostDetailH
               :<|> blogPostAddH
               :<|> blogPostSeriesH
-              :<|> blogSeriesH
   where blogPostListH = withResource conn listPosts
         blogPostDetailH postId = withResource conn $ flip getPost postId
         blogPostAddH newPost = withResource conn $ flip addPost newPost
-        blogPostSeriesH seriesId = withResource conn $ flip getPostSeries seriesId
-        blogSeriesH seriesId = withResource conn $ flip getSeries seriesId
+        blogPostSeriesH postId = withResource conn $ flip getPostWithSeries postId
 
 listPosts :: Connection -> Handler [PostOverview]
 listPosts conn = liftIO $ query_ conn postOverviewAllQuery
@@ -57,8 +54,16 @@ getPost conn postId = do
     (x:_) -> return x
     []    -> throwError err404
 
-getPostSeries :: Connection -> Int -> Handler [BlogPost]
-getPostSeries conn seriesId = liftIO $ query conn seriesPostsQuery (Only seriesId)
+getPostWithSeries :: Connection -> Int -> Handler PostSeries
+getPostWithSeries conn postId = do
+  posts <- liftIO $ query conn seriesPostsQuery (Only postId)
+  let (prev, current, next) = prevCurrNextPost postId posts
+  case current of
+    Nothing -> throwError err404
+    Just post -> do
+      let seriesq = "select id, name, description, parentid from series where id = ?"
+      series <- liftIO $ query conn seriesq (Only $ fromJust $ seriesId post)
+      return $ PostSeries prev post next $ head series
 
 addPost :: Connection -> BlogPost -> Handler BlogPost
 addPost conn newPost = do
@@ -72,10 +77,11 @@ addPost' conn newPost = do
   let q = "insert into post values (?, ?, ?)"
   query conn q newPost
 
-getSeries :: Connection -> Int -> Handler BlogSeries
-getSeries conn seriesId = do
-  let q = "select id, name, description, parentid from series where seriesid = ?"
-  result <- liftIO $ query conn q (Only seriesId)
-  case result of
-    (x:_) -> return x
-    []    -> throwError err404
+prevCurrNextPost :: Int -> [BlogPost] -> ([BlogPost], Maybe BlogPost, [BlogPost])
+prevCurrNextPost postId posts
+  | isNothing findPost = ([], Nothing, [])
+  | otherwise = (prev, findPost, next)
+  where findPost = L.find (\p -> bid p == postId) posts
+        post = fromJust findPost
+        prev = filter (\p -> ordinal p < ordinal post) posts
+        next = filter (\p -> ordinal p > ordinal post) posts

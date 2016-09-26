@@ -8170,6 +8170,188 @@ var _elm_lang$html$Html_App$beginnerProgram = function (_p1) {
 };
 var _elm_lang$html$Html_App$map = _elm_lang$virtual_dom$VirtualDom$map;
 
+var _elm_lang$core$Process$kill = _elm_lang$core$Native_Scheduler.kill;
+var _elm_lang$core$Process$sleep = _elm_lang$core$Native_Scheduler.sleep;
+var _elm_lang$core$Process$spawn = _elm_lang$core$Native_Scheduler.spawn;
+
+var _elm_lang$dom$Native_Dom = function() {
+
+function on(node)
+{
+	return function(eventName, decoder, toTask)
+	{
+		return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback) {
+
+			function performTask(event)
+			{
+				var result = A2(_elm_lang$core$Json_Decode$decodeValue, decoder, event);
+				if (result.ctor === 'Ok')
+				{
+					_elm_lang$core$Native_Scheduler.rawSpawn(toTask(result._0));
+				}
+			}
+
+			node.addEventListener(eventName, performTask);
+
+			return function()
+			{
+				node.removeEventListener(eventName, performTask);
+			};
+		});
+	};
+}
+
+var rAF = typeof requestAnimationFrame !== 'undefined'
+	? requestAnimationFrame
+	: function(callback) { callback(); };
+
+function withNode(id, doStuff)
+{
+	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
+	{
+		rAF(function()
+		{
+			var node = document.getElementById(id);
+			if (node === null)
+			{
+				callback(_elm_lang$core$Native_Scheduler.fail({ ctor: 'NotFound', _0: id }));
+				return;
+			}
+			callback(_elm_lang$core$Native_Scheduler.succeed(doStuff(node)));
+		});
+	});
+}
+
+
+// FOCUS
+
+function focus(id)
+{
+	return withNode(id, function(node) {
+		node.focus();
+		return _elm_lang$core$Native_Utils.Tuple0;
+	});
+}
+
+function blur(id)
+{
+	return withNode(id, function(node) {
+		node.blur();
+		return _elm_lang$core$Native_Utils.Tuple0;
+	});
+}
+
+
+// SCROLLING
+
+function getScrollTop(id)
+{
+	return withNode(id, function(node) {
+		return node.scrollTop;
+	});
+}
+
+function setScrollTop(id, desiredScrollTop)
+{
+	return withNode(id, function(node) {
+		node.scrollTop = desiredScrollTop;
+		return _elm_lang$core$Native_Utils.Tuple0;
+	});
+}
+
+function toBottom(id)
+{
+	return withNode(id, function(node) {
+		node.scrollTop = node.scrollHeight;
+		return _elm_lang$core$Native_Utils.Tuple0;
+	});
+}
+
+function getScrollLeft(id)
+{
+	return withNode(id, function(node) {
+		return node.scrollLeft;
+	});
+}
+
+function setScrollLeft(id, desiredScrollLeft)
+{
+	return withNode(id, function(node) {
+		node.scrollLeft = desiredScrollLeft;
+		return _elm_lang$core$Native_Utils.Tuple0;
+	});
+}
+
+function toRight(id)
+{
+	return withNode(id, function(node) {
+		node.scrollLeft = node.scrollWidth;
+		return _elm_lang$core$Native_Utils.Tuple0;
+	});
+}
+
+
+// SIZE
+
+function width(options, id)
+{
+	return withNode(id, function(node) {
+		switch (options.ctor)
+		{
+			case 'Content':
+				return node.scrollWidth;
+			case 'VisibleContent':
+				return node.clientWidth;
+			case 'VisibleContentWithBorders':
+				return node.offsetWidth;
+			case 'VisibleContentWithBordersAndMargins':
+				var rect = node.getBoundingClientRect();
+				return rect.right - rect.left;
+		}
+	});
+}
+
+function height(options, id)
+{
+	return withNode(id, function(node) {
+		switch (options.ctor)
+		{
+			case 'Content':
+				return node.scrollHeight;
+			case 'VisibleContent':
+				return node.clientHeight;
+			case 'VisibleContentWithBorders':
+				return node.offsetHeight;
+			case 'VisibleContentWithBordersAndMargins':
+				var rect = node.getBoundingClientRect();
+				return rect.bottom - rect.top;
+		}
+	});
+}
+
+return {
+	onDocument: F3(on(document)),
+	onWindow: F3(on(window)),
+
+	focus: focus,
+	blur: blur,
+
+	getScrollTop: getScrollTop,
+	setScrollTop: F2(setScrollTop),
+	getScrollLeft: getScrollLeft,
+	setScrollLeft: F2(setScrollLeft),
+	toBottom: toBottom,
+	toRight: toRight,
+
+	height: F2(height),
+	width: F2(width)
+};
+
+}();
+
+var _elm_lang$dom$Dom_LowLevel$onWindow = _elm_lang$dom$Native_Dom.onWindow;
+var _elm_lang$dom$Dom_LowLevel$onDocument = _elm_lang$dom$Native_Dom.onDocument;
+
 var _elm_lang$html$Html_Attributes$attribute = _elm_lang$virtual_dom$VirtualDom$attribute;
 var _elm_lang$html$Html_Attributes$contextmenu = function (value) {
 	return A2(_elm_lang$html$Html_Attributes$attribute, 'contextmenu', value);
@@ -8622,6 +8804,353 @@ var _elm_lang$html$Html_Events$Options = F2(
 	function (a, b) {
 		return {stopPropagation: a, preventDefault: b};
 	});
+
+var _elm_lang$navigation$Native_Navigation = function() {
+
+function go(n)
+{
+	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
+	{
+		if (n !== 0)
+		{
+			history.go(n);
+		}
+		callback(_elm_lang$core$Native_Scheduler.succeed(_elm_lang$core$Native_Utils.Tuple0));
+	});
+}
+
+function pushState(url)
+{
+	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
+	{
+		history.pushState({}, '', url);
+		callback(_elm_lang$core$Native_Scheduler.succeed(getLocation()));
+	});
+}
+
+function replaceState(url)
+{
+	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
+	{
+		history.replaceState({}, '', url);
+		callback(_elm_lang$core$Native_Scheduler.succeed(getLocation()));
+	});
+}
+
+function getLocation()
+{
+	var location = document.location;
+
+	return {
+		href: location.href,
+		host: location.host,
+		hostname: location.hostname,
+		protocol: location.protocol,
+		origin: location.origin,
+		port_: location.port,
+		pathname: location.pathname,
+		search: location.search,
+		hash: location.hash,
+		username: location.username,
+		password: location.password
+	};
+}
+
+
+return {
+	go: go,
+	pushState: pushState,
+	replaceState: replaceState,
+	getLocation: getLocation
+};
+
+}();
+
+var _elm_lang$navigation$Navigation$replaceState = _elm_lang$navigation$Native_Navigation.replaceState;
+var _elm_lang$navigation$Navigation$pushState = _elm_lang$navigation$Native_Navigation.pushState;
+var _elm_lang$navigation$Navigation$go = _elm_lang$navigation$Native_Navigation.go;
+var _elm_lang$navigation$Navigation$spawnPopState = function (router) {
+	return _elm_lang$core$Process$spawn(
+		A3(
+			_elm_lang$dom$Dom_LowLevel$onWindow,
+			'popstate',
+			_elm_lang$core$Json_Decode$value,
+			function (_p0) {
+				return A2(
+					_elm_lang$core$Platform$sendToSelf,
+					router,
+					_elm_lang$navigation$Native_Navigation.getLocation(
+						{ctor: '_Tuple0'}));
+			}));
+};
+var _elm_lang$navigation$Navigation_ops = _elm_lang$navigation$Navigation_ops || {};
+_elm_lang$navigation$Navigation_ops['&>'] = F2(
+	function (task1, task2) {
+		return A2(
+			_elm_lang$core$Task$andThen,
+			task1,
+			function (_p1) {
+				return task2;
+			});
+	});
+var _elm_lang$navigation$Navigation$notify = F3(
+	function (router, subs, location) {
+		var send = function (_p2) {
+			var _p3 = _p2;
+			return A2(
+				_elm_lang$core$Platform$sendToApp,
+				router,
+				_p3._0(location));
+		};
+		return A2(
+			_elm_lang$navigation$Navigation_ops['&>'],
+			_elm_lang$core$Task$sequence(
+				A2(_elm_lang$core$List$map, send, subs)),
+			_elm_lang$core$Task$succeed(
+				{ctor: '_Tuple0'}));
+	});
+var _elm_lang$navigation$Navigation$onSelfMsg = F3(
+	function (router, location, state) {
+		return A2(
+			_elm_lang$navigation$Navigation_ops['&>'],
+			A3(_elm_lang$navigation$Navigation$notify, router, state.subs, location),
+			_elm_lang$core$Task$succeed(state));
+	});
+var _elm_lang$navigation$Navigation$cmdHelp = F3(
+	function (router, subs, cmd) {
+		var _p4 = cmd;
+		switch (_p4.ctor) {
+			case 'Jump':
+				return _elm_lang$navigation$Navigation$go(_p4._0);
+			case 'New':
+				return A2(
+					_elm_lang$core$Task$andThen,
+					_elm_lang$navigation$Navigation$pushState(_p4._0),
+					A2(_elm_lang$navigation$Navigation$notify, router, subs));
+			default:
+				return A2(
+					_elm_lang$core$Task$andThen,
+					_elm_lang$navigation$Navigation$replaceState(_p4._0),
+					A2(_elm_lang$navigation$Navigation$notify, router, subs));
+		}
+	});
+var _elm_lang$navigation$Navigation$updateHelp = F2(
+	function (func, _p5) {
+		var _p6 = _p5;
+		return {
+			ctor: '_Tuple2',
+			_0: _p6._0,
+			_1: A2(_elm_lang$core$Platform_Cmd$map, func, _p6._1)
+		};
+	});
+var _elm_lang$navigation$Navigation$subscription = _elm_lang$core$Native_Platform.leaf('Navigation');
+var _elm_lang$navigation$Navigation$command = _elm_lang$core$Native_Platform.leaf('Navigation');
+var _elm_lang$navigation$Navigation$Location = function (a) {
+	return function (b) {
+		return function (c) {
+			return function (d) {
+				return function (e) {
+					return function (f) {
+						return function (g) {
+							return function (h) {
+								return function (i) {
+									return function (j) {
+										return function (k) {
+											return {href: a, host: b, hostname: c, protocol: d, origin: e, port_: f, pathname: g, search: h, hash: i, username: j, password: k};
+										};
+									};
+								};
+							};
+						};
+					};
+				};
+			};
+		};
+	};
+};
+var _elm_lang$navigation$Navigation$State = F2(
+	function (a, b) {
+		return {subs: a, process: b};
+	});
+var _elm_lang$navigation$Navigation$init = _elm_lang$core$Task$succeed(
+	A2(
+		_elm_lang$navigation$Navigation$State,
+		_elm_lang$core$Native_List.fromArray(
+			[]),
+		_elm_lang$core$Maybe$Nothing));
+var _elm_lang$navigation$Navigation$onEffects = F4(
+	function (router, cmds, subs, _p7) {
+		var _p8 = _p7;
+		var _p10 = _p8.process;
+		var stepState = function () {
+			var _p9 = {ctor: '_Tuple2', _0: subs, _1: _p10};
+			_v4_2:
+			do {
+				if (_p9._0.ctor === '[]') {
+					if (_p9._1.ctor === 'Just') {
+						return A2(
+							_elm_lang$navigation$Navigation_ops['&>'],
+							_elm_lang$core$Process$kill(_p9._1._0),
+							_elm_lang$core$Task$succeed(
+								A2(_elm_lang$navigation$Navigation$State, subs, _elm_lang$core$Maybe$Nothing)));
+					} else {
+						break _v4_2;
+					}
+				} else {
+					if (_p9._1.ctor === 'Nothing') {
+						return A2(
+							_elm_lang$core$Task$andThen,
+							_elm_lang$navigation$Navigation$spawnPopState(router),
+							function (pid) {
+								return _elm_lang$core$Task$succeed(
+									A2(
+										_elm_lang$navigation$Navigation$State,
+										subs,
+										_elm_lang$core$Maybe$Just(pid)));
+							});
+					} else {
+						break _v4_2;
+					}
+				}
+			} while(false);
+			return _elm_lang$core$Task$succeed(
+				A2(_elm_lang$navigation$Navigation$State, subs, _p10));
+		}();
+		return A2(
+			_elm_lang$navigation$Navigation_ops['&>'],
+			_elm_lang$core$Task$sequence(
+				A2(
+					_elm_lang$core$List$map,
+					A2(_elm_lang$navigation$Navigation$cmdHelp, router, subs),
+					cmds)),
+			stepState);
+	});
+var _elm_lang$navigation$Navigation$UserMsg = function (a) {
+	return {ctor: 'UserMsg', _0: a};
+};
+var _elm_lang$navigation$Navigation$Change = function (a) {
+	return {ctor: 'Change', _0: a};
+};
+var _elm_lang$navigation$Navigation$Parser = function (a) {
+	return {ctor: 'Parser', _0: a};
+};
+var _elm_lang$navigation$Navigation$makeParser = _elm_lang$navigation$Navigation$Parser;
+var _elm_lang$navigation$Navigation$Modify = function (a) {
+	return {ctor: 'Modify', _0: a};
+};
+var _elm_lang$navigation$Navigation$modifyUrl = function (url) {
+	return _elm_lang$navigation$Navigation$command(
+		_elm_lang$navigation$Navigation$Modify(url));
+};
+var _elm_lang$navigation$Navigation$New = function (a) {
+	return {ctor: 'New', _0: a};
+};
+var _elm_lang$navigation$Navigation$newUrl = function (url) {
+	return _elm_lang$navigation$Navigation$command(
+		_elm_lang$navigation$Navigation$New(url));
+};
+var _elm_lang$navigation$Navigation$Jump = function (a) {
+	return {ctor: 'Jump', _0: a};
+};
+var _elm_lang$navigation$Navigation$back = function (n) {
+	return _elm_lang$navigation$Navigation$command(
+		_elm_lang$navigation$Navigation$Jump(0 - n));
+};
+var _elm_lang$navigation$Navigation$forward = function (n) {
+	return _elm_lang$navigation$Navigation$command(
+		_elm_lang$navigation$Navigation$Jump(n));
+};
+var _elm_lang$navigation$Navigation$cmdMap = F2(
+	function (_p11, myCmd) {
+		var _p12 = myCmd;
+		switch (_p12.ctor) {
+			case 'Jump':
+				return _elm_lang$navigation$Navigation$Jump(_p12._0);
+			case 'New':
+				return _elm_lang$navigation$Navigation$New(_p12._0);
+			default:
+				return _elm_lang$navigation$Navigation$Modify(_p12._0);
+		}
+	});
+var _elm_lang$navigation$Navigation$Monitor = function (a) {
+	return {ctor: 'Monitor', _0: a};
+};
+var _elm_lang$navigation$Navigation$programWithFlags = F2(
+	function (_p13, stuff) {
+		var _p14 = _p13;
+		var _p16 = _p14._0;
+		var location = _elm_lang$navigation$Native_Navigation.getLocation(
+			{ctor: '_Tuple0'});
+		var init = function (flags) {
+			return A2(
+				_elm_lang$navigation$Navigation$updateHelp,
+				_elm_lang$navigation$Navigation$UserMsg,
+				A2(
+					stuff.init,
+					flags,
+					_p16(location)));
+		};
+		var view = function (model) {
+			return A2(
+				_elm_lang$html$Html_App$map,
+				_elm_lang$navigation$Navigation$UserMsg,
+				stuff.view(model));
+		};
+		var subs = function (model) {
+			return _elm_lang$core$Platform_Sub$batch(
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$navigation$Navigation$subscription(
+						_elm_lang$navigation$Navigation$Monitor(_elm_lang$navigation$Navigation$Change)),
+						A2(
+						_elm_lang$core$Platform_Sub$map,
+						_elm_lang$navigation$Navigation$UserMsg,
+						stuff.subscriptions(model))
+					]));
+		};
+		var update = F2(
+			function (msg, model) {
+				return A2(
+					_elm_lang$navigation$Navigation$updateHelp,
+					_elm_lang$navigation$Navigation$UserMsg,
+					function () {
+						var _p15 = msg;
+						if (_p15.ctor === 'Change') {
+							return A2(
+								stuff.urlUpdate,
+								_p16(_p15._0),
+								model);
+						} else {
+							return A2(stuff.update, _p15._0, model);
+						}
+					}());
+			});
+		return _elm_lang$html$Html_App$programWithFlags(
+			{init: init, view: view, update: update, subscriptions: subs});
+	});
+var _elm_lang$navigation$Navigation$program = F2(
+	function (parser, stuff) {
+		return A2(
+			_elm_lang$navigation$Navigation$programWithFlags,
+			parser,
+			_elm_lang$core$Native_Utils.update(
+				stuff,
+				{
+					init: function (_p17) {
+						return stuff.init;
+					}
+				}));
+	});
+var _elm_lang$navigation$Navigation$subMap = F2(
+	function (func, _p18) {
+		var _p19 = _p18;
+		return _elm_lang$navigation$Navigation$Monitor(
+			function (_p20) {
+				return func(
+					_p19._0(_p20));
+			});
+	});
+_elm_lang$core$Native_Platform.effectManagers['Navigation'] = {pkg: 'elm-lang/navigation', init: _elm_lang$navigation$Navigation$init, onEffects: _elm_lang$navigation$Navigation$onEffects, onSelfMsg: _elm_lang$navigation$Navigation$onSelfMsg, tag: 'fx', cmdMap: _elm_lang$navigation$Navigation$cmdMap, subMap: _elm_lang$navigation$Navigation$subMap};
 
 //import Dict, List, Maybe, Native.Scheduler //
 
@@ -9380,6 +9909,68 @@ var _pellagic_puffbomb$simpleservantblog$Api$encodeBlogPost = function (x) {
 			}
 			]));
 };
+var _pellagic_puffbomb$simpleservantblog$Api$PostOverview = F8(
+	function (a, b, c, d, e, f, g, h) {
+		return {pid: a, ptitle: b, psynopsis: c, ppubdate: d, pordinal: e, pseriesid: f, pseriesname: g, pseriesdescription: h};
+	});
+var _pellagic_puffbomb$simpleservantblog$Api$decodePostOverview = A2(
+	_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
+	A2(
+		_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
+		A2(
+			_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
+			A2(
+				_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
+				A2(
+					_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
+					A2(
+						_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
+						A2(
+							_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
+							A2(
+								_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
+								_elm_lang$core$Json_Decode$succeed(_pellagic_puffbomb$simpleservantblog$Api$PostOverview),
+								A2(_elm_lang$core$Json_Decode_ops[':='], 'pid', _elm_lang$core$Json_Decode$int)),
+							A2(_elm_lang$core$Json_Decode_ops[':='], 'ptitle', _elm_lang$core$Json_Decode$string)),
+						A2(
+							_elm_lang$core$Json_Decode_ops[':='],
+							'psynopsis',
+							_elm_lang$core$Json_Decode$maybe(_elm_lang$core$Json_Decode$string))),
+					A2(
+						_elm_lang$core$Json_Decode_ops[':='],
+						'ppubdate',
+						_elm_lang$core$Json_Decode$maybe(_elm_community$elm_json_extra$Json_Decode_Extra$date))),
+				A2(
+					_elm_lang$core$Json_Decode_ops[':='],
+					'pordinal',
+					_elm_lang$core$Json_Decode$maybe(_elm_lang$core$Json_Decode$int))),
+			A2(
+				_elm_lang$core$Json_Decode_ops[':='],
+				'pseriesid',
+				_elm_lang$core$Json_Decode$maybe(_elm_lang$core$Json_Decode$int))),
+		A2(
+			_elm_lang$core$Json_Decode_ops[':='],
+			'pseriesname',
+			_elm_lang$core$Json_Decode$maybe(_elm_lang$core$Json_Decode$string))),
+	A2(
+		_elm_lang$core$Json_Decode_ops[':='],
+		'pseriesdescription',
+		_elm_lang$core$Json_Decode$maybe(_elm_lang$core$Json_Decode$string)));
+var _pellagic_puffbomb$simpleservantblog$Api$getPost = function () {
+	var request = {
+		verb: 'GET',
+		headers: _elm_lang$core$Native_List.fromArray(
+			[
+				{ctor: '_Tuple2', _0: 'Content-Type', _1: 'application/json'}
+			]),
+		url: A2(_elm_lang$core$Basics_ops['++'], '/', 'post'),
+		body: _evancz$elm_http$Http$empty
+	};
+	return A2(
+		_evancz$elm_http$Http$fromJson,
+		_elm_lang$core$Json_Decode$list(_pellagic_puffbomb$simpleservantblog$Api$decodePostOverview),
+		A2(_evancz$elm_http$Http$send, _evancz$elm_http$Http$defaultSettings, request));
+}();
 var _pellagic_puffbomb$simpleservantblog$Api$BlogPost = function (a) {
 	return function (b) {
 		return function (c) {
@@ -9450,21 +10041,6 @@ var _pellagic_puffbomb$simpleservantblog$Api$decodeBlogPost = A2(
 		_elm_lang$core$Json_Decode_ops[':='],
 		'ordinal',
 		_elm_lang$core$Json_Decode$maybe(_elm_lang$core$Json_Decode$int)));
-var _pellagic_puffbomb$simpleservantblog$Api$getPost = function () {
-	var request = {
-		verb: 'GET',
-		headers: _elm_lang$core$Native_List.fromArray(
-			[
-				{ctor: '_Tuple2', _0: 'Content-Type', _1: 'application/json'}
-			]),
-		url: A2(_elm_lang$core$Basics_ops['++'], '/', 'post'),
-		body: _evancz$elm_http$Http$empty
-	};
-	return A2(
-		_evancz$elm_http$Http$fromJson,
-		_elm_lang$core$Json_Decode$list(_pellagic_puffbomb$simpleservantblog$Api$decodeBlogPost),
-		A2(_evancz$elm_http$Http$send, _evancz$elm_http$Http$defaultSettings, request));
-}();
 var _pellagic_puffbomb$simpleservantblog$Api$getPostById = function (id) {
 	var request = {
 		verb: 'GET',
@@ -9509,11 +10085,15 @@ var _pellagic_puffbomb$simpleservantblog$Api$postPost = function (body) {
 		_pellagic_puffbomb$simpleservantblog$Api$decodeBlogPost,
 		A2(_evancz$elm_http$Http$send, _evancz$elm_http$Http$defaultSettings, request));
 };
-var _pellagic_puffbomb$simpleservantblog$Api$BlogSeriesWithPosts = F5(
-	function (a, b, c, d, e) {
-		return {bsid: a, sname: b, sdescription: c, parent: d, posts: e};
+var _pellagic_puffbomb$simpleservantblog$Api$PostSeries = F4(
+	function (a, b, c, d) {
+		return {previous: a, current: b, next: c, series: d};
 	});
-var _pellagic_puffbomb$simpleservantblog$Api$decodeBlogSeriesWithPosts = A2(
+var _pellagic_puffbomb$simpleservantblog$Api$BlogSeries = F4(
+	function (a, b, c, d) {
+		return {sid: a, name: b, description: c, parentid: d};
+	});
+var _pellagic_puffbomb$simpleservantblog$Api$decodeBlogSeries = A2(
 	_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
 	A2(
 		_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
@@ -9521,21 +10101,34 @@ var _pellagic_puffbomb$simpleservantblog$Api$decodeBlogSeriesWithPosts = A2(
 			_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
 			A2(
 				_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
-				A2(
-					_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
-					_elm_lang$core$Json_Decode$succeed(_pellagic_puffbomb$simpleservantblog$Api$BlogSeriesWithPosts),
-					A2(_elm_lang$core$Json_Decode_ops[':='], 'bsid', _elm_lang$core$Json_Decode$int)),
-				A2(_elm_lang$core$Json_Decode_ops[':='], 'sname', _elm_lang$core$Json_Decode$string)),
-			A2(_elm_lang$core$Json_Decode_ops[':='], 'sdescription', _elm_lang$core$Json_Decode$string)),
-		A2(
-			_elm_lang$core$Json_Decode_ops[':='],
-			'parent',
-			_elm_lang$core$Json_Decode$maybe(_elm_lang$core$Json_Decode$int))),
+				_elm_lang$core$Json_Decode$succeed(_pellagic_puffbomb$simpleservantblog$Api$BlogSeries),
+				A2(_elm_lang$core$Json_Decode_ops[':='], 'sid', _elm_lang$core$Json_Decode$int)),
+			A2(_elm_lang$core$Json_Decode_ops[':='], 'name', _elm_lang$core$Json_Decode$string)),
+		A2(_elm_lang$core$Json_Decode_ops[':='], 'description', _elm_lang$core$Json_Decode$string)),
 	A2(
 		_elm_lang$core$Json_Decode_ops[':='],
-		'posts',
-		_elm_lang$core$Json_Decode$list(_pellagic_puffbomb$simpleservantblog$Api$decodeBlogPost)));
-var _pellagic_puffbomb$simpleservantblog$Api$getPostSeriesById = function (id) {
+		'parentid',
+		_elm_lang$core$Json_Decode$maybe(_elm_lang$core$Json_Decode$int)));
+var _pellagic_puffbomb$simpleservantblog$Api$decodePostSeries = A2(
+	_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
+	A2(
+		_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
+		A2(
+			_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
+			A2(
+				_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
+				_elm_lang$core$Json_Decode$succeed(_pellagic_puffbomb$simpleservantblog$Api$PostSeries),
+				A2(
+					_elm_lang$core$Json_Decode_ops[':='],
+					'previous',
+					_elm_lang$core$Json_Decode$list(_pellagic_puffbomb$simpleservantblog$Api$decodeBlogPost))),
+			A2(_elm_lang$core$Json_Decode_ops[':='], 'current', _pellagic_puffbomb$simpleservantblog$Api$decodeBlogPost)),
+		A2(
+			_elm_lang$core$Json_Decode_ops[':='],
+			'next',
+			_elm_lang$core$Json_Decode$list(_pellagic_puffbomb$simpleservantblog$Api$decodeBlogPost))),
+	A2(_elm_lang$core$Json_Decode_ops[':='], 'series', _pellagic_puffbomb$simpleservantblog$Api$decodeBlogSeries));
+var _pellagic_puffbomb$simpleservantblog$Api$getSeriesPostById = function (id) {
 	var request = {
 		verb: 'GET',
 		headers: _elm_lang$core$Native_List.fromArray(
@@ -9547,13 +10140,13 @@ var _pellagic_puffbomb$simpleservantblog$Api$getPostSeriesById = function (id) {
 			'/',
 			A2(
 				_elm_lang$core$Basics_ops['++'],
-				'post',
+				'series',
 				A2(
 					_elm_lang$core$Basics_ops['++'],
 					'/',
 					A2(
 						_elm_lang$core$Basics_ops['++'],
-						'series',
+						'post',
 						A2(
 							_elm_lang$core$Basics_ops['++'],
 							'/',
@@ -9563,7 +10156,32 @@ var _pellagic_puffbomb$simpleservantblog$Api$getPostSeriesById = function (id) {
 	};
 	return A2(
 		_evancz$elm_http$Http$fromJson,
-		_pellagic_puffbomb$simpleservantblog$Api$decodeBlogSeriesWithPosts,
+		_pellagic_puffbomb$simpleservantblog$Api$decodePostSeries,
+		A2(_evancz$elm_http$Http$send, _evancz$elm_http$Http$defaultSettings, request));
+};
+var _pellagic_puffbomb$simpleservantblog$Api$getSeriesById = function (id) {
+	var request = {
+		verb: 'GET',
+		headers: _elm_lang$core$Native_List.fromArray(
+			[
+				{ctor: '_Tuple2', _0: 'Content-Type', _1: 'application/json'}
+			]),
+		url: A2(
+			_elm_lang$core$Basics_ops['++'],
+			'/',
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				'series',
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					'/',
+					_evancz$elm_http$Http$uriEncode(
+						_elm_lang$core$Basics$toString(id))))),
+		body: _evancz$elm_http$Http$empty
+	};
+	return A2(
+		_evancz$elm_http$Http$fromJson,
+		_pellagic_puffbomb$simpleservantblog$Api$decodeBlogSeries,
 		A2(_evancz$elm_http$Http$send, _evancz$elm_http$Http$defaultSettings, request));
 };
 var _pellagic_puffbomb$simpleservantblog$Api$Author = F4(
@@ -9653,10 +10271,32 @@ var _pellagic_puffbomb$simpleservantblog$Api$getUserByLastName = function (lastN
 		A2(_evancz$elm_http$Http$send, _evancz$elm_http$Http$defaultSettings, request));
 };
 
-var _pellagic_puffbomb$simpleservantblog$Types$BlogContent = F2(
+var _pellagic_puffbomb$simpleservantblog$Types$Model = F2(
 	function (a, b) {
-		return {posts: a, detail: b};
+		return {content: a, error: b};
 	});
+var _pellagic_puffbomb$simpleservantblog$Types$BackendError = function (a) {
+	return {ctor: 'BackendError', _0: a};
+};
+var _pellagic_puffbomb$simpleservantblog$Types$PostDetail = function (a) {
+	return {ctor: 'PostDetail', _0: a};
+};
+var _pellagic_puffbomb$simpleservantblog$Types$SeriesPosts = function (a) {
+	return {ctor: 'SeriesPosts', _0: a};
+};
+var _pellagic_puffbomb$simpleservantblog$Types$PostList = function (a) {
+	return {ctor: 'PostList', _0: a};
+};
+var _pellagic_puffbomb$simpleservantblog$Types$SeeSeriesPostDetail = function (a) {
+	return {ctor: 'SeeSeriesPostDetail', _0: a};
+};
+var _pellagic_puffbomb$simpleservantblog$Types$SeePostDetail = function (a) {
+	return {ctor: 'SeePostDetail', _0: a};
+};
+var _pellagic_puffbomb$simpleservantblog$Types$SeePostList = {ctor: 'SeePostList'};
+var _pellagic_puffbomb$simpleservantblog$Types$OneSeriesPost = {ctor: 'OneSeriesPost'};
+var _pellagic_puffbomb$simpleservantblog$Types$OnePost = {ctor: 'OnePost'};
+var _pellagic_puffbomb$simpleservantblog$Types$AllPosts = {ctor: 'AllPosts'};
 var _pellagic_puffbomb$simpleservantblog$Types$Error = function (a) {
 	return {ctor: 'Error', _0: a};
 };
@@ -9667,63 +10307,7 @@ var _pellagic_puffbomb$simpleservantblog$Types$FromBackend = function (a) {
 	return {ctor: 'FromBackend', _0: a};
 };
 var _pellagic_puffbomb$simpleservantblog$Types$NoOp = {ctor: 'NoOp'};
-var _pellagic_puffbomb$simpleservantblog$Types$BackendError = function (a) {
-	return {ctor: 'BackendError', _0: a};
-};
-var _pellagic_puffbomb$simpleservantblog$Types$PostDetail = function (a) {
-	return {ctor: 'PostDetail', _0: a};
-};
-var _pellagic_puffbomb$simpleservantblog$Types$Series = function (a) {
-	return {ctor: 'Series', _0: a};
-};
-var _pellagic_puffbomb$simpleservantblog$Types$PostList = function (a) {
-	return {ctor: 'PostList', _0: a};
-};
-var _pellagic_puffbomb$simpleservantblog$Types$SeePostDetail = function (a) {
-	return {ctor: 'SeePostDetail', _0: a};
-};
-var _pellagic_puffbomb$simpleservantblog$Types$SeePostSeries = function (a) {
-	return {ctor: 'SeePostSeries', _0: a};
-};
-var _pellagic_puffbomb$simpleservantblog$Types$SeePostList = {ctor: 'SeePostList'};
-var _pellagic_puffbomb$simpleservantblog$Types$Home = {ctor: 'Home'};
 
-var _pellagic_puffbomb$simpleservantblog$Post$seriesIndexItem = function (post) {
-	return A2(
-		_elm_lang$html$Html$li,
-		_elm_lang$core$Native_List.fromArray(
-			[]),
-		_elm_lang$core$Native_List.fromArray(
-			[
-				A2(
-				_elm_lang$html$Html$a,
-				_elm_lang$core$Native_List.fromArray(
-					[]),
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$html$Html$text(post.title)
-					]))
-			]));
-};
-var _pellagic_puffbomb$simpleservantblog$Post$seriesIndex = function (series) {
-	return _elm_lang$core$Native_List.fromArray(
-		[
-			A2(
-			_elm_lang$html$Html$div,
-			_elm_lang$core$Native_List.fromArray(
-				[
-					_elm_lang$html$Html_Attributes$class('series-index')
-				]),
-			_elm_lang$core$Native_List.fromArray(
-				[
-					A2(
-					_elm_lang$html$Html$ol,
-					_elm_lang$core$Native_List.fromArray(
-						[]),
-					A2(_elm_lang$core$List$map, _pellagic_puffbomb$simpleservantblog$Post$seriesIndexItem, series.posts))
-				]))
-		]);
-};
 var _pellagic_puffbomb$simpleservantblog$Post$fromJustDate = function (somedate) {
 	var _p0 = somedate;
 	if (_p0.ctor === 'Nothing') {
@@ -9748,64 +10332,110 @@ var _pellagic_puffbomb$simpleservantblog$Post$fromJustDate = function (somedate)
 							_elm_lang$core$Date$year(_p1))))));
 	}
 };
-var _pellagic_puffbomb$simpleservantblog$Post$postTitle = function (post) {
-	return A2(
-		_elm_lang$html$Html$div,
-		_elm_lang$core$Native_List.fromArray(
-			[
-				_elm_lang$html$Html_Attributes$class('row')
-			]),
-		_elm_lang$core$Native_List.fromArray(
-			[
-				A2(
-				_elm_lang$html$Html$h3,
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$html$Html_Attributes$class('post-title')
-					]),
-				_elm_lang$core$Native_List.fromArray(
-					[
-						A2(
-						_elm_lang$html$Html$a,
-						_elm_lang$core$Native_List.fromArray(
-							[
-								_elm_lang$html$Html_Events$onClick(
-								_pellagic_puffbomb$simpleservantblog$Types$FromFrontend(
-									_pellagic_puffbomb$simpleservantblog$Types$SeePostDetail(post.bid))),
-								_elm_lang$html$Html_Attributes$href('#')
-							]),
-						_elm_lang$core$Native_List.fromArray(
-							[
-								_elm_lang$html$Html$text(post.title)
-							]))
-					])),
-				A2(
-				_elm_lang$html$Html$span,
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$html$Html_Attributes$class('')
-					]),
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$html$Html$text(
-						_pellagic_puffbomb$simpleservantblog$Post$fromJustDate(post.pubdate))
-					]))
-			]));
-};
-var _pellagic_puffbomb$simpleservantblog$Post$fromJustStr = function (someval) {
-	var _p2 = someval;
+var _pellagic_puffbomb$simpleservantblog$Post$postTitle = function (po) {
+	var _p2 = po.pseriesid;
 	if (_p2.ctor === 'Nothing') {
-		return '';
+		return A2(
+			_elm_lang$html$Html$div,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$html$Html_Attributes$class('row')
+				]),
+			_elm_lang$core$Native_List.fromArray(
+				[
+					A2(
+					_elm_lang$html$Html$h3,
+					_elm_lang$core$Native_List.fromArray(
+						[
+							_elm_lang$html$Html_Attributes$class('post-title')
+						]),
+					_elm_lang$core$Native_List.fromArray(
+						[
+							A2(
+							_elm_lang$html$Html$a,
+							_elm_lang$core$Native_List.fromArray(
+								[
+									_elm_lang$html$Html_Events$onClick(
+									_pellagic_puffbomb$simpleservantblog$Types$FromFrontend(
+										_pellagic_puffbomb$simpleservantblog$Types$SeePostDetail(po.pid))),
+									_elm_lang$html$Html_Attributes$href('#')
+								]),
+							_elm_lang$core$Native_List.fromArray(
+								[
+									_elm_lang$html$Html$text(po.ptitle)
+								]))
+						])),
+					A2(
+					_elm_lang$html$Html$span,
+					_elm_lang$core$Native_List.fromArray(
+						[
+							_elm_lang$html$Html_Attributes$class('')
+						]),
+					_elm_lang$core$Native_List.fromArray(
+						[
+							_elm_lang$html$Html$text(
+							_pellagic_puffbomb$simpleservantblog$Post$fromJustDate(po.ppubdate))
+						]))
+				]));
 	} else {
-		return _p2._0;
+		return A2(
+			_elm_lang$html$Html$div,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$html$Html_Attributes$class('row')
+				]),
+			_elm_lang$core$Native_List.fromArray(
+				[
+					A2(
+					_elm_lang$html$Html$h3,
+					_elm_lang$core$Native_List.fromArray(
+						[
+							_elm_lang$html$Html_Attributes$class('post-title')
+						]),
+					_elm_lang$core$Native_List.fromArray(
+						[
+							A2(
+							_elm_lang$html$Html$a,
+							_elm_lang$core$Native_List.fromArray(
+								[
+									_elm_lang$html$Html_Events$onClick(
+									_pellagic_puffbomb$simpleservantblog$Types$FromFrontend(
+										_pellagic_puffbomb$simpleservantblog$Types$SeeSeriesPostDetail(po.pid))),
+									_elm_lang$html$Html_Attributes$href('#')
+								]),
+							_elm_lang$core$Native_List.fromArray(
+								[
+									_elm_lang$html$Html$text(po.ptitle)
+								]))
+						])),
+					A2(
+					_elm_lang$html$Html$span,
+					_elm_lang$core$Native_List.fromArray(
+						[
+							_elm_lang$html$Html_Attributes$class('')
+						]),
+					_elm_lang$core$Native_List.fromArray(
+						[
+							_elm_lang$html$Html$text(
+							_pellagic_puffbomb$simpleservantblog$Post$fromJustDate(po.ppubdate))
+						]))
+				]));
 	}
 };
-var _pellagic_puffbomb$simpleservantblog$Post$postTitleAndSynopsis = function (post) {
+var _pellagic_puffbomb$simpleservantblog$Post$fromJustStr = function (someval) {
+	var _p3 = someval;
+	if (_p3.ctor === 'Nothing') {
+		return '';
+	} else {
+		return _p3._0;
+	}
+};
+var _pellagic_puffbomb$simpleservantblog$Post$postTitleAndSynopsis = function (po) {
 	return A2(
 		_elm_lang$core$Basics_ops['++'],
 		_elm_lang$core$Native_List.fromArray(
 			[
-				_pellagic_puffbomb$simpleservantblog$Post$postTitle(post)
+				_pellagic_puffbomb$simpleservantblog$Post$postTitle(po)
 			]),
 		_elm_lang$core$Native_List.fromArray(
 			[
@@ -9823,18 +10453,18 @@ var _pellagic_puffbomb$simpleservantblog$Post$postTitleAndSynopsis = function (p
 							[
 								_elm_lang$html$Html_Attributes$class('post-synopsis')
 							]),
-						_pellagic_puffbomb$simpleservantblog$Post$fromJustStr(post.synopsis))
+						_pellagic_puffbomb$simpleservantblog$Post$fromJustStr(po.psynopsis))
 					]))
 			]));
 };
-var _pellagic_puffbomb$simpleservantblog$Post$viewPostSummary = function (post) {
+var _pellagic_puffbomb$simpleservantblog$Post$viewPostSummary = function (po) {
 	return A2(
 		_elm_lang$html$Html$div,
 		_elm_lang$core$Native_List.fromArray(
 			[
 				_elm_lang$html$Html_Attributes$class('post-content')
 			]),
-		_pellagic_puffbomb$simpleservantblog$Post$postTitleAndSynopsis(post));
+		_pellagic_puffbomb$simpleservantblog$Post$postTitleAndSynopsis(po));
 };
 var _pellagic_puffbomb$simpleservantblog$Post$postBody = function (post) {
 	return _elm_lang$core$Native_List.fromArray(
@@ -9867,122 +10497,220 @@ var _pellagic_puffbomb$simpleservantblog$Post$viewPost = function (post) {
 		_pellagic_puffbomb$simpleservantblog$Post$postBody(post));
 };
 
-var _pellagic_puffbomb$simpleservantblog$Main$view = function (state) {
-	var _p0 = state.detail;
-	if (_p0.ctor === 'Just') {
+var _pellagic_puffbomb$simpleservantblog$Series$seriesIndexCurrent = function (post) {
+	return A2(
+		_elm_lang$html$Html$li,
+		_elm_lang$core$Native_List.fromArray(
+			[]),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_elm_lang$html$Html$text(post.title)
+			]));
+};
+var _pellagic_puffbomb$simpleservantblog$Series$seriesIndexItem = function (post) {
+	return A2(
+		_elm_lang$html$Html$li,
+		_elm_lang$core$Native_List.fromArray(
+			[]),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				A2(
+				_elm_lang$html$Html$a,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Events$onClick(
+						_pellagic_puffbomb$simpleservantblog$Types$FromFrontend(
+							_pellagic_puffbomb$simpleservantblog$Types$SeeSeriesPostDetail(post.bid))),
+						_elm_lang$html$Html_Attributes$href('#')
+					]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text(post.title)
+					]))
+			]));
+};
+var _pellagic_puffbomb$simpleservantblog$Series$seriesIndex = F3(
+	function (prev, current, next) {
 		return A2(
 			_elm_lang$html$Html$div,
 			_elm_lang$core$Native_List.fromArray(
-				[]),
+				[
+					_elm_lang$html$Html_Attributes$class('series-index')
+				]),
 			_elm_lang$core$Native_List.fromArray(
 				[
 					A2(
-					_elm_lang$html$Html$div,
+					_elm_lang$html$Html$h2,
+					_elm_lang$core$Native_List.fromArray(
+						[]),
 					_elm_lang$core$Native_List.fromArray(
 						[
-							_elm_lang$html$Html_Attributes$class('post-main row')
-						]),
+							_elm_lang$html$Html$text('Index')
+						])),
+					A2(
+					_elm_lang$html$Html$ol,
 					_elm_lang$core$Native_List.fromArray(
-						[
-							_pellagic_puffbomb$simpleservantblog$Post$viewPost(_p0._0)
-						]))
+						[]),
+					_elm_lang$core$List$concat(
+						_elm_lang$core$Native_List.fromArray(
+							[
+								A2(_elm_lang$core$List$map, _pellagic_puffbomb$simpleservantblog$Series$seriesIndexItem, prev),
+								_elm_lang$core$Native_List.fromArray(
+								[
+									_pellagic_puffbomb$simpleservantblog$Series$seriesIndexCurrent(current)
+								]),
+								A2(_elm_lang$core$List$map, _pellagic_puffbomb$simpleservantblog$Series$seriesIndexItem, next)
+							])))
 				]));
-	} else {
-		var _p1 = state.posts;
-		switch (_p1.ctor) {
-			case 'Series':
-				var _p2 = _p1._0;
-				return A2(
-					_elm_lang$html$Html$div,
-					_elm_lang$core$Native_List.fromArray(
-						[]),
-					_elm_lang$core$Native_List.fromArray(
-						[
-							A2(
-							_elm_lang$html$Html$div,
-							_elm_lang$core$Native_List.fromArray(
-								[
-									_elm_lang$html$Html_Attributes$class('post-main row')
-								]),
-							A2(
-								_elm_lang$core$Basics_ops['++'],
-								_pellagic_puffbomb$simpleservantblog$Post$seriesIndex(_p2),
-								A2(_elm_lang$core$List$map, _pellagic_puffbomb$simpleservantblog$Post$viewPostSummary, _p2.posts)))
-						]));
-			case 'PostList':
-				return A2(
-					_elm_lang$html$Html$div,
-					_elm_lang$core$Native_List.fromArray(
-						[]),
-					_elm_lang$core$Native_List.fromArray(
-						[
-							A2(
-							_elm_lang$html$Html$div,
-							_elm_lang$core$Native_List.fromArray(
-								[
-									_elm_lang$html$Html_Attributes$class('post-main row')
-								]),
-							A2(_elm_lang$core$List$map, _pellagic_puffbomb$simpleservantblog$Post$viewPostSummary, _p1._0))
-						]));
-			case 'PostDetail':
-				return A2(
-					_elm_lang$html$Html$div,
-					_elm_lang$core$Native_List.fromArray(
-						[]),
-					_elm_lang$core$Native_List.fromArray(
-						[
-							A2(
-							_elm_lang$html$Html$div,
-							_elm_lang$core$Native_List.fromArray(
-								[
-									_elm_lang$html$Html_Attributes$class('post-main row')
-								]),
-							_elm_lang$core$Native_List.fromArray(
-								[
-									_pellagic_puffbomb$simpleservantblog$Post$viewPost(_p1._0)
-								]))
-						]));
-			default:
-				return A2(
-					_elm_lang$html$Html$div,
-					_elm_lang$core$Native_List.fromArray(
-						[]),
-					_elm_lang$core$Native_List.fromArray(
-						[
-							A2(
-							_elm_lang$html$Html$div,
-							_elm_lang$core$Native_List.fromArray(
-								[
-									_elm_lang$html$Html_Attributes$class('error row')
-								]),
-							_elm_lang$core$Native_List.fromArray(
-								[
-									_elm_lang$html$Html$text('Something went wrong'),
-									_elm_lang$html$Html$text(_p1._0)
-								]))
-						]));
-		}
+	});
+var _pellagic_puffbomb$simpleservantblog$Series$seriesInfo = function (series) {
+	return A2(
+		_elm_lang$html$Html$div,
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_elm_lang$html$Html_Attributes$class('series-info')
+			]),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				A2(
+				_elm_lang$html$Html$h3,
+				_elm_lang$core$Native_List.fromArray(
+					[]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text(series.name)
+					])),
+				A2(
+				_elm_lang$html$Html$p,
+				_elm_lang$core$Native_List.fromArray(
+					[]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text(series.description)
+					]))
+			]));
+};
+var _pellagic_puffbomb$simpleservantblog$Series$viewSeriesPost = function (seriesPost) {
+	return A2(
+		_elm_lang$html$Html$div,
+		_elm_lang$core$Native_List.fromArray(
+			[]),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_pellagic_puffbomb$simpleservantblog$Series$seriesInfo(seriesPost.series),
+				A3(_pellagic_puffbomb$simpleservantblog$Series$seriesIndex, seriesPost.previous, seriesPost.current, seriesPost.next),
+				A2(
+				_elm_lang$html$Html$hr,
+				_elm_lang$core$Native_List.fromArray(
+					[]),
+				_elm_lang$core$Native_List.fromArray(
+					[])),
+				_pellagic_puffbomb$simpleservantblog$Post$viewPost(seriesPost.current)
+			]));
+};
+
+var _pellagic_puffbomb$simpleservantblog$Main$view = function (state) {
+	var _p0 = state.content;
+	switch (_p0.ctor) {
+		case 'PostList':
+			return A2(
+				_elm_lang$html$Html$div,
+				_elm_lang$core$Native_List.fromArray(
+					[]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						A2(
+						_elm_lang$html$Html$div,
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$html$Html_Attributes$class('post-main row')
+							]),
+						A2(_elm_lang$core$List$map, _pellagic_puffbomb$simpleservantblog$Post$viewPostSummary, _p0._0))
+					]));
+		case 'SeriesPosts':
+			return A2(
+				_elm_lang$html$Html$div,
+				_elm_lang$core$Native_List.fromArray(
+					[]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						A2(
+						_elm_lang$html$Html$div,
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$html$Html_Attributes$class('post-main row')
+							]),
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_pellagic_puffbomb$simpleservantblog$Series$viewSeriesPost(_p0._0)
+							]))
+					]));
+		case 'PostDetail':
+			return A2(
+				_elm_lang$html$Html$div,
+				_elm_lang$core$Native_List.fromArray(
+					[]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						A2(
+						_elm_lang$html$Html$div,
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$html$Html_Attributes$class('post-main row')
+							]),
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_pellagic_puffbomb$simpleservantblog$Post$viewPost(_p0._0)
+							]))
+					]));
+		default:
+			return A2(
+				_elm_lang$html$Html$div,
+				_elm_lang$core$Native_List.fromArray(
+					[]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						A2(
+						_elm_lang$html$Html$div,
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$html$Html_Attributes$class('error row')
+							]),
+						_elm_lang$core$Native_List.fromArray(
+							[
+								A2(
+								_elm_lang$html$Html$h4,
+								_elm_lang$core$Native_List.fromArray(
+									[]),
+								_elm_lang$core$Native_List.fromArray(
+									[
+										_elm_lang$html$Html$text('Something went wrong')
+									])),
+								A2(
+								_elm_lang$html$Html$p,
+								_elm_lang$core$Native_List.fromArray(
+									[]),
+								_elm_lang$core$Native_List.fromArray(
+									[
+										_elm_lang$html$Html$text(_p0._0)
+									]))
+							]))
+					]));
 	}
 };
-var _pellagic_puffbomb$simpleservantblog$Main$seriesToMessage = function (series) {
+var _pellagic_puffbomb$simpleservantblog$Main$seriesPostsToMessage = function (series) {
 	return _pellagic_puffbomb$simpleservantblog$Types$FromBackend(
-		_pellagic_puffbomb$simpleservantblog$Types$Series(series));
-};
-var _pellagic_puffbomb$simpleservantblog$Main$getSeries = function (seriesId) {
-	return A3(
-		_elm_lang$core$Task$perform,
-		_pellagic_puffbomb$simpleservantblog$Types$Error,
-		_pellagic_puffbomb$simpleservantblog$Main$seriesToMessage,
-		A2(
-			_elm_lang$core$Task$mapError,
-			_elm_lang$core$Basics$toString,
-			_pellagic_puffbomb$simpleservantblog$Api$getPostSeriesById(seriesId)));
+		_pellagic_puffbomb$simpleservantblog$Types$SeriesPosts(series));
 };
 var _pellagic_puffbomb$simpleservantblog$Main$postToMessage = function (post) {
 	return _pellagic_puffbomb$simpleservantblog$Types$FromBackend(
 		_pellagic_puffbomb$simpleservantblog$Types$PostDetail(post));
 };
-var _pellagic_puffbomb$simpleservantblog$Main$getPost = function (postId) {
+var _pellagic_puffbomb$simpleservantblog$Main$postsToMessage = function (posts) {
+	return _pellagic_puffbomb$simpleservantblog$Types$FromBackend(
+		_pellagic_puffbomb$simpleservantblog$Types$PostList(posts));
+};
+var _pellagic_puffbomb$simpleservantblog$Main$retrievePost = function (postId) {
 	return A3(
 		_elm_lang$core$Task$perform,
 		_pellagic_puffbomb$simpleservantblog$Types$Error,
@@ -9992,32 +10720,25 @@ var _pellagic_puffbomb$simpleservantblog$Main$getPost = function (postId) {
 			_elm_lang$core$Basics$toString,
 			_pellagic_puffbomb$simpleservantblog$Api$getPostById(postId)));
 };
-var _pellagic_puffbomb$simpleservantblog$Main$postsToMessage = function (posts) {
-	return _pellagic_puffbomb$simpleservantblog$Types$FromBackend(
-		_pellagic_puffbomb$simpleservantblog$Types$PostList(posts));
+var _pellagic_puffbomb$simpleservantblog$Main$retrieveSeriesPost = function (postId) {
+	return A3(
+		_elm_lang$core$Task$perform,
+		_pellagic_puffbomb$simpleservantblog$Types$Error,
+		_pellagic_puffbomb$simpleservantblog$Main$seriesPostsToMessage,
+		A2(
+			_elm_lang$core$Task$mapError,
+			_elm_lang$core$Basics$toString,
+			_pellagic_puffbomb$simpleservantblog$Api$getSeriesPostById(postId)));
 };
-var _pellagic_puffbomb$simpleservantblog$Main$getAll = A3(
+var _pellagic_puffbomb$simpleservantblog$Main$retrieveAll = A3(
 	_elm_lang$core$Task$perform,
 	_pellagic_puffbomb$simpleservantblog$Types$Error,
 	_pellagic_puffbomb$simpleservantblog$Main$postsToMessage,
 	A2(_elm_lang$core$Task$mapError, _elm_lang$core$Basics$toString, _pellagic_puffbomb$simpleservantblog$Api$getPost));
-var _pellagic_puffbomb$simpleservantblog$Main$retrieve = function (frontendRequest) {
-	var _p3 = frontendRequest;
-	switch (_p3.ctor) {
-		case 'Home':
-			return _pellagic_puffbomb$simpleservantblog$Main$getAll;
-		case 'SeePostList':
-			return _pellagic_puffbomb$simpleservantblog$Main$getAll;
-		case 'SeePostSeries':
-			return _pellagic_puffbomb$simpleservantblog$Main$getSeries(_p3._0);
-		default:
-			return _pellagic_puffbomb$simpleservantblog$Main$getPost(_p3._0);
-	}
-};
 var _pellagic_puffbomb$simpleservantblog$Main$update = F2(
 	function (message, s) {
-		var _p4 = message;
-		switch (_p4.ctor) {
+		var _p1 = message;
+		switch (_p1.ctor) {
 			case 'NoOp':
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
@@ -10025,27 +10746,27 @@ var _pellagic_puffbomb$simpleservantblog$Main$update = F2(
 					_elm_lang$core$Native_List.fromArray(
 						[]));
 			case 'FromBackend':
-				var _p5 = _p4._0;
-				switch (_p5.ctor) {
+				var _p2 = _p1._0;
+				switch (_p2.ctor) {
 					case 'PostList':
 						return A2(
 							_elm_lang$core$Platform_Cmd_ops['!'],
 							_elm_lang$core$Native_Utils.update(
 								s,
 								{
-									posts: _pellagic_puffbomb$simpleservantblog$Types$PostList(_p5._0),
-									detail: _elm_lang$core$Maybe$Nothing
+									content: _pellagic_puffbomb$simpleservantblog$Types$PostList(_p2._0),
+									error: _elm_lang$core$Maybe$Nothing
 								}),
 							_elm_lang$core$Native_List.fromArray(
 								[]));
-					case 'Series':
+					case 'SeriesPosts':
 						return A2(
 							_elm_lang$core$Platform_Cmd_ops['!'],
 							_elm_lang$core$Native_Utils.update(
 								s,
 								{
-									posts: _pellagic_puffbomb$simpleservantblog$Types$Series(_p5._0),
-									detail: _elm_lang$core$Maybe$Nothing
+									content: _pellagic_puffbomb$simpleservantblog$Types$SeriesPosts(_p2._0),
+									error: _elm_lang$core$Maybe$Nothing
 								}),
 							_elm_lang$core$Native_List.fromArray(
 								[]));
@@ -10055,84 +10776,70 @@ var _pellagic_puffbomb$simpleservantblog$Main$update = F2(
 							_elm_lang$core$Native_Utils.update(
 								s,
 								{
-									detail: _elm_lang$core$Maybe$Just(_p5._0)
+									content: _pellagic_puffbomb$simpleservantblog$Types$PostDetail(_p2._0),
+									error: _elm_lang$core$Maybe$Nothing
 								}),
 							_elm_lang$core$Native_List.fromArray(
 								[]));
 					default:
+						var _p3 = _p2._0;
 						return A2(
 							_elm_lang$core$Platform_Cmd_ops['!'],
 							_elm_lang$core$Native_Utils.update(
 								s,
 								{
-									posts: _pellagic_puffbomb$simpleservantblog$Types$BackendError(_p5._0)
+									content: _pellagic_puffbomb$simpleservantblog$Types$BackendError(_p3),
+									error: _elm_lang$core$Maybe$Just(_p3)
 								}),
 							_elm_lang$core$Native_List.fromArray(
 								[]));
 				}
 			case 'FromFrontend':
-				var _p6 = _p4._0;
-				switch (_p6.ctor) {
-					case 'Home':
-						return A2(
-							_elm_lang$core$Platform_Cmd_ops['!'],
-							_elm_lang$core$Native_Utils.update(
-								s,
-								{
-									posts: _pellagic_puffbomb$simpleservantblog$Types$PostList(
-										_elm_lang$core$Native_List.fromArray(
-											[])),
-									detail: _elm_lang$core$Maybe$Nothing
-								}),
-							_elm_lang$core$Native_List.fromArray(
-								[
-									_pellagic_puffbomb$simpleservantblog$Main$retrieve(_pellagic_puffbomb$simpleservantblog$Types$Home)
-								]));
+				var _p4 = _p1._0;
+				switch (_p4.ctor) {
 					case 'SeePostList':
 						return A2(
 							_elm_lang$core$Platform_Cmd_ops['!'],
 							_elm_lang$core$Native_Utils.update(
 								s,
 								{
-									posts: _pellagic_puffbomb$simpleservantblog$Types$PostList(
+									content: _pellagic_puffbomb$simpleservantblog$Types$PostList(
 										_elm_lang$core$Native_List.fromArray(
 											[])),
-									detail: _elm_lang$core$Maybe$Nothing
+									error: _elm_lang$core$Maybe$Nothing
 								}),
 							_elm_lang$core$Native_List.fromArray(
-								[
-									_pellagic_puffbomb$simpleservantblog$Main$retrieve(_pellagic_puffbomb$simpleservantblog$Types$SeePostList)
-								]));
-					case 'SeePostSeries':
+								[_pellagic_puffbomb$simpleservantblog$Main$retrieveAll]));
+					case 'SeePostDetail':
 						return A2(
 							_elm_lang$core$Platform_Cmd_ops['!'],
 							_elm_lang$core$Native_Utils.update(
 								s,
-								{detail: _elm_lang$core$Maybe$Nothing}),
+								{error: _elm_lang$core$Maybe$Nothing}),
 							_elm_lang$core$Native_List.fromArray(
 								[
-									_pellagic_puffbomb$simpleservantblog$Main$retrieve(
-									_pellagic_puffbomb$simpleservantblog$Types$SeePostSeries(_p6._0))
+									_pellagic_puffbomb$simpleservantblog$Main$retrievePost(_p4._0)
 								]));
 					default:
 						return A2(
 							_elm_lang$core$Platform_Cmd_ops['!'],
 							_elm_lang$core$Native_Utils.update(
 								s,
-								{detail: _elm_lang$core$Maybe$Nothing}),
+								{error: _elm_lang$core$Maybe$Nothing}),
 							_elm_lang$core$Native_List.fromArray(
 								[
-									_pellagic_puffbomb$simpleservantblog$Main$retrieve(
-									_pellagic_puffbomb$simpleservantblog$Types$SeePostDetail(_p6._0))
+									_pellagic_puffbomb$simpleservantblog$Main$retrieveSeriesPost(_p4._0)
 								]));
 				}
 			default:
+				var _p5 = _p1._0;
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					_elm_lang$core$Native_Utils.update(
 						s,
 						{
-							posts: _pellagic_puffbomb$simpleservantblog$Types$BackendError(_p4._0)
+							content: _pellagic_puffbomb$simpleservantblog$Types$BackendError(_p5),
+							error: _elm_lang$core$Maybe$Just(_p5)
 						}),
 					_elm_lang$core$Native_List.fromArray(
 						[]));
@@ -10140,23 +10847,19 @@ var _pellagic_puffbomb$simpleservantblog$Main$update = F2(
 	});
 var _pellagic_puffbomb$simpleservantblog$Main$init = function () {
 	var state = {
-		posts: _pellagic_puffbomb$simpleservantblog$Types$PostList(
+		content: _pellagic_puffbomb$simpleservantblog$Types$PostList(
 			_elm_lang$core$Native_List.fromArray(
 				[])),
-		detail: _elm_lang$core$Maybe$Nothing
+		error: _elm_lang$core$Maybe$Nothing
 	};
-	return {
-		ctor: '_Tuple2',
-		_0: state,
-		_1: _pellagic_puffbomb$simpleservantblog$Main$retrieve(_pellagic_puffbomb$simpleservantblog$Types$Home)
-	};
+	return {ctor: '_Tuple2', _0: state, _1: _pellagic_puffbomb$simpleservantblog$Main$retrieveAll};
 }();
 var _pellagic_puffbomb$simpleservantblog$Main$main = {
 	main: _elm_lang$html$Html_App$program(
 		{
 			init: _pellagic_puffbomb$simpleservantblog$Main$init,
 			update: _pellagic_puffbomb$simpleservantblog$Main$update,
-			subscriptions: function (_p7) {
+			subscriptions: function (_p6) {
 				return _elm_lang$core$Platform_Sub$none;
 			},
 			view: _pellagic_puffbomb$simpleservantblog$Main$view

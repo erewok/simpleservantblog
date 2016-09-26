@@ -35,46 +35,43 @@ fromJustDate somedate =
                 ++ toString (year date)
 
 
-viewPostSummary : BlogPost -> Html Msg
-viewPostSummary post =
-    div [ class "post-content" ] (postTitleAndSynopsis post)
+viewPostSummary : PostOverview -> Html Msg
+viewPostSummary po =
+    div [ class "post-content" ] (postTitleAndSynopsis po)
+
+
+postTitleAndSynopsis : PostOverview -> List (Html Msg)
+postTitleAndSynopsis po =
+    [ (postTitle po) ]
+        ++ [ div [ class "row" ]
+                [ M.toHtml [ class "post-synopsis" ] (fromJustStr po.psynopsis)
+                ]
+           ]
+
+
+postTitle : PostOverview -> Html Msg
+postTitle po =
+    case po.pseriesid of
+        Nothing ->
+            div [ class "row" ]
+                [ h3 [ class "post-title" ]
+                    [ a [ onClick (FromFrontend (SeePostDetail po.pid)), href "#" ] [ text (po.ptitle) ]
+                    ]
+                , span [ class "" ] [ text (fromJustDate po.ppubdate) ]
+                ]
+
+        Just seriesid ->
+            div [ class "row" ]
+                [ h3 [ class "post-title" ]
+                    [ a [ onClick (FromFrontend (SeeSeriesPostDetail po.pid)), href "#" ] [ text (po.ptitle) ]
+                    ]
+                , span [ class "" ] [ text (fromJustDate po.ppubdate) ]
+                ]
 
 
 viewPost : BlogPost -> Html Msg
 viewPost post =
     div [ class "post-content" ] (postBody post)
-
-
-seriesIndex : SeriesDigest -> List (Html a)
-seriesIndex series =
-    [ div [ class "series-index" ]
-        [ ol [] (List.map seriesIndexItem series.posts)
-        ]
-    ]
-
-
-seriesIndexItem : SeriesDigest -> Html a
-seriesIndexItem post =
-    li [] [ a [ onClick (FromFrontend (SeePostDetail post.bid post.seriesId)), href "#" ] [ text post.title ] ]
-
-
-postTitleAndSynopsis : BlogPost -> List (Html Msg)
-postTitleAndSynopsis post =
-    [ (postTitle post) ]
-        ++ [ div [ class "row" ]
-                [ M.toHtml [ class "post-synopsis" ] (fromJustStr post.synopsis)
-                ]
-           ]
-
-
-postTitle : BlogPost -> Html Msg
-postTitle post =
-    div [ class "row" ]
-        [ h3 [ class "post-title" ]
-            [ a [ onClick (FromFrontend ( SeePostDetail post.bid, post.seriesId )), href "#" ] [ text (post.title) ]
-            ]
-        , span [ class "" ] [ text (fromJustDate post.pubdate) ]
-        ]
 
 
 postBody : BlogPost -> List (Html a)
