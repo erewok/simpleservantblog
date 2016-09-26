@@ -10,6 +10,9 @@ personal interest, so it may never be finished, but it's pretty fun to work on.
 - Implement routing and back button.
 - ~~Fix syntax highlighting.~~
 - Implement series list page.
+- Add "prev/next" links for regular posts.
+- Implement media associated with posts.
+- Write a program to ingest a post from a file.
 - Continue to work on styling.
 - Write tests for Backend
 - Write tests for frontend

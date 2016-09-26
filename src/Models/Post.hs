@@ -53,7 +53,8 @@ postOverviewAllQuery :: Query
 postOverviewAllQuery = Query $ B.unwords [
                                   "select p.id, p.title, p.synopsis, p.pubdate, p.ordinal, "
                                   , "s.id, s.name, s.description from post p left join series s "
-                                  , "on p.seriesid = s.id where p.pubdate is NOT NULL"
+                                  , "on p.seriesid = s.id where p.pubdate is NOT NULL "
+                                  , "order by p.pubdate DESC"
                                   ]
 
 seriesPostsQuery :: Query
