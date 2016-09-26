@@ -31,16 +31,13 @@ import           Models.Post
 
 type PostApi = "post" :> Get '[JSON] [PostOverview]
   :<|> "post" :> Capture "id" Int  :> Get  '[JSON] BlogPost
-  :<|> "post" :> ReqBody '[JSON] BlogPost :> Post '[JSON] BlogPost
   :<|> "series" :> "post" :> Capture "id" Int  :> Get  '[JSON] PostSeries
 
 postHandlers conn = blogPostListH
               :<|> blogPostDetailH
-              :<|> blogPostAddH
               :<|> blogPostSeriesH
   where blogPostListH = withResource conn listPosts
         blogPostDetailH postId = withResource conn $ flip getPost postId
-        blogPostAddH newPost = withResource conn $ flip addPost newPost
         blogPostSeriesH postId = withResource conn $ flip getPostWithSeries postId
 
 listPosts :: Connection -> Handler [PostOverview]
@@ -64,18 +61,6 @@ getPostWithSeries conn postId = do
       let seriesq = "select id, name, description, parentid from series where id = ?"
       series <- liftIO $ query conn seriesq (Only $ fromJust $ seriesId post)
       return $ PostSeries prev post next $ head series
-
-addPost :: Connection -> BlogPost -> Handler BlogPost
-addPost conn newPost = do
-  result <- liftIO $ addPost' conn newPost
-  case result of
-    (x:_) -> return x
-    []    -> throwError err404
-
-addPost' :: Connection -> BlogPost -> IO [BlogPost]
-addPost' conn newPost = do
-  let q = "insert into post values (?, ?, ?)"
-  query conn q newPost
 
 prevCurrNextPost :: Int -> [BlogPost] -> ([BlogPost], Maybe BlogPost, [BlogPost])
 prevCurrNextPost postId posts

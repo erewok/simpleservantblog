@@ -11,21 +11,17 @@ module Api.User
 
 
 import           Control.Monad.Except
-import           Control.Monad.IO.Class             (liftIO)
+import           Control.Monad.IO.Class     (liftIO)
 import           Data.Maybe
-import           Data.Pool                          (withResource)
+import           Data.Pool                  (withResource)
 import           Data.Proxy
 import           Data.Text
 
 import           Database.PostgreSQL.Simple
-import           Database.PostgreSQL.Simple.FromRow (fromRow)
 
 import           Servant
 
-import           Network.Wai
-import           Network.Wai.Handler.Warp           as Warp
-
-import           Models.Author                      (Author)
+import           Models.Author              (Author)
 
 data SearchType = FirstName Text
                   | LastName Text
@@ -33,21 +29,13 @@ data SearchType = FirstName Text
                   | RowId Int
 
 
-type UserApi = "user" :> ReqBody '[JSON] Author :> Post '[JSON] [Author]
-  :<|> "user" :> Capture "firstName" Text  :> Get  '[JSON] [Author]
+type UserApi = "user" :> Capture "firstName" Text  :> Get  '[JSON] [Author]
   :<|> "user" :> Capture "lastName" Text  :> Get  '[JSON] [Author]
 
-userHandlers conn = userAddH
-                   :<|> userFNameSearchH
+userHandlers conn = userFNameSearchH
                    :<|> userLNameSearchH
-  where userAddH newUser = withResource conn $ flip addUser newUser
-        userFNameSearchH name = withResource conn $ flip getUser (FirstName name)
+  where userFNameSearchH name = withResource conn $ flip getUser (FirstName name)
         userLNameSearchH name = withResource conn $ flip getUser (LastName name)
-
-addUser :: Connection -> Author -> Handler [Author]
-addUser conn newUser = do
-  let q = "insert into author values (?, ?, ?)"
-  liftIO $ query conn q newUser
 
 getUser :: Connection -> SearchType -> Handler [Author]
 getUser conn searchValue = case searchValue of

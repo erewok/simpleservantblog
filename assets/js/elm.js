@@ -9782,32 +9782,6 @@ var _krisajenkins$elm_exts$Exts_Date$toISOString = function (d) {
 														'Z')))))))))))));
 };
 
-var _pellagic_puffbomb$simpleservantblog$Api$encodeAuthor = function (x) {
-	return _elm_lang$core$Json_Encode$object(
-		_elm_lang$core$Native_List.fromArray(
-			[
-				{
-				ctor: '_Tuple2',
-				_0: 'aid',
-				_1: _elm_lang$core$Json_Encode$int(x.aid)
-			},
-				{
-				ctor: '_Tuple2',
-				_0: 'firstName',
-				_1: _elm_lang$core$Json_Encode$string(x.firstName)
-			},
-				{
-				ctor: '_Tuple2',
-				_0: 'lastName',
-				_1: _elm_lang$core$Json_Encode$string(x.lastName)
-			},
-				{
-				ctor: '_Tuple2',
-				_0: 'email',
-				_1: _elm_lang$core$Json_Encode$string(x.email)
-			}
-			]));
-};
 var _pellagic_puffbomb$simpleservantblog$Api$encodeBlogPost = function (x) {
 	return _elm_lang$core$Json_Encode$object(
 		_elm_lang$core$Native_List.fromArray(
@@ -9906,6 +9880,32 @@ var _pellagic_puffbomb$simpleservantblog$Api$encodeBlogPost = function (x) {
 						_elm_lang$core$Json_Encode$null,
 						A2(_elm_lang$core$Maybe$map, _elm_lang$core$Json_Encode$int, _p8));
 				}(x.ordinal)
+			}
+			]));
+};
+var _pellagic_puffbomb$simpleservantblog$Api$encodeAuthor = function (x) {
+	return _elm_lang$core$Json_Encode$object(
+		_elm_lang$core$Native_List.fromArray(
+			[
+				{
+				ctor: '_Tuple2',
+				_0: 'aid',
+				_1: _elm_lang$core$Json_Encode$int(x.aid)
+			},
+				{
+				ctor: '_Tuple2',
+				_0: 'firstName',
+				_1: _elm_lang$core$Json_Encode$string(x.firstName)
+			},
+				{
+				ctor: '_Tuple2',
+				_0: 'lastName',
+				_1: _elm_lang$core$Json_Encode$string(x.lastName)
+			},
+				{
+				ctor: '_Tuple2',
+				_0: 'email',
+				_1: _elm_lang$core$Json_Encode$string(x.email)
 			}
 			]));
 };
@@ -10066,14 +10066,20 @@ var _pellagic_puffbomb$simpleservantblog$Api$getPostById = function (id) {
 		_pellagic_puffbomb$simpleservantblog$Api$decodeBlogPost,
 		A2(_evancz$elm_http$Http$send, _evancz$elm_http$Http$defaultSettings, request));
 };
-var _pellagic_puffbomb$simpleservantblog$Api$postPost = function (body) {
+var _pellagic_puffbomb$simpleservantblog$Api$postAdminPost = function (body) {
 	var request = {
 		verb: 'POST',
 		headers: _elm_lang$core$Native_List.fromArray(
 			[
 				{ctor: '_Tuple2', _0: 'Content-Type', _1: 'application/json'}
 			]),
-		url: A2(_elm_lang$core$Basics_ops['++'], '/', 'post'),
+		url: A2(
+			_elm_lang$core$Basics_ops['++'],
+			'/',
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				'admin',
+				A2(_elm_lang$core$Basics_ops['++'], '/', 'post'))),
 		body: _evancz$elm_http$Http$string(
 			A2(
 				_elm_lang$core$Json_Encode$encode,
@@ -10159,31 +10165,6 @@ var _pellagic_puffbomb$simpleservantblog$Api$getSeriesPostById = function (id) {
 		_pellagic_puffbomb$simpleservantblog$Api$decodePostSeries,
 		A2(_evancz$elm_http$Http$send, _evancz$elm_http$Http$defaultSettings, request));
 };
-var _pellagic_puffbomb$simpleservantblog$Api$getSeriesById = function (id) {
-	var request = {
-		verb: 'GET',
-		headers: _elm_lang$core$Native_List.fromArray(
-			[
-				{ctor: '_Tuple2', _0: 'Content-Type', _1: 'application/json'}
-			]),
-		url: A2(
-			_elm_lang$core$Basics_ops['++'],
-			'/',
-			A2(
-				_elm_lang$core$Basics_ops['++'],
-				'series',
-				A2(
-					_elm_lang$core$Basics_ops['++'],
-					'/',
-					_evancz$elm_http$Http$uriEncode(
-						_elm_lang$core$Basics$toString(id))))),
-		body: _evancz$elm_http$Http$empty
-	};
-	return A2(
-		_evancz$elm_http$Http$fromJson,
-		_pellagic_puffbomb$simpleservantblog$Api$decodeBlogSeries,
-		A2(_evancz$elm_http$Http$send, _evancz$elm_http$Http$defaultSettings, request));
-};
 var _pellagic_puffbomb$simpleservantblog$Api$Author = F4(
 	function (a, b, c, d) {
 		return {aid: a, firstName: b, lastName: c, email: d};
@@ -10201,25 +10182,6 @@ var _pellagic_puffbomb$simpleservantblog$Api$decodeAuthor = A2(
 			A2(_elm_lang$core$Json_Decode_ops[':='], 'firstName', _elm_lang$core$Json_Decode$string)),
 		A2(_elm_lang$core$Json_Decode_ops[':='], 'lastName', _elm_lang$core$Json_Decode$string)),
 	A2(_elm_lang$core$Json_Decode_ops[':='], 'email', _elm_lang$core$Json_Decode$string));
-var _pellagic_puffbomb$simpleservantblog$Api$postUser = function (body) {
-	var request = {
-		verb: 'POST',
-		headers: _elm_lang$core$Native_List.fromArray(
-			[
-				{ctor: '_Tuple2', _0: 'Content-Type', _1: 'application/json'}
-			]),
-		url: A2(_elm_lang$core$Basics_ops['++'], '/', 'user'),
-		body: _evancz$elm_http$Http$string(
-			A2(
-				_elm_lang$core$Json_Encode$encode,
-				0,
-				_pellagic_puffbomb$simpleservantblog$Api$encodeAuthor(body)))
-	};
-	return A2(
-		_evancz$elm_http$Http$fromJson,
-		_elm_lang$core$Json_Decode$list(_pellagic_puffbomb$simpleservantblog$Api$decodeAuthor),
-		A2(_evancz$elm_http$Http$send, _evancz$elm_http$Http$defaultSettings, request));
-};
 var _pellagic_puffbomb$simpleservantblog$Api$getUserByFirstName = function (firstName) {
 	var request = {
 		verb: 'GET',
@@ -10268,6 +10230,176 @@ var _pellagic_puffbomb$simpleservantblog$Api$getUserByLastName = function (lastN
 	return A2(
 		_evancz$elm_http$Http$fromJson,
 		_elm_lang$core$Json_Decode$list(_pellagic_puffbomb$simpleservantblog$Api$decodeAuthor),
+		A2(_evancz$elm_http$Http$send, _evancz$elm_http$Http$defaultSettings, request));
+};
+var _pellagic_puffbomb$simpleservantblog$Api$postAdminUser = function (body) {
+	var request = {
+		verb: 'POST',
+		headers: _elm_lang$core$Native_List.fromArray(
+			[
+				{ctor: '_Tuple2', _0: 'Content-Type', _1: 'application/json'}
+			]),
+		url: A2(
+			_elm_lang$core$Basics_ops['++'],
+			'/',
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				'admin',
+				A2(_elm_lang$core$Basics_ops['++'], '/', 'user'))),
+		body: _evancz$elm_http$Http$string(
+			A2(
+				_elm_lang$core$Json_Encode$encode,
+				0,
+				_pellagic_puffbomb$simpleservantblog$Api$encodeAuthor(body)))
+	};
+	return A2(
+		_evancz$elm_http$Http$fromJson,
+		_pellagic_puffbomb$simpleservantblog$Api$decodeAuthor,
+		A2(_evancz$elm_http$Http$send, _evancz$elm_http$Http$defaultSettings, request));
+};
+var _pellagic_puffbomb$simpleservantblog$Api$ResultResp = F2(
+	function (a, b) {
+		return {status: a, description: b};
+	});
+var _pellagic_puffbomb$simpleservantblog$Api$decodeResultResp = A2(
+	_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
+	A2(
+		_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
+		_elm_lang$core$Json_Decode$succeed(_pellagic_puffbomb$simpleservantblog$Api$ResultResp),
+		A2(_elm_lang$core$Json_Decode_ops[':='], 'status', _elm_lang$core$Json_Decode$string)),
+	A2(_elm_lang$core$Json_Decode_ops[':='], 'description', _elm_lang$core$Json_Decode$string));
+var _pellagic_puffbomb$simpleservantblog$Api$putAdminUserById = F2(
+	function (id, body) {
+		var request = {
+			verb: 'PUT',
+			headers: _elm_lang$core$Native_List.fromArray(
+				[
+					{ctor: '_Tuple2', _0: 'Content-Type', _1: 'application/json'}
+				]),
+			url: A2(
+				_elm_lang$core$Basics_ops['++'],
+				'/',
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					'admin',
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						'/',
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							'user',
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								'/',
+								_evancz$elm_http$Http$uriEncode(
+									_elm_lang$core$Basics$toString(id))))))),
+			body: _evancz$elm_http$Http$string(
+				A2(
+					_elm_lang$core$Json_Encode$encode,
+					0,
+					_pellagic_puffbomb$simpleservantblog$Api$encodeAuthor(body)))
+		};
+		return A2(
+			_evancz$elm_http$Http$fromJson,
+			_pellagic_puffbomb$simpleservantblog$Api$decodeResultResp,
+			A2(_evancz$elm_http$Http$send, _evancz$elm_http$Http$defaultSettings, request));
+	});
+var _pellagic_puffbomb$simpleservantblog$Api$deleteAdminUserById = function (id) {
+	var request = {
+		verb: 'DELETE',
+		headers: _elm_lang$core$Native_List.fromArray(
+			[
+				{ctor: '_Tuple2', _0: 'Content-Type', _1: 'application/json'}
+			]),
+		url: A2(
+			_elm_lang$core$Basics_ops['++'],
+			'/',
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				'admin',
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					'/',
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						'user',
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							'/',
+							_evancz$elm_http$Http$uriEncode(
+								_elm_lang$core$Basics$toString(id))))))),
+		body: _evancz$elm_http$Http$empty
+	};
+	return A2(
+		_evancz$elm_http$Http$fromJson,
+		_pellagic_puffbomb$simpleservantblog$Api$decodeResultResp,
+		A2(_evancz$elm_http$Http$send, _evancz$elm_http$Http$defaultSettings, request));
+};
+var _pellagic_puffbomb$simpleservantblog$Api$putAdminPostById = F2(
+	function (id, body) {
+		var request = {
+			verb: 'PUT',
+			headers: _elm_lang$core$Native_List.fromArray(
+				[
+					{ctor: '_Tuple2', _0: 'Content-Type', _1: 'application/json'}
+				]),
+			url: A2(
+				_elm_lang$core$Basics_ops['++'],
+				'/',
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					'admin',
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						'/',
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							'post',
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								'/',
+								_evancz$elm_http$Http$uriEncode(
+									_elm_lang$core$Basics$toString(id))))))),
+			body: _evancz$elm_http$Http$string(
+				A2(
+					_elm_lang$core$Json_Encode$encode,
+					0,
+					_pellagic_puffbomb$simpleservantblog$Api$encodeBlogPost(body)))
+		};
+		return A2(
+			_evancz$elm_http$Http$fromJson,
+			_pellagic_puffbomb$simpleservantblog$Api$decodeResultResp,
+			A2(_evancz$elm_http$Http$send, _evancz$elm_http$Http$defaultSettings, request));
+	});
+var _pellagic_puffbomb$simpleservantblog$Api$deleteAdminPostById = function (id) {
+	var request = {
+		verb: 'DELETE',
+		headers: _elm_lang$core$Native_List.fromArray(
+			[
+				{ctor: '_Tuple2', _0: 'Content-Type', _1: 'application/json'}
+			]),
+		url: A2(
+			_elm_lang$core$Basics_ops['++'],
+			'/',
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				'admin',
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					'/',
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						'post',
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							'/',
+							_evancz$elm_http$Http$uriEncode(
+								_elm_lang$core$Basics$toString(id))))))),
+		body: _evancz$elm_http$Http$empty
+	};
+	return A2(
+		_evancz$elm_http$Http$fromJson,
+		_pellagic_puffbomb$simpleservantblog$Api$decodeResultResp,
 		A2(_evancz$elm_http$Http$send, _evancz$elm_http$Http$defaultSettings, request));
 };
 
@@ -10597,14 +10729,23 @@ var _pellagic_puffbomb$simpleservantblog$Series$viewSeriesPost = function (serie
 			[]),
 		_elm_lang$core$Native_List.fromArray(
 			[
-				_pellagic_puffbomb$simpleservantblog$Series$seriesInfo(seriesPost.series),
-				A3(_pellagic_puffbomb$simpleservantblog$Series$seriesIndex, seriesPost.previous, seriesPost.current, seriesPost.next),
 				A2(
-				_elm_lang$html$Html$hr,
+				_elm_lang$html$Html$div,
 				_elm_lang$core$Native_List.fromArray(
-					[]),
+					[
+						_elm_lang$html$Html_Attributes$class('series-main')
+					]),
 				_elm_lang$core$Native_List.fromArray(
-					[])),
+					[
+						_pellagic_puffbomb$simpleservantblog$Series$seriesInfo(seriesPost.series),
+						A3(_pellagic_puffbomb$simpleservantblog$Series$seriesIndex, seriesPost.previous, seriesPost.current, seriesPost.next),
+						A2(
+						_elm_lang$html$Html$hr,
+						_elm_lang$core$Native_List.fromArray(
+							[]),
+						_elm_lang$core$Native_List.fromArray(
+							[]))
+					])),
 				_pellagic_puffbomb$simpleservantblog$Post$viewPost(seriesPost.current)
 			]));
 };

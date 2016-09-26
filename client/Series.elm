@@ -18,9 +18,11 @@ import Types exposing (..)
 viewSeriesPost : PostSeries -> Html Msg
 viewSeriesPost seriesPost =
     div []
-        [ seriesInfo seriesPost.series
-        , seriesIndex seriesPost.previous seriesPost.current seriesPost.next
-        , hr [] []
+        [ div [ class "series-main" ]
+            [ seriesInfo seriesPost.series
+            , seriesIndex seriesPost.previous seriesPost.current seriesPost.next
+            , hr [] []
+            ]
         , viewPost seriesPost.current
         ]
 

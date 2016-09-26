@@ -17,6 +17,7 @@ library
   hs-source-dirs:      src
   exposed-modules:     Api
                      , Config
+                     , Api.Admin
                      , Api.Post
                      , Api.User
                      , Html.Home

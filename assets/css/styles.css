@@ -38,6 +38,9 @@ body {
 .top-nav button {
   border: none;
 }
+.series-main {
+  padding: 0.5rem 2rem;
+}
 .sidebar {
   padding-left: 2em;
 }

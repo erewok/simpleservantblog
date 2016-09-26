@@ -21,7 +21,7 @@ import           Data.Time                          (UTCTime)
 import           Database.PostgreSQL.Simple.FromRow (FromRow, field, fromRow)
 import           Database.PostgreSQL.Simple.ToField (toField)
 import           Database.PostgreSQL.Simple.ToRow   (ToRow, toRow)
-import           Database.PostgreSQL.Simple.Types   (Query (..))
+import           Database.PostgreSQL.Simple.Types   (Query(..))
 import           GHC.Generics
 import           Prelude                            (Bool, Eq, Int, Show, ($),
                                                      (++), (.))

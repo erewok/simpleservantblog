@@ -99,39 +99,6 @@ getPostById id =
       decodeBlogPost
       (Http.send Http.defaultSettings request)
 
-encodeBlogPost : BlogPost -> Json.Encode.Value
-encodeBlogPost x =
-  Json.Encode.object
-    [ ( "bid", Json.Encode.int x.bid )
-    , ( "authorId", Json.Encode.int x.authorId )
-    , ( "seriesId", (Maybe.withDefault Json.Encode.null << Maybe.map Json.Encode.int) x.seriesId )
-    , ( "title", Json.Encode.string x.title )
-    , ( "body", (Maybe.withDefault Json.Encode.null << Maybe.map Json.Encode.string) x.body )
-    , ( "synopsis", (Maybe.withDefault Json.Encode.null << Maybe.map Json.Encode.string) x.synopsis )
-    , ( "created", (Json.Encode.string << Exts.Date.toISOString) x.created )
-    , ( "modified", (Maybe.withDefault Json.Encode.null << Maybe.map (Json.Encode.string << Exts.Date.toISOString)) x.modified )
-    , ( "pubdate", (Maybe.withDefault Json.Encode.null << Maybe.map (Json.Encode.string << Exts.Date.toISOString)) x.pubdate )
-    , ( "ordinal", (Maybe.withDefault Json.Encode.null << Maybe.map Json.Encode.int) x.ordinal )
-    ]
-
-postPost : BlogPost -> Task.Task Http.Error (BlogPost)
-postPost body =
-  let
-    request =
-      { verb =
-          "POST"
-      , headers =
-          [("Content-Type", "application/json")]
-      , url =
-          "/" ++ "post"
-      , body =
-          Http.string (Json.Encode.encode 0 (encodeBlogPost body))
-      }
-  in
-    Http.fromJson
-      decodeBlogPost
-      (Http.send Http.defaultSettings request)
-
 type alias PostSeries =
   { previous : List BlogPost
   , current : BlogPost
@@ -182,40 +149,12 @@ getSeriesPostById id =
       decodePostSeries
       (Http.send Http.defaultSettings request)
 
-getSeriesById : Int -> Task.Task Http.Error (BlogSeries)
-getSeriesById id =
-  let
-    request =
-      { verb =
-          "GET"
-      , headers =
-          [("Content-Type", "application/json")]
-      , url =
-          "/" ++ "series"
-          ++ "/" ++ (id |> toString |> Http.uriEncode)
-      , body =
-          Http.empty
-      }
-  in
-    Http.fromJson
-      decodeBlogSeries
-      (Http.send Http.defaultSettings request)
-
 type alias Author =
   { aid : Int
   , firstName : String
   , lastName : String
   , email : String
   }
-
-encodeAuthor : Author -> Json.Encode.Value
-encodeAuthor x =
-  Json.Encode.object
-    [ ( "aid", Json.Encode.int x.aid )
-    , ( "firstName", Json.Encode.string x.firstName )
-    , ( "lastName", Json.Encode.string x.lastName )
-    , ( "email", Json.Encode.string x.email )
-    ]
 
 decodeAuthor : Json.Decode.Decoder Author
 decodeAuthor =
@@ -224,24 +163,6 @@ decodeAuthor =
     |: ("firstName" := Json.Decode.string)
     |: ("lastName" := Json.Decode.string)
     |: ("email" := Json.Decode.string)
-
-postUser : Author -> Task.Task Http.Error (List (Author))
-postUser body =
-  let
-    request =
-      { verb =
-          "POST"
-      , headers =
-          [("Content-Type", "application/json")]
-      , url =
-          "/" ++ "user"
-      , body =
-          Http.string (Json.Encode.encode 0 (encodeAuthor body))
-      }
-  in
-    Http.fromJson
-      (Json.Decode.list decodeAuthor)
-      (Http.send Http.defaultSettings request)
 
 getUserByFirstName : String -> Task.Task Http.Error (List (Author))
 getUserByFirstName firstName =
@@ -279,4 +200,157 @@ getUserByLastName lastName =
   in
     Http.fromJson
       (Json.Decode.list decodeAuthor)
+      (Http.send Http.defaultSettings request)
+
+encodeAuthor : Author -> Json.Encode.Value
+encodeAuthor x =
+  Json.Encode.object
+    [ ( "aid", Json.Encode.int x.aid )
+    , ( "firstName", Json.Encode.string x.firstName )
+    , ( "lastName", Json.Encode.string x.lastName )
+    , ( "email", Json.Encode.string x.email )
+    ]
+
+postAdminUser : Author -> Task.Task Http.Error (Author)
+postAdminUser body =
+  let
+    request =
+      { verb =
+          "POST"
+      , headers =
+          [("Content-Type", "application/json")]
+      , url =
+          "/" ++ "admin"
+          ++ "/" ++ "user"
+      , body =
+          Http.string (Json.Encode.encode 0 (encodeAuthor body))
+      }
+  in
+    Http.fromJson
+      decodeAuthor
+      (Http.send Http.defaultSettings request)
+
+type alias ResultResp =
+  { status : String
+  , description : String
+  }
+
+decodeResultResp : Json.Decode.Decoder ResultResp
+decodeResultResp =
+  Json.Decode.succeed ResultResp
+    |: ("status" := Json.Decode.string)
+    |: ("description" := Json.Decode.string)
+
+putAdminUserById : Int -> Author -> Task.Task Http.Error (ResultResp)
+putAdminUserById id body =
+  let
+    request =
+      { verb =
+          "PUT"
+      , headers =
+          [("Content-Type", "application/json")]
+      , url =
+          "/" ++ "admin"
+          ++ "/" ++ "user"
+          ++ "/" ++ (id |> toString |> Http.uriEncode)
+      , body =
+          Http.string (Json.Encode.encode 0 (encodeAuthor body))
+      }
+  in
+    Http.fromJson
+      decodeResultResp
+      (Http.send Http.defaultSettings request)
+
+deleteAdminUserById : Int -> Task.Task Http.Error (ResultResp)
+deleteAdminUserById id =
+  let
+    request =
+      { verb =
+          "DELETE"
+      , headers =
+          [("Content-Type", "application/json")]
+      , url =
+          "/" ++ "admin"
+          ++ "/" ++ "user"
+          ++ "/" ++ (id |> toString |> Http.uriEncode)
+      , body =
+          Http.empty
+      }
+  in
+    Http.fromJson
+      decodeResultResp
+      (Http.send Http.defaultSettings request)
+
+encodeBlogPost : BlogPost -> Json.Encode.Value
+encodeBlogPost x =
+  Json.Encode.object
+    [ ( "bid", Json.Encode.int x.bid )
+    , ( "authorId", Json.Encode.int x.authorId )
+    , ( "seriesId", (Maybe.withDefault Json.Encode.null << Maybe.map Json.Encode.int) x.seriesId )
+    , ( "title", Json.Encode.string x.title )
+    , ( "body", (Maybe.withDefault Json.Encode.null << Maybe.map Json.Encode.string) x.body )
+    , ( "synopsis", (Maybe.withDefault Json.Encode.null << Maybe.map Json.Encode.string) x.synopsis )
+    , ( "created", (Json.Encode.string << Exts.Date.toISOString) x.created )
+    , ( "modified", (Maybe.withDefault Json.Encode.null << Maybe.map (Json.Encode.string << Exts.Date.toISOString)) x.modified )
+    , ( "pubdate", (Maybe.withDefault Json.Encode.null << Maybe.map (Json.Encode.string << Exts.Date.toISOString)) x.pubdate )
+    , ( "ordinal", (Maybe.withDefault Json.Encode.null << Maybe.map Json.Encode.int) x.ordinal )
+    ]
+
+postAdminPost : BlogPost -> Task.Task Http.Error (BlogPost)
+postAdminPost body =
+  let
+    request =
+      { verb =
+          "POST"
+      , headers =
+          [("Content-Type", "application/json")]
+      , url =
+          "/" ++ "admin"
+          ++ "/" ++ "post"
+      , body =
+          Http.string (Json.Encode.encode 0 (encodeBlogPost body))
+      }
+  in
+    Http.fromJson
+      decodeBlogPost
+      (Http.send Http.defaultSettings request)
+
+putAdminPostById : Int -> BlogPost -> Task.Task Http.Error (ResultResp)
+putAdminPostById id body =
+  let
+    request =
+      { verb =
+          "PUT"
+      , headers =
+          [("Content-Type", "application/json")]
+      , url =
+          "/" ++ "admin"
+          ++ "/" ++ "post"
+          ++ "/" ++ (id |> toString |> Http.uriEncode)
+      , body =
+          Http.string (Json.Encode.encode 0 (encodeBlogPost body))
+      }
+  in
+    Http.fromJson
+      decodeResultResp
+      (Http.send Http.defaultSettings request)
+
+deleteAdminPostById : Int -> Task.Task Http.Error (ResultResp)
+deleteAdminPostById id =
+  let
+    request =
+      { verb =
+          "DELETE"
+      , headers =
+          [("Content-Type", "application/json")]
+      , url =
+          "/" ++ "admin"
+          ++ "/" ++ "post"
+          ++ "/" ++ (id |> toString |> Http.uriEncode)
+      , body =
+          Http.empty
+      }
+  in
+    Http.fromJson
+      decodeResultResp
       (Http.send Http.defaultSettings request)
