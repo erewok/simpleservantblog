@@ -4,7 +4,8 @@ import Api exposing (..)
 
 
 type alias Model =
-    { content : Backend
+    { route : Route
+    , content : Backend
     , error : Maybe String
     }
 
@@ -27,22 +28,23 @@ type Frontend
 -- | SeeSeriesList
 
 
-type ContentTypes
-    = AllPosts
-    | OnePost
-    | OneSeriesPost
-
-
 type alias BlogPostId =
     Int
 
 
 type alias SeriesId =
-    Maybe Int
+    Int
 
 
 type Msg
     = NoOp
     | FromBackend Backend
     | FromFrontend Frontend
+    | Navigate String
     | Error String
+
+
+type Route
+    = HomeRoute
+    | PostDetailRoute BlogPostId
+    | SeriesPostDetailRoute BlogPostId SeriesId

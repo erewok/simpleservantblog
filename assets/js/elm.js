@@ -9649,6 +9649,184 @@ var _evancz$elm_markdown$Markdown$Options = F4(
 		return {githubFlavored: a, defaultHighlighting: b, sanitize: c, smartypants: d};
 	});
 
+var _evancz$url_parser$UrlParser$oneOfHelp = F3(
+	function (choices, chunks, formatter) {
+		oneOfHelp:
+		while (true) {
+			var _p0 = choices;
+			if (_p0.ctor === '[]') {
+				return _elm_lang$core$Result$Err('Tried many parsers, but none of them worked!');
+			} else {
+				var _p1 = A2(_p0._0._0, chunks, formatter);
+				if (_p1.ctor === 'Err') {
+					var _v2 = _p0._1,
+						_v3 = chunks,
+						_v4 = formatter;
+					choices = _v2;
+					chunks = _v3;
+					formatter = _v4;
+					continue oneOfHelp;
+				} else {
+					return _elm_lang$core$Result$Ok(_p1._0);
+				}
+			}
+		}
+	});
+var _evancz$url_parser$UrlParser$Chunks = F2(
+	function (a, b) {
+		return {seen: a, rest: b};
+	});
+var _evancz$url_parser$UrlParser$parse = F3(
+	function (input, _p2, url) {
+		var _p3 = _p2;
+		var _p4 = A2(
+			_p3._0,
+			A2(
+				_evancz$url_parser$UrlParser$Chunks,
+				_elm_lang$core$Native_List.fromArray(
+					[]),
+				A2(_elm_lang$core$String$split, '/', url)),
+			input);
+		if (_p4.ctor === 'Err') {
+			return _elm_lang$core$Result$Err(_p4._0);
+		} else {
+			var _p7 = _p4._0._1;
+			var _p6 = _p4._0._0.rest;
+			var _p5 = _p6;
+			if (_p5.ctor === '[]') {
+				return _elm_lang$core$Result$Ok(_p7);
+			} else {
+				if ((_p5._0 === '') && (_p5._1.ctor === '[]')) {
+					return _elm_lang$core$Result$Ok(_p7);
+				} else {
+					return _elm_lang$core$Result$Err(
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							'The parser worked, but /',
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								A2(_elm_lang$core$String$join, '/', _p6),
+								' was left over.')));
+				}
+			}
+		}
+	});
+var _evancz$url_parser$UrlParser$Parser = function (a) {
+	return {ctor: 'Parser', _0: a};
+};
+var _evancz$url_parser$UrlParser$s = function (str) {
+	return _evancz$url_parser$UrlParser$Parser(
+		F2(
+			function (_p8, result) {
+				var _p9 = _p8;
+				var _p12 = _p9.rest;
+				var _p10 = _p12;
+				if (_p10.ctor === '[]') {
+					return _elm_lang$core$Result$Err(
+						A2(_elm_lang$core$Basics_ops['++'], 'Got to the end of the URL but wanted /', str));
+				} else {
+					var _p11 = _p10._0;
+					return _elm_lang$core$Native_Utils.eq(_p11, str) ? _elm_lang$core$Result$Ok(
+						{
+							ctor: '_Tuple2',
+							_0: A2(
+								_evancz$url_parser$UrlParser$Chunks,
+								A2(_elm_lang$core$List_ops['::'], _p11, _p9.seen),
+								_p10._1),
+							_1: result
+						}) : _elm_lang$core$Result$Err(
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							'Wanted /',
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								str,
+								A2(
+									_elm_lang$core$Basics_ops['++'],
+									' but got /',
+									A2(_elm_lang$core$String$join, '/', _p12)))));
+				}
+			}));
+};
+var _evancz$url_parser$UrlParser$custom = F2(
+	function (tipe, stringToSomething) {
+		return _evancz$url_parser$UrlParser$Parser(
+			F2(
+				function (_p13, func) {
+					var _p14 = _p13;
+					var _p15 = _p14.rest;
+					if (_p15.ctor === '[]') {
+						return _elm_lang$core$Result$Err(
+							A2(_elm_lang$core$Basics_ops['++'], 'Got to the end of the URL but wanted /', tipe));
+					} else {
+						var _p17 = _p15._0;
+						var _p16 = stringToSomething(_p17);
+						if (_p16.ctor === 'Ok') {
+							return _elm_lang$core$Result$Ok(
+								{
+									ctor: '_Tuple2',
+									_0: A2(
+										_evancz$url_parser$UrlParser$Chunks,
+										A2(_elm_lang$core$List_ops['::'], _p17, _p14.seen),
+										_p15._1),
+									_1: func(_p16._0)
+								});
+						} else {
+							return _elm_lang$core$Result$Err(
+								A2(
+									_elm_lang$core$Basics_ops['++'],
+									'Parsing `',
+									A2(
+										_elm_lang$core$Basics_ops['++'],
+										_p17,
+										A2(_elm_lang$core$Basics_ops['++'], '` went wrong: ', _p16._0))));
+						}
+					}
+				}));
+	});
+var _evancz$url_parser$UrlParser$string = A2(_evancz$url_parser$UrlParser$custom, 'STRING', _elm_lang$core$Result$Ok);
+var _evancz$url_parser$UrlParser$int = A2(_evancz$url_parser$UrlParser$custom, 'NUMBER', _elm_lang$core$String$toInt);
+var _evancz$url_parser$UrlParser_ops = _evancz$url_parser$UrlParser_ops || {};
+_evancz$url_parser$UrlParser_ops['</>'] = F2(
+	function (_p19, _p18) {
+		var _p20 = _p19;
+		var _p21 = _p18;
+		return _evancz$url_parser$UrlParser$Parser(
+			F2(
+				function (chunks, func) {
+					return A2(
+						_elm_lang$core$Result$andThen,
+						A2(_p20._0, chunks, func),
+						function (_p22) {
+							var _p23 = _p22;
+							return A2(_p21._0, _p23._0, _p23._1);
+						});
+				}));
+	});
+var _evancz$url_parser$UrlParser$oneOf = function (choices) {
+	return _evancz$url_parser$UrlParser$Parser(
+		_evancz$url_parser$UrlParser$oneOfHelp(choices));
+};
+var _evancz$url_parser$UrlParser$format = F2(
+	function (input, _p24) {
+		var _p25 = _p24;
+		return _evancz$url_parser$UrlParser$Parser(
+			F2(
+				function (chunks, func) {
+					var _p26 = A2(_p25._0, chunks, input);
+					if (_p26.ctor === 'Err') {
+						return _elm_lang$core$Result$Err(_p26._0);
+					} else {
+						return _elm_lang$core$Result$Ok(
+							{
+								ctor: '_Tuple2',
+								_0: _p26._0._0,
+								_1: func(_p26._0._1)
+							});
+					}
+				}));
+	});
+
 var _krisajenkins$elm_exts$Exts_Date$monthNumber = function (date) {
 	var _p0 = _elm_lang$core$Date$month(date);
 	switch (_p0.ctor) {
@@ -10081,9 +10259,9 @@ var _pellagic_puffbomb$simpleservantblog$Api$getUserByLastName = function (lastN
 		A2(_evancz$elm_http$Http$send, _evancz$elm_http$Http$defaultSettings, request));
 };
 
-var _pellagic_puffbomb$simpleservantblog$Types$Model = F2(
-	function (a, b) {
-		return {content: a, error: b};
+var _pellagic_puffbomb$simpleservantblog$Types$Model = F3(
+	function (a, b, c) {
+		return {route: a, content: b, error: c};
 	});
 var _pellagic_puffbomb$simpleservantblog$Types$BackendError = function (a) {
 	return {ctor: 'BackendError', _0: a};
@@ -10104,11 +10282,11 @@ var _pellagic_puffbomb$simpleservantblog$Types$SeePostDetail = function (a) {
 	return {ctor: 'SeePostDetail', _0: a};
 };
 var _pellagic_puffbomb$simpleservantblog$Types$SeePostList = {ctor: 'SeePostList'};
-var _pellagic_puffbomb$simpleservantblog$Types$OneSeriesPost = {ctor: 'OneSeriesPost'};
-var _pellagic_puffbomb$simpleservantblog$Types$OnePost = {ctor: 'OnePost'};
-var _pellagic_puffbomb$simpleservantblog$Types$AllPosts = {ctor: 'AllPosts'};
 var _pellagic_puffbomb$simpleservantblog$Types$Error = function (a) {
 	return {ctor: 'Error', _0: a};
+};
+var _pellagic_puffbomb$simpleservantblog$Types$Navigate = function (a) {
+	return {ctor: 'Navigate', _0: a};
 };
 var _pellagic_puffbomb$simpleservantblog$Types$FromFrontend = function (a) {
 	return {ctor: 'FromFrontend', _0: a};
@@ -10117,6 +10295,14 @@ var _pellagic_puffbomb$simpleservantblog$Types$FromBackend = function (a) {
 	return {ctor: 'FromBackend', _0: a};
 };
 var _pellagic_puffbomb$simpleservantblog$Types$NoOp = {ctor: 'NoOp'};
+var _pellagic_puffbomb$simpleservantblog$Types$SeriesPostDetailRoute = F2(
+	function (a, b) {
+		return {ctor: 'SeriesPostDetailRoute', _0: a, _1: b};
+	});
+var _pellagic_puffbomb$simpleservantblog$Types$PostDetailRoute = function (a) {
+	return {ctor: 'PostDetailRoute', _0: a};
+};
+var _pellagic_puffbomb$simpleservantblog$Types$HomeRoute = {ctor: 'HomeRoute'};
 
 var _pellagic_puffbomb$simpleservantblog$Post$fromJustDate = function (somedate) {
 	var _p0 = somedate;
@@ -10307,6 +10493,119 @@ var _pellagic_puffbomb$simpleservantblog$Post$viewPost = function (post) {
 		_pellagic_puffbomb$simpleservantblog$Post$postBody(post));
 };
 
+var _pellagic_puffbomb$simpleservantblog$Routes$pathDecoder = _elm_lang$core$Json_Decode$oneOf(
+	_elm_lang$core$Native_List.fromArray(
+		[
+			A2(
+			_elm_lang$core$Json_Decode$at,
+			_elm_lang$core$Native_List.fromArray(
+				['data-navigate']),
+			_elm_lang$core$Json_Decode$string),
+			A2(
+			_elm_lang$core$Json_Decode$at,
+			_elm_lang$core$Native_List.fromArray(
+				['parentElement']),
+			_elm_community$elm_json_extra$Json_Decode_Extra$lazy(
+				function (_p0) {
+					return _pellagic_puffbomb$simpleservantblog$Routes$pathDecoder;
+				})),
+			_elm_lang$core$Json_Decode$fail('no path found for click')
+		]));
+var _pellagic_puffbomb$simpleservantblog$Routes$catchNavigationClicks = function (tagger) {
+	return A3(
+		_elm_lang$html$Html_Events$onWithOptions,
+		'click',
+		{stopPropagation: true, preventDefault: true},
+		A2(
+			_elm_lang$core$Json_Decode$map,
+			tagger,
+			A2(
+				_elm_lang$core$Json_Decode$at,
+				_elm_lang$core$Native_List.fromArray(
+					['target']),
+				_pellagic_puffbomb$simpleservantblog$Routes$pathDecoder)));
+};
+var _pellagic_puffbomb$simpleservantblog$Routes$encode = function (route) {
+	var _p1 = route;
+	switch (_p1.ctor) {
+		case 'HomeRoute':
+			return '/';
+		case 'PostDetailRoute':
+			return A2(
+				_elm_lang$core$Basics_ops['++'],
+				'/posts/',
+				_elm_lang$core$Basics$toString(_p1._0));
+		default:
+			return A2(
+				_elm_lang$core$Basics_ops['++'],
+				'/series/',
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					_elm_lang$core$Basics$toString(_p1._0),
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						'/posts/',
+						_elm_lang$core$Basics$toString(_p1._1))));
+	}
+};
+var _pellagic_puffbomb$simpleservantblog$Routes$navigate = function (route) {
+	return _elm_lang$navigation$Navigation$newUrl(
+		_pellagic_puffbomb$simpleservantblog$Routes$encode(route));
+};
+var _pellagic_puffbomb$simpleservantblog$Routes$linkAttrs = function (route) {
+	var path = _pellagic_puffbomb$simpleservantblog$Routes$encode(route);
+	return _elm_lang$core$Native_List.fromArray(
+		[
+			_elm_lang$html$Html_Attributes$href(path),
+			A2(_elm_lang$html$Html_Attributes$attribute, 'data-navigate', path)
+		]);
+};
+var _pellagic_puffbomb$simpleservantblog$Routes$linkTo = F3(
+	function (route, attrs, content) {
+		return A2(
+			_elm_lang$html$Html$a,
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				_pellagic_puffbomb$simpleservantblog$Routes$linkAttrs(route),
+				attrs),
+			content);
+	});
+var _pellagic_puffbomb$simpleservantblog$Routes$matchers = _evancz$url_parser$UrlParser$oneOf(
+	_elm_lang$core$Native_List.fromArray(
+		[
+			A2(
+			_evancz$url_parser$UrlParser$format,
+			_pellagic_puffbomb$simpleservantblog$Types$HomeRoute,
+			_evancz$url_parser$UrlParser$s('')),
+			A2(
+			_evancz$url_parser$UrlParser$format,
+			_pellagic_puffbomb$simpleservantblog$Types$PostDetailRoute,
+			A2(
+				_evancz$url_parser$UrlParser_ops['</>'],
+				_evancz$url_parser$UrlParser$s('posts'),
+				_evancz$url_parser$UrlParser$int)),
+			A2(
+			_evancz$url_parser$UrlParser$format,
+			_pellagic_puffbomb$simpleservantblog$Types$SeriesPostDetailRoute,
+			A2(
+				_evancz$url_parser$UrlParser_ops['</>'],
+				_evancz$url_parser$UrlParser$s('series'),
+				A2(
+					_evancz$url_parser$UrlParser_ops['</>'],
+					_evancz$url_parser$UrlParser$int,
+					A2(
+						_evancz$url_parser$UrlParser_ops['</>'],
+						_evancz$url_parser$UrlParser$s('posts'),
+						_evancz$url_parser$UrlParser$int))))
+		]));
+var _pellagic_puffbomb$simpleservantblog$Routes$decode = function (location) {
+	return A3(
+		_evancz$url_parser$UrlParser$parse,
+		_elm_lang$core$Basics$identity,
+		_pellagic_puffbomb$simpleservantblog$Routes$matchers,
+		A2(_elm_lang$core$String$dropLeft, 1, location.pathname));
+};
+
 var _pellagic_puffbomb$simpleservantblog$Series$seriesIndexCurrent = function (post) {
 	return A2(
 		_elm_lang$html$Html$li,
@@ -10435,7 +10734,9 @@ var _pellagic_puffbomb$simpleservantblog$Main$view = function (state) {
 			return A2(
 				_elm_lang$html$Html$div,
 				_elm_lang$core$Native_List.fromArray(
-					[]),
+					[
+						_pellagic_puffbomb$simpleservantblog$Routes$catchNavigationClicks(_pellagic_puffbomb$simpleservantblog$Types$Navigate)
+					]),
 				_elm_lang$core$Native_List.fromArray(
 					[
 						A2(
@@ -10450,7 +10751,9 @@ var _pellagic_puffbomb$simpleservantblog$Main$view = function (state) {
 			return A2(
 				_elm_lang$html$Html$div,
 				_elm_lang$core$Native_List.fromArray(
-					[]),
+					[
+						_pellagic_puffbomb$simpleservantblog$Routes$catchNavigationClicks(_pellagic_puffbomb$simpleservantblog$Types$Navigate)
+					]),
 				_elm_lang$core$Native_List.fromArray(
 					[
 						A2(
@@ -10468,7 +10771,9 @@ var _pellagic_puffbomb$simpleservantblog$Main$view = function (state) {
 			return A2(
 				_elm_lang$html$Html$div,
 				_elm_lang$core$Native_List.fromArray(
-					[]),
+					[
+						_pellagic_puffbomb$simpleservantblog$Routes$catchNavigationClicks(_pellagic_puffbomb$simpleservantblog$Types$Navigate)
+					]),
 				_elm_lang$core$Native_List.fromArray(
 					[
 						A2(
@@ -10486,7 +10791,9 @@ var _pellagic_puffbomb$simpleservantblog$Main$view = function (state) {
 			return A2(
 				_elm_lang$html$Html$div,
 				_elm_lang$core$Native_List.fromArray(
-					[]),
+					[
+						_pellagic_puffbomb$simpleservantblog$Routes$catchNavigationClicks(_pellagic_puffbomb$simpleservantblog$Types$Navigate)
+					]),
 				_elm_lang$core$Native_List.fromArray(
 					[
 						A2(
@@ -10554,10 +10861,55 @@ var _pellagic_puffbomb$simpleservantblog$Main$retrieveAll = A3(
 	_pellagic_puffbomb$simpleservantblog$Types$Error,
 	_pellagic_puffbomb$simpleservantblog$Main$postsToMessage,
 	A2(_elm_lang$core$Task$mapError, _elm_lang$core$Basics$toString, _pellagic_puffbomb$simpleservantblog$Api$getPost));
+var _pellagic_puffbomb$simpleservantblog$Main$urlUpdate = F2(
+	function (result, model) {
+		var _p1 = result;
+		if (_p1.ctor === 'Err') {
+			return A2(
+				_elm_lang$core$Platform_Cmd_ops['!'],
+				model,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$navigation$Navigation$modifyUrl(
+						_pellagic_puffbomb$simpleservantblog$Routes$encode(model.route))
+					]));
+		} else {
+			switch (_p1._0.ctor) {
+				case 'HomeRoute':
+					return A2(
+						_elm_lang$core$Platform_Cmd_ops['!'],
+						_elm_lang$core$Native_Utils.update(
+							model,
+							{route: _p1._0}),
+						_elm_lang$core$Native_List.fromArray(
+							[_pellagic_puffbomb$simpleservantblog$Main$retrieveAll]));
+				case 'PostDetailRoute':
+					return A2(
+						_elm_lang$core$Platform_Cmd_ops['!'],
+						_elm_lang$core$Native_Utils.update(
+							model,
+							{route: _p1._0}),
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_pellagic_puffbomb$simpleservantblog$Main$retrievePost(_p1._0._0)
+							]));
+				default:
+					return A2(
+						_elm_lang$core$Platform_Cmd_ops['!'],
+						_elm_lang$core$Native_Utils.update(
+							model,
+							{route: _p1._0}),
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_pellagic_puffbomb$simpleservantblog$Main$retrieveSeriesPost(_p1._0._1)
+							]));
+			}
+		}
+	});
 var _pellagic_puffbomb$simpleservantblog$Main$update = F2(
 	function (message, s) {
-		var _p1 = message;
-		switch (_p1.ctor) {
+		var _p2 = message;
+		switch (_p2.ctor) {
 			case 'NoOp':
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
@@ -10565,15 +10917,15 @@ var _pellagic_puffbomb$simpleservantblog$Main$update = F2(
 					_elm_lang$core$Native_List.fromArray(
 						[]));
 			case 'FromBackend':
-				var _p2 = _p1._0;
-				switch (_p2.ctor) {
+				var _p3 = _p2._0;
+				switch (_p3.ctor) {
 					case 'PostList':
 						return A2(
 							_elm_lang$core$Platform_Cmd_ops['!'],
 							_elm_lang$core$Native_Utils.update(
 								s,
 								{
-									content: _pellagic_puffbomb$simpleservantblog$Types$PostList(_p2._0),
+									content: _pellagic_puffbomb$simpleservantblog$Types$PostList(_p3._0),
 									error: _elm_lang$core$Maybe$Nothing
 								}),
 							_elm_lang$core$Native_List.fromArray(
@@ -10584,7 +10936,7 @@ var _pellagic_puffbomb$simpleservantblog$Main$update = F2(
 							_elm_lang$core$Native_Utils.update(
 								s,
 								{
-									content: _pellagic_puffbomb$simpleservantblog$Types$SeriesPosts(_p2._0),
+									content: _pellagic_puffbomb$simpleservantblog$Types$SeriesPosts(_p3._0),
 									error: _elm_lang$core$Maybe$Nothing
 								}),
 							_elm_lang$core$Native_List.fromArray(
@@ -10595,27 +10947,27 @@ var _pellagic_puffbomb$simpleservantblog$Main$update = F2(
 							_elm_lang$core$Native_Utils.update(
 								s,
 								{
-									content: _pellagic_puffbomb$simpleservantblog$Types$PostDetail(_p2._0),
+									content: _pellagic_puffbomb$simpleservantblog$Types$PostDetail(_p3._0),
 									error: _elm_lang$core$Maybe$Nothing
 								}),
 							_elm_lang$core$Native_List.fromArray(
 								[]));
 					default:
-						var _p3 = _p2._0;
+						var _p4 = _p3._0;
 						return A2(
 							_elm_lang$core$Platform_Cmd_ops['!'],
 							_elm_lang$core$Native_Utils.update(
 								s,
 								{
-									content: _pellagic_puffbomb$simpleservantblog$Types$BackendError(_p3),
-									error: _elm_lang$core$Maybe$Just(_p3)
+									content: _pellagic_puffbomb$simpleservantblog$Types$BackendError(_p4),
+									error: _elm_lang$core$Maybe$Just(_p4)
 								}),
 							_elm_lang$core$Native_List.fromArray(
 								[]));
 				}
 			case 'FromFrontend':
-				var _p4 = _p1._0;
-				switch (_p4.ctor) {
+				var _p5 = _p2._0;
+				switch (_p5.ctor) {
 					case 'SeePostList':
 						return A2(
 							_elm_lang$core$Platform_Cmd_ops['!'],
@@ -10637,7 +10989,7 @@ var _pellagic_puffbomb$simpleservantblog$Main$update = F2(
 								{error: _elm_lang$core$Maybe$Nothing}),
 							_elm_lang$core$Native_List.fromArray(
 								[
-									_pellagic_puffbomb$simpleservantblog$Main$retrievePost(_p4._0)
+									_pellagic_puffbomb$simpleservantblog$Main$retrievePost(_p5._0)
 								]));
 					default:
 						return A2(
@@ -10647,40 +10999,52 @@ var _pellagic_puffbomb$simpleservantblog$Main$update = F2(
 								{error: _elm_lang$core$Maybe$Nothing}),
 							_elm_lang$core$Native_List.fromArray(
 								[
-									_pellagic_puffbomb$simpleservantblog$Main$retrieveSeriesPost(_p4._0)
+									_pellagic_puffbomb$simpleservantblog$Main$retrieveSeriesPost(_p5._0)
 								]));
 				}
+			case 'Navigate':
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					s,
+					_elm_lang$core$Native_List.fromArray(
+						[
+							_elm_lang$navigation$Navigation$newUrl(_p2._0)
+						]));
 			default:
-				var _p5 = _p1._0;
+				var _p6 = _p2._0;
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					_elm_lang$core$Native_Utils.update(
 						s,
 						{
-							content: _pellagic_puffbomb$simpleservantblog$Types$BackendError(_p5),
-							error: _elm_lang$core$Maybe$Just(_p5)
+							content: _pellagic_puffbomb$simpleservantblog$Types$BackendError(_p6),
+							error: _elm_lang$core$Maybe$Just(_p6)
 						}),
 					_elm_lang$core$Native_List.fromArray(
 						[]));
 		}
 	});
-var _pellagic_puffbomb$simpleservantblog$Main$init = function () {
+var _pellagic_puffbomb$simpleservantblog$Main$init = function (result) {
 	var state = {
 		content: _pellagic_puffbomb$simpleservantblog$Types$PostList(
 			_elm_lang$core$Native_List.fromArray(
 				[])),
-		error: _elm_lang$core$Maybe$Nothing
+		error: _elm_lang$core$Maybe$Nothing,
+		route: _pellagic_puffbomb$simpleservantblog$Types$HomeRoute
 	};
-	return {ctor: '_Tuple2', _0: state, _1: _pellagic_puffbomb$simpleservantblog$Main$retrieveAll};
-}();
+	return A2(_pellagic_puffbomb$simpleservantblog$Main$urlUpdate, result, state);
+};
 var _pellagic_puffbomb$simpleservantblog$Main$main = {
-	main: _elm_lang$html$Html_App$program(
+	main: A2(
+		_elm_lang$navigation$Navigation$program,
+		_elm_lang$navigation$Navigation$makeParser(_pellagic_puffbomb$simpleservantblog$Routes$decode),
 		{
 			init: _pellagic_puffbomb$simpleservantblog$Main$init,
 			update: _pellagic_puffbomb$simpleservantblog$Main$update,
-			subscriptions: function (_p6) {
+			subscriptions: function (_p7) {
 				return _elm_lang$core$Platform_Sub$none;
 			},
+			urlUpdate: _pellagic_puffbomb$simpleservantblog$Main$urlUpdate,
 			view: _pellagic_puffbomb$simpleservantblog$Main$view
 		})
 };
