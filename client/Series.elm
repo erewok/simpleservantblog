@@ -3,27 +3,78 @@ module Series exposing (..)
 import Date exposing (..)
 import Debug exposing (..)
 import Dict exposing (..)
+import Exts.List as EL
 import Html exposing (..)
 import Html.App exposing (program)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Http
-import List exposing (concat)
+import List as L
+import List.Extra as LX
 import Task exposing (Task, perform)
 import Post exposing (..)
 import Api exposing (..)
 import Types exposing (..)
 
 
+-- Pick an arbitrarily large number so those without ordering are at the end.
+
+
+comparingOrdinals : Maybe Int -> Int
+comparingOrdinals val =
+    case val of
+        Nothing ->
+            10000
+
+        Just v ->
+            v
+
+
+updateFromCurrentSeries : BlogPostId -> PostSeries -> PostSeries
+updateFromCurrentSeries postId seriesDigest =
+    let
+        after =
+            L.sortBy (\p -> comparingOrdinals p.ordinal)
+                (L.concat
+                    [ seriesDigest.previous
+                    , [ seriesDigest.current ]
+                    , seriesDigest.next
+                    ]
+                )
+
+        ( previous, rest ) =
+            LX.span (\p -> p.bid /= postId) after
+
+        current =
+            case EL.firstMatch (\p -> p.bid == postId) rest of
+                Nothing ->
+                    seriesDigest.current
+
+                Just post ->
+                    post
+
+        next =
+            L.drop 1 rest
+
+        updatedDigest =
+            { series = seriesDigest.series
+            , current = current
+            , next = next
+            , previous = previous
+            }
+    in
+        updatedDigest
+
+
 viewSeriesPost : PostSeries -> Html Msg
-viewSeriesPost seriesPost =
+viewSeriesPost seriesDigest =
     div []
         [ div [ class "series-main" ]
-            [ seriesInfo seriesPost.series
-            , seriesIndex seriesPost.previous seriesPost.current seriesPost.next
+            [ seriesInfo seriesDigest.series
+            , seriesIndex seriesDigest
             , hr [] []
             ]
-        , viewPost seriesPost.current
+        , viewPost seriesDigest.current
         ]
 
 
@@ -35,22 +86,26 @@ seriesInfo series =
         ]
 
 
-seriesIndex : List BlogPost -> BlogPost -> List BlogPost -> Html Msg
-seriesIndex prev current next =
+seriesIndex : PostSeries -> Html Msg
+seriesIndex seriesDigest =
     div [ class "series-index" ]
         [ h2 [] [ text "Index" ]
         , ol [] <|
-            concat
-                [ (List.map seriesIndexItem prev)
-                , [ seriesIndexCurrent current ]
-                , (List.map seriesIndexItem next)
+            L.concat
+                [ (L.map (seriesIndexItem seriesDigest.series.sid) seriesDigest.previous)
+                , [ seriesIndexCurrent seriesDigest.current ]
+                , (L.map (seriesIndexItem seriesDigest.series.sid) seriesDigest.next)
                 ]
         ]
 
 
-seriesIndexItem : BlogPost -> Html Msg
-seriesIndexItem post =
-    li [] [ a [ onClick (FromFrontend (SeeSeriesPostDetail post.bid)), href "#" ] [ text post.title ] ]
+seriesIndexItem : SeriesId -> BlogPost -> Html Msg
+seriesIndexItem seriesId post =
+    li []
+        [ a [ onClick (FromFrontend (SeeSeriesPostDetail post.bid seriesId)), href "#" ]
+            [ text post.title
+            ]
+        ]
 
 
 seriesIndexCurrent : BlogPost -> Html Msg

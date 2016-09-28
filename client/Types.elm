@@ -20,7 +20,7 @@ type Backend
 type Frontend
     = SeePostList
     | SeePostDetail BlogPostId
-    | SeeSeriesPostDetail BlogPostId
+    | SeeSeriesPostDetail BlogPostId SeriesId
 
 
 

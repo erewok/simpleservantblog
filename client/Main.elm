@@ -1,7 +1,5 @@
 module Main exposing (..)
 
--- import Cmd exposing (none)
-
 import Platform.Cmd exposing (none)
 import Date exposing (..)
 import Debug exposing (..)
@@ -41,15 +39,15 @@ init =
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
-update message s =
+update message model =
     case message of
         NoOp ->
-            s ! []
+            model ! []
 
         FromBackend backend ->
             case backend of
                 PostList posts ->
-                    { s
+                    { model
                         | content = PostList posts
                         , error = Nothing
                         , route = HomeRoute
@@ -57,7 +55,7 @@ update message s =
                         ! []
 
                 SeriesPosts series ->
-                    { s
+                    { model
                         | content = SeriesPosts series
                         , error = Nothing
                         , route = SeriesPostDetailRoute series.series.sid series.current.bid
@@ -65,7 +63,7 @@ update message s =
                         ! []
 
                 PostDetail post ->
-                    { s
+                    { model
                         | content = PostDetail post
                         , error = Nothing
                         , route = PostDetailRoute post.bid
@@ -73,24 +71,42 @@ update message s =
                         ! []
 
                 BackendError msg ->
-                    { s | content = BackendError msg, error = Just msg } ! []
+                    { model | content = BackendError msg, error = Just msg } ! []
 
         FromFrontend frontend ->
             case frontend of
                 SeePostList ->
-                    { s | content = PostList [], error = Nothing } ! [ retrieveAll ]
+                    { model | content = PostList [], error = Nothing } ! [ retrieveAll ]
 
                 SeePostDetail postId ->
-                    { s | error = Nothing } ! [ retrievePost postId ]
+                    { model | error = Nothing } ! [ retrievePost postId ]
 
-                SeeSeriesPostDetail postId ->
-                    { s | error = Nothing } ! [ retrieveSeriesPost postId ]
+                SeeSeriesPostDetail postId seriesId ->
+                    case model.content of
+                        SeriesPosts seriesDigest ->
+                            if seriesId == seriesDigest.series.sid then
+                                let
+                                    newSeries =
+                                        updateFromCurrentSeries postId seriesDigest
+
+                                    msg =
+                                        FromBackend (SeriesPosts newSeries)
+
+                                    newModel =
+                                        { model | content = SeriesPosts newSeries }
+                                in
+                                    update msg newModel
+                            else
+                                { model | error = Nothing } ! [ retrieveSeriesPost postId ]
+
+                        _ ->
+                            { model | error = Nothing } ! [ retrieveSeriesPost postId ]
 
         Navigate url ->
-            s ! [ Navigation.newUrl url ]
+            model ! [ Navigation.newUrl url ]
 
         Error msg ->
-            { s | content = BackendError msg, error = Just msg } ! []
+            { model | content = BackendError msg, error = Just msg } ! []
 
 
 
@@ -116,12 +132,6 @@ retrievePost postId =
     Api.getPostById postId
         |> Task.mapError toString
         |> Task.perform Error postToMessage
-
-
-
--- retrievePostInCurrentSeries : BlogPostId -> PostSeries -> Msg
--- retrievePostInCurrentSeries postId series =
---     seriesPostsToMessage (currentSeriesRetrieve postId series)
 
 
 postsToMessage : List PostOverview -> Msg

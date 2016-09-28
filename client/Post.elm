@@ -63,7 +63,7 @@ postTitle po =
         Just seriesid ->
             div [ class "row" ]
                 [ h3 [ class "post-title" ]
-                    [ a [ onClick (FromFrontend (SeeSeriesPostDetail po.pid)), href "#" ] [ text (po.ptitle) ]
+                    [ a [ onClick (FromFrontend (SeeSeriesPostDetail po.pid seriesid)), href "#" ] [ text (po.ptitle) ]
                     ]
                 , span [ class "" ] [ text (fromJustDate po.ppubdate) ]
                 ]
