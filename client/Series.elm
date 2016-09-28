@@ -14,6 +14,7 @@ import List.Extra as LX
 import Task exposing (Task, perform)
 import Post exposing (..)
 import Api exposing (..)
+import Routes exposing (..)
 import Types exposing (..)
 
 
@@ -102,7 +103,9 @@ seriesIndex seriesDigest =
 seriesIndexItem : SeriesId -> BlogPost -> Html Msg
 seriesIndexItem seriesId post =
     li []
-        [ a [ onClick (FromFrontend (SeeSeriesPostDetail post.bid seriesId)), href "#" ]
+        [ a
+            [ onClick (FromFrontend (SeeSeriesPostDetail post.bid seriesId))
+            ]
             [ text post.title
             ]
         ]

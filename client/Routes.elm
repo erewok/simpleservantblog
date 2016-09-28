@@ -9,48 +9,59 @@ import Html.Events exposing (onWithOptions)
 import Api exposing (..)
 import Types exposing (..)
 import RouteUrl exposing (HistoryEntry(..), UrlChange)
+import Debug exposing (..)
 
 
 delta2url : Model -> Model -> Maybe UrlChange
 delta2url previous current =
-    case current.route of
-        HomeRoute ->
-            Just <| UrlChange NewEntry "#/"
+    case previous.route == current.route of
+        True ->
+            Nothing
 
-        PostDetailRoute i ->
-            Just <| UrlChange NewEntry <| "#/posts/" ++ toString i
+        False ->
+            Just <| UrlChange NewEntry <| toUrl current.route
 
-        SeriesPostDetailRoute i j ->
-            Just <| UrlChange NewEntry <| "#/series/" ++ toString i ++ "/posts/" ++ toString j
+
+routeParser : Parser (Route -> a) a
+routeParser =
+    oneOf
+        [ format PostDetailRoute (s "posts" </> int)
+        , format SeriesPostDetailRoute (s "series" </> int </> s "posts" </> int)
+        , format HomeRoute (s "")
+        ]
+
+
+fromUrl : Location -> Result String Route
+fromUrl location =
+    log "parsed location" <| parse identity routeParser (String.dropLeft 1 location.hash)
 
 
 location2messages : Location -> List Msg
 location2messages location =
     case fromUrl location of
         Ok route ->
-            case route of
+            case log "fromUrl route" route of
                 HomeRoute ->
                     [ FromFrontend SeePostList ]
 
                 PostDetailRoute postId ->
                     [ FromFrontend <| SeePostDetail postId ]
 
-                SeriesPostDetailRoute postId seriesId ->
+                SeriesPostDetailRoute seriesId postId ->
                     [ FromFrontend <| SeeSeriesPostDetail postId seriesId ]
 
         Err error ->
             [ Error error ]
 
 
-routeParser : Parser (Route -> a) a
-routeParser =
-    oneOf
-        [ format HomeRoute (s "")
-        , format PostDetailRoute (s "posts" </> int)
-        , format SeriesPostDetailRoute (s "series" </> int </> s "posts" </> int)
-        ]
+toUrl : Route -> String
+toUrl route =
+    case log "toUrl route" route of
+        HomeRoute ->
+            "#"
 
+        PostDetailRoute postId ->
+            "#posts/" ++ toString postId
 
-fromUrl : Location -> Result String Route
-fromUrl location =
-    parse identity routeParser (String.dropLeft 1 location.pathname)
+        SeriesPostDetailRoute seriesId postId ->
+            "#series/" ++ toString seriesId ++ "/posts/" ++ toString postId

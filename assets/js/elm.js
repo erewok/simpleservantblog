@@ -12328,6 +12328,111 @@ var _pellagic_puffbomb$simpleservantblog$Types$PostDetailRoute = function (a) {
 };
 var _pellagic_puffbomb$simpleservantblog$Types$HomeRoute = {ctor: 'HomeRoute'};
 
+var _pellagic_puffbomb$simpleservantblog$Routes$toUrl = function (route) {
+	var _p0 = A2(_elm_lang$core$Debug$log, 'toUrl route', route);
+	switch (_p0.ctor) {
+		case 'HomeRoute':
+			return '#';
+		case 'PostDetailRoute':
+			return A2(
+				_elm_lang$core$Basics_ops['++'],
+				'#posts/',
+				_elm_lang$core$Basics$toString(_p0._0));
+		default:
+			return A2(
+				_elm_lang$core$Basics_ops['++'],
+				'#series/',
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					_elm_lang$core$Basics$toString(_p0._0),
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						'/posts/',
+						_elm_lang$core$Basics$toString(_p0._1))));
+	}
+};
+var _pellagic_puffbomb$simpleservantblog$Routes$routeParser = _evancz$url_parser$UrlParser$oneOf(
+	_elm_lang$core$Native_List.fromArray(
+		[
+			A2(
+			_evancz$url_parser$UrlParser$format,
+			_pellagic_puffbomb$simpleservantblog$Types$PostDetailRoute,
+			A2(
+				_evancz$url_parser$UrlParser_ops['</>'],
+				_evancz$url_parser$UrlParser$s('posts'),
+				_evancz$url_parser$UrlParser$int)),
+			A2(
+			_evancz$url_parser$UrlParser$format,
+			_pellagic_puffbomb$simpleservantblog$Types$SeriesPostDetailRoute,
+			A2(
+				_evancz$url_parser$UrlParser_ops['</>'],
+				_evancz$url_parser$UrlParser$s('series'),
+				A2(
+					_evancz$url_parser$UrlParser_ops['</>'],
+					_evancz$url_parser$UrlParser$int,
+					A2(
+						_evancz$url_parser$UrlParser_ops['</>'],
+						_evancz$url_parser$UrlParser$s('posts'),
+						_evancz$url_parser$UrlParser$int)))),
+			A2(
+			_evancz$url_parser$UrlParser$format,
+			_pellagic_puffbomb$simpleservantblog$Types$HomeRoute,
+			_evancz$url_parser$UrlParser$s(''))
+		]));
+var _pellagic_puffbomb$simpleservantblog$Routes$fromUrl = function (location) {
+	return A2(
+		_elm_lang$core$Debug$log,
+		'parsed location',
+		A3(
+			_evancz$url_parser$UrlParser$parse,
+			_elm_lang$core$Basics$identity,
+			_pellagic_puffbomb$simpleservantblog$Routes$routeParser,
+			A2(_elm_lang$core$String$dropLeft, 1, location.hash)));
+};
+var _pellagic_puffbomb$simpleservantblog$Routes$location2messages = function (location) {
+	var _p1 = _pellagic_puffbomb$simpleservantblog$Routes$fromUrl(location);
+	if (_p1.ctor === 'Ok') {
+		var _p2 = A2(_elm_lang$core$Debug$log, 'fromUrl route', _p1._0);
+		switch (_p2.ctor) {
+			case 'HomeRoute':
+				return _elm_lang$core$Native_List.fromArray(
+					[
+						_pellagic_puffbomb$simpleservantblog$Types$FromFrontend(_pellagic_puffbomb$simpleservantblog$Types$SeePostList)
+					]);
+			case 'PostDetailRoute':
+				return _elm_lang$core$Native_List.fromArray(
+					[
+						_pellagic_puffbomb$simpleservantblog$Types$FromFrontend(
+						_pellagic_puffbomb$simpleservantblog$Types$SeePostDetail(_p2._0))
+					]);
+			default:
+				return _elm_lang$core$Native_List.fromArray(
+					[
+						_pellagic_puffbomb$simpleservantblog$Types$FromFrontend(
+						A2(_pellagic_puffbomb$simpleservantblog$Types$SeeSeriesPostDetail, _p2._1, _p2._0))
+					]);
+		}
+	} else {
+		return _elm_lang$core$Native_List.fromArray(
+			[
+				_pellagic_puffbomb$simpleservantblog$Types$Error(_p1._0)
+			]);
+	}
+};
+var _pellagic_puffbomb$simpleservantblog$Routes$delta2url = F2(
+	function (previous, current) {
+		var _p3 = _elm_lang$core$Native_Utils.eq(previous.route, current.route);
+		if (_p3 === true) {
+			return _elm_lang$core$Maybe$Nothing;
+		} else {
+			return _elm_lang$core$Maybe$Just(
+				A2(
+					_rgrempel$elm_route_url$RouteUrl$UrlChange,
+					_rgrempel$elm_route_url$RouteUrl$NewEntry,
+					_pellagic_puffbomb$simpleservantblog$Routes$toUrl(current.route)));
+		}
+	});
+
 var _pellagic_puffbomb$simpleservantblog$Post$fromJustDate = function (somedate) {
 	var _p0 = somedate;
 	if (_p0.ctor === 'Nothing') {
@@ -12377,8 +12482,7 @@ var _pellagic_puffbomb$simpleservantblog$Post$postTitle = function (po) {
 								[
 									_elm_lang$html$Html_Events$onClick(
 									_pellagic_puffbomb$simpleservantblog$Types$FromFrontend(
-										_pellagic_puffbomb$simpleservantblog$Types$SeePostDetail(po.pid))),
-									_elm_lang$html$Html_Attributes$href('#')
+										_pellagic_puffbomb$simpleservantblog$Types$SeePostDetail(po.pid)))
 								]),
 							_elm_lang$core$Native_List.fromArray(
 								[
@@ -12420,8 +12524,7 @@ var _pellagic_puffbomb$simpleservantblog$Post$postTitle = function (po) {
 								[
 									_elm_lang$html$Html_Events$onClick(
 									_pellagic_puffbomb$simpleservantblog$Types$FromFrontend(
-										A2(_pellagic_puffbomb$simpleservantblog$Types$SeeSeriesPostDetail, po.pid, _p2._0))),
-									_elm_lang$html$Html_Attributes$href('#')
+										A2(_pellagic_puffbomb$simpleservantblog$Types$SeeSeriesPostDetail, po.pid, _p2._0)))
 								]),
 							_elm_lang$core$Native_List.fromArray(
 								[
@@ -12517,105 +12620,6 @@ var _pellagic_puffbomb$simpleservantblog$Post$viewPost = function (post) {
 		_pellagic_puffbomb$simpleservantblog$Post$postBody(post));
 };
 
-var _pellagic_puffbomb$simpleservantblog$Routes$routeParser = _evancz$url_parser$UrlParser$oneOf(
-	_elm_lang$core$Native_List.fromArray(
-		[
-			A2(
-			_evancz$url_parser$UrlParser$format,
-			_pellagic_puffbomb$simpleservantblog$Types$HomeRoute,
-			_evancz$url_parser$UrlParser$s('')),
-			A2(
-			_evancz$url_parser$UrlParser$format,
-			_pellagic_puffbomb$simpleservantblog$Types$PostDetailRoute,
-			A2(
-				_evancz$url_parser$UrlParser_ops['</>'],
-				_evancz$url_parser$UrlParser$s('posts'),
-				_evancz$url_parser$UrlParser$int)),
-			A2(
-			_evancz$url_parser$UrlParser$format,
-			_pellagic_puffbomb$simpleservantblog$Types$SeriesPostDetailRoute,
-			A2(
-				_evancz$url_parser$UrlParser_ops['</>'],
-				_evancz$url_parser$UrlParser$s('series'),
-				A2(
-					_evancz$url_parser$UrlParser_ops['</>'],
-					_evancz$url_parser$UrlParser$int,
-					A2(
-						_evancz$url_parser$UrlParser_ops['</>'],
-						_evancz$url_parser$UrlParser$s('posts'),
-						_evancz$url_parser$UrlParser$int))))
-		]));
-var _pellagic_puffbomb$simpleservantblog$Routes$fromUrl = function (location) {
-	return A3(
-		_evancz$url_parser$UrlParser$parse,
-		_elm_lang$core$Basics$identity,
-		_pellagic_puffbomb$simpleservantblog$Routes$routeParser,
-		A2(_elm_lang$core$String$dropLeft, 1, location.pathname));
-};
-var _pellagic_puffbomb$simpleservantblog$Routes$location2messages = function (location) {
-	var _p0 = _pellagic_puffbomb$simpleservantblog$Routes$fromUrl(location);
-	if (_p0.ctor === 'Ok') {
-		var _p1 = _p0._0;
-		switch (_p1.ctor) {
-			case 'HomeRoute':
-				return _elm_lang$core$Native_List.fromArray(
-					[
-						_pellagic_puffbomb$simpleservantblog$Types$FromFrontend(_pellagic_puffbomb$simpleservantblog$Types$SeePostList)
-					]);
-			case 'PostDetailRoute':
-				return _elm_lang$core$Native_List.fromArray(
-					[
-						_pellagic_puffbomb$simpleservantblog$Types$FromFrontend(
-						_pellagic_puffbomb$simpleservantblog$Types$SeePostDetail(_p1._0))
-					]);
-			default:
-				return _elm_lang$core$Native_List.fromArray(
-					[
-						_pellagic_puffbomb$simpleservantblog$Types$FromFrontend(
-						A2(_pellagic_puffbomb$simpleservantblog$Types$SeeSeriesPostDetail, _p1._0, _p1._1))
-					]);
-		}
-	} else {
-		return _elm_lang$core$Native_List.fromArray(
-			[
-				_pellagic_puffbomb$simpleservantblog$Types$Error(_p0._0)
-			]);
-	}
-};
-var _pellagic_puffbomb$simpleservantblog$Routes$delta2url = F2(
-	function (previous, current) {
-		var _p2 = current.route;
-		switch (_p2.ctor) {
-			case 'HomeRoute':
-				return _elm_lang$core$Maybe$Just(
-					A2(_rgrempel$elm_route_url$RouteUrl$UrlChange, _rgrempel$elm_route_url$RouteUrl$NewEntry, '#/'));
-			case 'PostDetailRoute':
-				return _elm_lang$core$Maybe$Just(
-					A2(
-						_rgrempel$elm_route_url$RouteUrl$UrlChange,
-						_rgrempel$elm_route_url$RouteUrl$NewEntry,
-						A2(
-							_elm_lang$core$Basics_ops['++'],
-							'#/posts/',
-							_elm_lang$core$Basics$toString(_p2._0))));
-			default:
-				return _elm_lang$core$Maybe$Just(
-					A2(
-						_rgrempel$elm_route_url$RouteUrl$UrlChange,
-						_rgrempel$elm_route_url$RouteUrl$NewEntry,
-						A2(
-							_elm_lang$core$Basics_ops['++'],
-							'#/series/',
-							A2(
-								_elm_lang$core$Basics_ops['++'],
-								_elm_lang$core$Basics$toString(_p2._0),
-								A2(
-									_elm_lang$core$Basics_ops['++'],
-									'/posts/',
-									_elm_lang$core$Basics$toString(_p2._1))))));
-		}
-	});
-
 var _pellagic_puffbomb$simpleservantblog$Series$seriesIndexCurrent = function (post) {
 	return A2(
 		_elm_lang$html$Html$li,
@@ -12640,8 +12644,7 @@ var _pellagic_puffbomb$simpleservantblog$Series$seriesIndexItem = F2(
 						[
 							_elm_lang$html$Html_Events$onClick(
 							_pellagic_puffbomb$simpleservantblog$Types$FromFrontend(
-								A2(_pellagic_puffbomb$simpleservantblog$Types$SeeSeriesPostDetail, post.bid, seriesId))),
-							_elm_lang$html$Html_Attributes$href('#')
+								A2(_pellagic_puffbomb$simpleservantblog$Types$SeeSeriesPostDetail, post.bid, seriesId)))
 						]),
 					_elm_lang$core$Native_List.fromArray(
 						[
@@ -12953,7 +12956,7 @@ var _pellagic_puffbomb$simpleservantblog$Main$update = F2(
 									{
 										content: _pellagic_puffbomb$simpleservantblog$Types$SeriesPosts(_p3),
 										error: _elm_lang$core$Maybe$Nothing,
-										route: A2(_pellagic_puffbomb$simpleservantblog$Types$SeriesPostDetailRoute, _p3.series.sid, _p3.current.bid)
+										route: A2(_pellagic_puffbomb$simpleservantblog$Types$SeriesPostDetailRoute, _p3.current.bid, _p3.series.sid)
 									}),
 								_elm_lang$core$Native_List.fromArray(
 									[]));

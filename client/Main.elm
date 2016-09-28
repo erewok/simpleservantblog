@@ -61,7 +61,7 @@ update message model =
                     { model
                         | content = SeriesPosts series
                         , error = Nothing
-                        , route = SeriesPostDetailRoute series.series.sid series.current.bid
+                        , route = SeriesPostDetailRoute series.current.bid series.series.sid
                     }
                         ! []
 

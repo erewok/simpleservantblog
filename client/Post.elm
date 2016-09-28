@@ -8,6 +8,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Markdown as M
 import Api exposing (..)
+import Routes exposing (..)
 import Types exposing (..)
 
 
@@ -55,7 +56,11 @@ postTitle po =
         Nothing ->
             div [ class "row" ]
                 [ h3 [ class "post-title" ]
-                    [ a [ onClick (FromFrontend (SeePostDetail po.pid)), href "#" ] [ text (po.ptitle) ]
+                    [ a
+                        [ onClick (FromFrontend (SeePostDetail po.pid))
+                        ]
+                        [ text (po.ptitle)
+                        ]
                     ]
                 , span [ class "" ] [ text (fromJustDate po.ppubdate) ]
                 ]
@@ -63,7 +68,11 @@ postTitle po =
         Just seriesid ->
             div [ class "row" ]
                 [ h3 [ class "post-title" ]
-                    [ a [ onClick (FromFrontend (SeeSeriesPostDetail po.pid seriesid)), href "#" ] [ text (po.ptitle) ]
+                    [ a
+                        [ onClick (FromFrontend (SeeSeriesPostDetail po.pid seriesid))
+                        ]
+                        [ text (po.ptitle)
+                        ]
                     ]
                 , span [ class "" ] [ text (fromJustDate po.ppubdate) ]
                 ]

@@ -46,4 +46,4 @@ type Msg
 type Route
     = HomeRoute
     | PostDetailRoute BlogPostId
-    | SeriesPostDetailRoute BlogPostId SeriesId
+    | SeriesPostDetailRoute SeriesId BlogPostId
