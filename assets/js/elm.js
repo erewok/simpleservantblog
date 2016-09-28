@@ -10734,9 +10734,7 @@ var _pellagic_puffbomb$simpleservantblog$Main$view = function (state) {
 			return A2(
 				_elm_lang$html$Html$div,
 				_elm_lang$core$Native_List.fromArray(
-					[
-						_pellagic_puffbomb$simpleservantblog$Routes$catchNavigationClicks(_pellagic_puffbomb$simpleservantblog$Types$Navigate)
-					]),
+					[]),
 				_elm_lang$core$Native_List.fromArray(
 					[
 						A2(
@@ -10751,9 +10749,7 @@ var _pellagic_puffbomb$simpleservantblog$Main$view = function (state) {
 			return A2(
 				_elm_lang$html$Html$div,
 				_elm_lang$core$Native_List.fromArray(
-					[
-						_pellagic_puffbomb$simpleservantblog$Routes$catchNavigationClicks(_pellagic_puffbomb$simpleservantblog$Types$Navigate)
-					]),
+					[]),
 				_elm_lang$core$Native_List.fromArray(
 					[
 						A2(
@@ -10771,9 +10767,7 @@ var _pellagic_puffbomb$simpleservantblog$Main$view = function (state) {
 			return A2(
 				_elm_lang$html$Html$div,
 				_elm_lang$core$Native_List.fromArray(
-					[
-						_pellagic_puffbomb$simpleservantblog$Routes$catchNavigationClicks(_pellagic_puffbomb$simpleservantblog$Types$Navigate)
-					]),
+					[]),
 				_elm_lang$core$Native_List.fromArray(
 					[
 						A2(
@@ -10791,9 +10785,7 @@ var _pellagic_puffbomb$simpleservantblog$Main$view = function (state) {
 			return A2(
 				_elm_lang$html$Html$div,
 				_elm_lang$core$Native_List.fromArray(
-					[
-						_pellagic_puffbomb$simpleservantblog$Routes$catchNavigationClicks(_pellagic_puffbomb$simpleservantblog$Types$Navigate)
-					]),
+					[]),
 				_elm_lang$core$Native_List.fromArray(
 					[
 						A2(
@@ -10926,48 +10918,53 @@ var _pellagic_puffbomb$simpleservantblog$Main$update = F2(
 								s,
 								{
 									content: _pellagic_puffbomb$simpleservantblog$Types$PostList(_p3._0),
-									error: _elm_lang$core$Maybe$Nothing
+									error: _elm_lang$core$Maybe$Nothing,
+									route: _pellagic_puffbomb$simpleservantblog$Types$HomeRoute
 								}),
 							_elm_lang$core$Native_List.fromArray(
 								[]));
 					case 'SeriesPosts':
-						return A2(
-							_elm_lang$core$Platform_Cmd_ops['!'],
-							_elm_lang$core$Native_Utils.update(
-								s,
-								{
-									content: _pellagic_puffbomb$simpleservantblog$Types$SeriesPosts(_p3._0),
-									error: _elm_lang$core$Maybe$Nothing
-								}),
-							_elm_lang$core$Native_List.fromArray(
-								[]));
-					case 'PostDetail':
-						return A2(
-							_elm_lang$core$Platform_Cmd_ops['!'],
-							_elm_lang$core$Native_Utils.update(
-								s,
-								{
-									content: _pellagic_puffbomb$simpleservantblog$Types$PostDetail(_p3._0),
-									error: _elm_lang$core$Maybe$Nothing
-								}),
-							_elm_lang$core$Native_List.fromArray(
-								[]));
-					default:
 						var _p4 = _p3._0;
 						return A2(
 							_elm_lang$core$Platform_Cmd_ops['!'],
 							_elm_lang$core$Native_Utils.update(
 								s,
 								{
-									content: _pellagic_puffbomb$simpleservantblog$Types$BackendError(_p4),
-									error: _elm_lang$core$Maybe$Just(_p4)
+									content: _pellagic_puffbomb$simpleservantblog$Types$SeriesPosts(_p4),
+									error: _elm_lang$core$Maybe$Nothing,
+									route: A2(_pellagic_puffbomb$simpleservantblog$Types$SeriesPostDetailRoute, _p4.series.sid, _p4.current.bid)
+								}),
+							_elm_lang$core$Native_List.fromArray(
+								[]));
+					case 'PostDetail':
+						var _p5 = _p3._0;
+						return A2(
+							_elm_lang$core$Platform_Cmd_ops['!'],
+							_elm_lang$core$Native_Utils.update(
+								s,
+								{
+									content: _pellagic_puffbomb$simpleservantblog$Types$PostDetail(_p5),
+									error: _elm_lang$core$Maybe$Nothing,
+									route: _pellagic_puffbomb$simpleservantblog$Types$PostDetailRoute(_p5.bid)
+								}),
+							_elm_lang$core$Native_List.fromArray(
+								[]));
+					default:
+						var _p6 = _p3._0;
+						return A2(
+							_elm_lang$core$Platform_Cmd_ops['!'],
+							_elm_lang$core$Native_Utils.update(
+								s,
+								{
+									content: _pellagic_puffbomb$simpleservantblog$Types$BackendError(_p6),
+									error: _elm_lang$core$Maybe$Just(_p6)
 								}),
 							_elm_lang$core$Native_List.fromArray(
 								[]));
 				}
 			case 'FromFrontend':
-				var _p5 = _p2._0;
-				switch (_p5.ctor) {
+				var _p7 = _p2._0;
+				switch (_p7.ctor) {
 					case 'SeePostList':
 						return A2(
 							_elm_lang$core$Platform_Cmd_ops['!'],
@@ -10989,7 +10986,7 @@ var _pellagic_puffbomb$simpleservantblog$Main$update = F2(
 								{error: _elm_lang$core$Maybe$Nothing}),
 							_elm_lang$core$Native_List.fromArray(
 								[
-									_pellagic_puffbomb$simpleservantblog$Main$retrievePost(_p5._0)
+									_pellagic_puffbomb$simpleservantblog$Main$retrievePost(_p7._0)
 								]));
 					default:
 						return A2(
@@ -10999,7 +10996,7 @@ var _pellagic_puffbomb$simpleservantblog$Main$update = F2(
 								{error: _elm_lang$core$Maybe$Nothing}),
 							_elm_lang$core$Native_List.fromArray(
 								[
-									_pellagic_puffbomb$simpleservantblog$Main$retrieveSeriesPost(_p5._0)
+									_pellagic_puffbomb$simpleservantblog$Main$retrieveSeriesPost(_p7._0)
 								]));
 				}
 			case 'Navigate':
@@ -11011,20 +11008,20 @@ var _pellagic_puffbomb$simpleservantblog$Main$update = F2(
 							_elm_lang$navigation$Navigation$newUrl(_p2._0)
 						]));
 			default:
-				var _p6 = _p2._0;
+				var _p8 = _p2._0;
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					_elm_lang$core$Native_Utils.update(
 						s,
 						{
-							content: _pellagic_puffbomb$simpleservantblog$Types$BackendError(_p6),
-							error: _elm_lang$core$Maybe$Just(_p6)
+							content: _pellagic_puffbomb$simpleservantblog$Types$BackendError(_p8),
+							error: _elm_lang$core$Maybe$Just(_p8)
 						}),
 					_elm_lang$core$Native_List.fromArray(
 						[]));
 		}
 	});
-var _pellagic_puffbomb$simpleservantblog$Main$init = function (result) {
+var _pellagic_puffbomb$simpleservantblog$Main$init = function () {
 	var state = {
 		content: _pellagic_puffbomb$simpleservantblog$Types$PostList(
 			_elm_lang$core$Native_List.fromArray(
@@ -11032,19 +11029,16 @@ var _pellagic_puffbomb$simpleservantblog$Main$init = function (result) {
 		error: _elm_lang$core$Maybe$Nothing,
 		route: _pellagic_puffbomb$simpleservantblog$Types$HomeRoute
 	};
-	return A2(_pellagic_puffbomb$simpleservantblog$Main$urlUpdate, result, state);
-};
+	return {ctor: '_Tuple2', _0: state, _1: _pellagic_puffbomb$simpleservantblog$Main$retrieveAll};
+}();
 var _pellagic_puffbomb$simpleservantblog$Main$main = {
-	main: A2(
-		_elm_lang$navigation$Navigation$program,
-		_elm_lang$navigation$Navigation$makeParser(_pellagic_puffbomb$simpleservantblog$Routes$decode),
+	main: _elm_lang$html$Html_App$program(
 		{
 			init: _pellagic_puffbomb$simpleservantblog$Main$init,
 			update: _pellagic_puffbomb$simpleservantblog$Main$update,
-			subscriptions: function (_p7) {
+			subscriptions: function (_p9) {
 				return _elm_lang$core$Platform_Sub$none;
 			},
-			urlUpdate: _pellagic_puffbomb$simpleservantblog$Main$urlUpdate,
 			view: _pellagic_puffbomb$simpleservantblog$Main$view
 		})
 };

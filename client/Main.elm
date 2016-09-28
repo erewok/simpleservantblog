@@ -1,5 +1,8 @@
 module Main exposing (..)
 
+-- import Cmd exposing (none)
+
+import Platform.Cmd exposing (none)
 import Date exposing (..)
 import Debug exposing (..)
 import Dict exposing (..)
@@ -8,7 +11,8 @@ import Html.App exposing (program)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Http
-import Task exposing (Task, perform)
+import List exposing (..)
+import Task exposing (Task, perform, succeed)
 import Navigation
 import Api exposing (..)
 import Post exposing (..)
@@ -19,22 +23,21 @@ import Types exposing (..)
 
 main : Program Never
 main =
-    Navigation.program (Navigation.makeParser Routes.decode)
+    program
         { init = init
         , update = update
         , subscriptions = \_ -> Sub.none
-        , urlUpdate = urlUpdate
         , view = view
         }
 
 
-init : Result String Route -> ( Model, Cmd Msg )
-init result =
+init : ( Model, Cmd Msg )
+init =
     let
         state =
             { content = PostList [], error = Nothing, route = HomeRoute }
     in
-        urlUpdate result state
+        ( state, retrieveAll )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -49,6 +52,7 @@ update message s =
                     { s
                         | content = PostList posts
                         , error = Nothing
+                        , route = HomeRoute
                     }
                         ! []
 
@@ -56,6 +60,7 @@ update message s =
                     { s
                         | content = SeriesPosts series
                         , error = Nothing
+                        , route = SeriesPostDetailRoute series.series.sid series.current.bid
                     }
                         ! []
 
@@ -63,6 +68,7 @@ update message s =
                     { s
                         | content = PostDetail post
                         , error = Nothing
+                        , route = PostDetailRoute post.bid
                     }
                         ! []
 
@@ -112,6 +118,12 @@ retrievePost postId =
         |> Task.perform Error postToMessage
 
 
+
+-- retrievePostInCurrentSeries : BlogPostId -> PostSeries -> Msg
+-- retrievePostInCurrentSeries postId series =
+--     seriesPostsToMessage (currentSeriesRetrieve postId series)
+
+
 postsToMessage : List PostOverview -> Msg
 postsToMessage posts =
     FromBackend (PostList posts)
@@ -132,25 +144,25 @@ view state =
     case state.content of
         -- if there is a post-detail, show that
         PostList posts ->
-            div [ Routes.catchNavigationClicks Navigate ]
+            div []
                 [ div [ class "post-main row" ] <|
                     (List.map viewPostSummary posts)
                 ]
 
         SeriesPosts seriesPost ->
-            div [ Routes.catchNavigationClicks Navigate ]
+            div []
                 [ div [ class "post-main row" ] <|
                     [ viewSeriesPost seriesPost ]
                 ]
 
         PostDetail post ->
-            div [ Routes.catchNavigationClicks Navigate ]
+            div []
                 [ div [ class "post-main row" ] <|
                     [ viewPost post ]
                 ]
 
         BackendError error ->
-            div [ Routes.catchNavigationClicks Navigate ]
+            div []
                 [ div [ class "error row" ] <|
                     [ h4 [] [ text "Something went wrong" ]
                     , p [] [ text error ]
