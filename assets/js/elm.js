@@ -9233,9 +9233,144 @@ var _elm_community$list_extra$List_Extra$init = function () {
 var _elm_community$list_extra$List_Extra$last = _elm_community$list_extra$List_Extra$foldl1(
 	_elm_lang$core$Basics$flip(_elm_lang$core$Basics$always));
 
+//import Maybe, Native.List //
+
+var _elm_lang$core$Native_Regex = function() {
+
+function escape(str)
+{
+	return str.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+}
+function caseInsensitive(re)
+{
+	return new RegExp(re.source, 'gi');
+}
+function regex(raw)
+{
+	return new RegExp(raw, 'g');
+}
+
+function contains(re, string)
+{
+	return string.match(re) !== null;
+}
+
+function find(n, re, str)
+{
+	n = n.ctor === 'All' ? Infinity : n._0;
+	var out = [];
+	var number = 0;
+	var string = str;
+	var lastIndex = re.lastIndex;
+	var prevLastIndex = -1;
+	var result;
+	while (number++ < n && (result = re.exec(string)))
+	{
+		if (prevLastIndex === re.lastIndex) break;
+		var i = result.length - 1;
+		var subs = new Array(i);
+		while (i > 0)
+		{
+			var submatch = result[i];
+			subs[--i] = submatch === undefined
+				? _elm_lang$core$Maybe$Nothing
+				: _elm_lang$core$Maybe$Just(submatch);
+		}
+		out.push({
+			match: result[0],
+			submatches: _elm_lang$core$Native_List.fromArray(subs),
+			index: result.index,
+			number: number
+		});
+		prevLastIndex = re.lastIndex;
+	}
+	re.lastIndex = lastIndex;
+	return _elm_lang$core$Native_List.fromArray(out);
+}
+
+function replace(n, re, replacer, string)
+{
+	n = n.ctor === 'All' ? Infinity : n._0;
+	var count = 0;
+	function jsReplacer(match)
+	{
+		if (count++ >= n)
+		{
+			return match;
+		}
+		var i = arguments.length - 3;
+		var submatches = new Array(i);
+		while (i > 0)
+		{
+			var submatch = arguments[i];
+			submatches[--i] = submatch === undefined
+				? _elm_lang$core$Maybe$Nothing
+				: _elm_lang$core$Maybe$Just(submatch);
+		}
+		return replacer({
+			match: match,
+			submatches: _elm_lang$core$Native_List.fromArray(submatches),
+			index: arguments[i - 1],
+			number: count
+		});
+	}
+	return string.replace(re, jsReplacer);
+}
+
+function split(n, re, str)
+{
+	n = n.ctor === 'All' ? Infinity : n._0;
+	if (n === Infinity)
+	{
+		return _elm_lang$core$Native_List.fromArray(str.split(re));
+	}
+	var string = str;
+	var result;
+	var out = [];
+	var start = re.lastIndex;
+	while (n--)
+	{
+		if (!(result = re.exec(string))) break;
+		out.push(string.slice(start, result.index));
+		start = re.lastIndex;
+	}
+	out.push(string.slice(start));
+	return _elm_lang$core$Native_List.fromArray(out);
+}
+
+return {
+	regex: regex,
+	caseInsensitive: caseInsensitive,
+	escape: escape,
+
+	contains: F2(contains),
+	find: F3(find),
+	replace: F4(replace),
+	split: F3(split)
+};
+
+}();
+
 var _elm_lang$core$Process$kill = _elm_lang$core$Native_Scheduler.kill;
 var _elm_lang$core$Process$sleep = _elm_lang$core$Native_Scheduler.sleep;
 var _elm_lang$core$Process$spawn = _elm_lang$core$Native_Scheduler.spawn;
+
+var _elm_lang$core$Regex$split = _elm_lang$core$Native_Regex.split;
+var _elm_lang$core$Regex$replace = _elm_lang$core$Native_Regex.replace;
+var _elm_lang$core$Regex$find = _elm_lang$core$Native_Regex.find;
+var _elm_lang$core$Regex$contains = _elm_lang$core$Native_Regex.contains;
+var _elm_lang$core$Regex$caseInsensitive = _elm_lang$core$Native_Regex.caseInsensitive;
+var _elm_lang$core$Regex$regex = _elm_lang$core$Native_Regex.regex;
+var _elm_lang$core$Regex$escape = _elm_lang$core$Native_Regex.escape;
+var _elm_lang$core$Regex$Match = F4(
+	function (a, b, c, d) {
+		return {match: a, submatches: b, index: c, number: d};
+	});
+var _elm_lang$core$Regex$Regex = {ctor: 'Regex'};
+var _elm_lang$core$Regex$AtMost = function (a) {
+	return {ctor: 'AtMost', _0: a};
+};
+var _elm_lang$core$Regex$All = {ctor: 'All'};
 
 var _elm_lang$dom$Native_Dom = function() {
 
@@ -11511,6 +11646,645 @@ var _pellagic_puffbomb$simpleservantblog$Api$getUserByLastName = function (lastN
 		A2(_evancz$elm_http$Http$send, _evancz$elm_http$Http$defaultSettings, request));
 };
 
+var _sporto$erl$Erl$appendPathSegments = F2(
+	function (segments, url) {
+		var newPath = A2(_elm_lang$core$List$append, url.path, segments);
+		return _elm_lang$core$Native_Utils.update(
+			url,
+			{path: newPath});
+	});
+var _sporto$erl$Erl$removeQuery = F2(
+	function (key, url) {
+		var updated = A2(_elm_lang$core$Dict$remove, key, url.query);
+		return _elm_lang$core$Native_Utils.update(
+			url,
+			{query: updated});
+	});
+var _sporto$erl$Erl$setQuery = F3(
+	function (key, val, url) {
+		var updated = A2(_elm_lang$core$Dict$singleton, key, val);
+		return _elm_lang$core$Native_Utils.update(
+			url,
+			{query: updated});
+	});
+var _sporto$erl$Erl$addQuery = F3(
+	function (key, val, url) {
+		var updated = _elm_lang$core$String$isEmpty(val) ? A2(_elm_lang$core$Dict$remove, key, url.query) : A3(_elm_lang$core$Dict$insert, key, val, url.query);
+		return _elm_lang$core$Native_Utils.update(
+			url,
+			{query: updated});
+	});
+var _sporto$erl$Erl$clearQuery = function (url) {
+	return _elm_lang$core$Native_Utils.update(
+		url,
+		{query: _elm_lang$core$Dict$empty});
+};
+var _sporto$erl$Erl$new = {
+	protocol: '',
+	username: '',
+	password: '',
+	host: _elm_lang$core$Native_List.fromArray(
+		[]),
+	path: _elm_lang$core$Native_List.fromArray(
+		[]),
+	hasTrailingSlash: false,
+	port$: 0,
+	hash: '',
+	query: _elm_lang$core$Dict$empty
+};
+var _sporto$erl$Erl$hashToString = function (url) {
+	return _elm_lang$core$String$isEmpty(url.hash) ? '' : A2(_elm_lang$core$Basics_ops['++'], '#', url.hash);
+};
+var _sporto$erl$Erl$trailingSlashComponent = function (url) {
+	return _elm_lang$core$Native_Utils.eq(url.hasTrailingSlash, true) ? '/' : '';
+};
+var _sporto$erl$Erl$pathComponent = function (url) {
+	var encoded = A2(_elm_lang$core$List$map, _evancz$elm_http$Http$uriEncode, url.path);
+	return _elm_lang$core$Native_Utils.eq(
+		_elm_lang$core$List$length(url.path),
+		0) ? '' : A2(
+		_elm_lang$core$Basics_ops['++'],
+		'/',
+		A2(_elm_lang$core$String$join, '/', encoded));
+};
+var _sporto$erl$Erl$portComponent = function (url) {
+	var _p0 = url.port$;
+	switch (_p0) {
+		case 0:
+			return '';
+		case 80:
+			return '';
+		default:
+			return A2(
+				_elm_lang$core$Basics_ops['++'],
+				':',
+				_elm_lang$core$Basics$toString(url.port$));
+	}
+};
+var _sporto$erl$Erl$hostComponent = function (url) {
+	return _evancz$elm_http$Http$uriEncode(
+		A2(_elm_lang$core$String$join, '.', url.host));
+};
+var _sporto$erl$Erl$protocolComponent = function (url) {
+	var _p1 = url.protocol;
+	if (_p1 === '') {
+		return '';
+	} else {
+		return A2(_elm_lang$core$Basics_ops['++'], url.protocol, '://');
+	}
+};
+var _sporto$erl$Erl$queryToString = function (url) {
+	var tuples = _elm_lang$core$Dict$toList(url.query);
+	var encodedTuples = A2(
+		_elm_lang$core$List$map,
+		function (_p2) {
+			var _p3 = _p2;
+			return {
+				ctor: '_Tuple2',
+				_0: _evancz$elm_http$Http$uriEncode(_p3._0),
+				_1: _evancz$elm_http$Http$uriEncode(_p3._1)
+			};
+		},
+		tuples);
+	var parts = A2(
+		_elm_lang$core$List$map,
+		function (_p4) {
+			var _p5 = _p4;
+			return A2(
+				_elm_lang$core$Basics_ops['++'],
+				_p5._0,
+				A2(_elm_lang$core$Basics_ops['++'], '=', _p5._1));
+		},
+		encodedTuples);
+	return _elm_lang$core$Dict$isEmpty(url.query) ? '' : A2(
+		_elm_lang$core$Basics_ops['++'],
+		'?',
+		A2(_elm_lang$core$String$join, '&', parts));
+};
+var _sporto$erl$Erl$toString = function (url) {
+	var hash = _sporto$erl$Erl$hashToString(url);
+	var query$ = _sporto$erl$Erl$queryToString(url);
+	var trailingSlash$ = _sporto$erl$Erl$trailingSlashComponent(url);
+	var path$ = _sporto$erl$Erl$pathComponent(url);
+	var port$ = _sporto$erl$Erl$portComponent(url);
+	var host$ = _sporto$erl$Erl$hostComponent(url);
+	var protocol$ = _sporto$erl$Erl$protocolComponent(url);
+	return A2(
+		_elm_lang$core$Basics_ops['++'],
+		protocol$,
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			host$,
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				port$,
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					path$,
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						trailingSlash$,
+						A2(_elm_lang$core$Basics_ops['++'], query$, hash))))));
+};
+var _sporto$erl$Erl$queryStringElementToTuple = function (element) {
+	var splitted = A2(_elm_lang$core$String$split, '=', element);
+	var first = A2(
+		_elm_lang$core$Maybe$withDefault,
+		'',
+		_elm_lang$core$List$head(splitted));
+	var firstDecoded = _evancz$elm_http$Http$uriDecode(first);
+	var second = A2(
+		_elm_lang$core$Maybe$withDefault,
+		'',
+		_elm_lang$core$List$head(
+			A2(_elm_lang$core$List$drop, 1, splitted)));
+	var secondDecoded = _evancz$elm_http$Http$uriDecode(second);
+	return {ctor: '_Tuple2', _0: firstDecoded, _1: secondDecoded};
+};
+var _sporto$erl$Erl$queryTuples = function (queryString) {
+	var splitted = A2(_elm_lang$core$String$split, '&', queryString);
+	return _elm_lang$core$String$isEmpty(queryString) ? _elm_lang$core$Native_List.fromArray(
+		[]) : A2(_elm_lang$core$List$map, _sporto$erl$Erl$queryStringElementToTuple, splitted);
+};
+var _sporto$erl$Erl$parseQuery = function (str) {
+	return _elm_lang$core$Dict$fromList(
+		_sporto$erl$Erl$queryTuples(str));
+};
+var _sporto$erl$Erl$extractQuery = function (str) {
+	return A2(
+		_elm_lang$core$Maybe$withDefault,
+		'',
+		_elm_lang$core$List$head(
+			A2(
+				_elm_lang$core$String$split,
+				'#',
+				A2(
+					_elm_lang$core$Maybe$withDefault,
+					'',
+					_elm_lang$core$List$head(
+						A2(
+							_elm_lang$core$List$drop,
+							1,
+							A2(_elm_lang$core$String$split, '?', str)))))));
+};
+var _sporto$erl$Erl$queryFromAll = function (all) {
+	return _sporto$erl$Erl$parseQuery(
+		_sporto$erl$Erl$extractQuery(all));
+};
+var _sporto$erl$Erl$extractHash = function (str) {
+	return A2(
+		_elm_lang$core$Maybe$withDefault,
+		'',
+		_elm_lang$core$List$head(
+			A2(
+				_elm_lang$core$List$drop,
+				1,
+				A2(_elm_lang$core$String$split, '#', str))));
+};
+var _sporto$erl$Erl$hashFromAll = function (str) {
+	return _sporto$erl$Erl$extractHash(str);
+};
+var _sporto$erl$Erl$extractPort = function (str) {
+	var rx = _elm_lang$core$Regex$regex(':\\d+');
+	var res = A3(
+		_elm_lang$core$Regex$find,
+		_elm_lang$core$Regex$AtMost(1),
+		rx,
+		str);
+	return A2(
+		_elm_lang$core$Maybe$withDefault,
+		80,
+		_elm_lang$core$Result$toMaybe(
+			_elm_lang$core$String$toInt(
+				A2(
+					_elm_lang$core$String$dropLeft,
+					1,
+					A2(
+						_elm_lang$core$Maybe$withDefault,
+						'',
+						_elm_lang$core$List$head(
+							A2(
+								_elm_lang$core$List$map,
+								function (_) {
+									return _.match;
+								},
+								res)))))));
+};
+var _sporto$erl$Erl$parseHost = function (str) {
+	return A2(_elm_lang$core$String$split, '.', str);
+};
+var _sporto$erl$Erl$extractProtocol = function (str) {
+	var parts = A2(_elm_lang$core$String$split, '://', str);
+	var _p6 = _elm_lang$core$List$length(parts);
+	if (_p6 === 1) {
+		return '';
+	} else {
+		return A2(
+			_elm_lang$core$Maybe$withDefault,
+			'',
+			_elm_lang$core$List$head(parts));
+	}
+};
+var _sporto$erl$Erl$leftFrom = F2(
+	function (delimiter, str) {
+		var parts = A2(_elm_lang$core$String$split, delimiter, str);
+		var head = _elm_lang$core$List$head(parts);
+		var _p7 = _elm_lang$core$List$length(parts);
+		switch (_p7) {
+			case 0:
+				return '';
+			case 1:
+				return '';
+			default:
+				return A2(_elm_lang$core$Maybe$withDefault, '', head);
+		}
+	});
+var _sporto$erl$Erl$leftFromOrSame = F2(
+	function (delimiter, str) {
+		var parts = A2(_elm_lang$core$String$split, delimiter, str);
+		return A2(
+			_elm_lang$core$Maybe$withDefault,
+			'',
+			_elm_lang$core$List$head(parts));
+	});
+var _sporto$erl$Erl$rightFromOrSame = F2(
+	function (delimiter, str) {
+		var parts = A2(_elm_lang$core$String$split, delimiter, str);
+		return A2(
+			_elm_lang$core$Maybe$withDefault,
+			'',
+			_elm_lang$core$List$head(
+				_elm_lang$core$List$reverse(parts)));
+	});
+var _sporto$erl$Erl$extractHost = function (str) {
+	var localhostRx = 'localhost';
+	var dotsRx = '((\\w|-)+\\.)+(\\w|-)+';
+	var rx = A2(
+		_elm_lang$core$Basics_ops['++'],
+		'(',
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			dotsRx,
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				'|',
+				A2(_elm_lang$core$Basics_ops['++'], localhostRx, ')'))));
+	return A2(
+		_elm_lang$core$Maybe$withDefault,
+		'',
+		_elm_lang$core$List$head(
+			A2(
+				_elm_lang$core$List$map,
+				function (_) {
+					return _.match;
+				},
+				A3(
+					_elm_lang$core$Regex$find,
+					_elm_lang$core$Regex$AtMost(1),
+					_elm_lang$core$Regex$regex(rx),
+					A2(
+						_sporto$erl$Erl$leftFromOrSame,
+						'/',
+						A2(_sporto$erl$Erl$rightFromOrSame, '//', str))))));
+};
+var _sporto$erl$Erl$host = function (str) {
+	return _sporto$erl$Erl$parseHost(
+		_sporto$erl$Erl$extractHost(str));
+};
+var _sporto$erl$Erl$extractPath = function (str) {
+	var host = _sporto$erl$Erl$extractHost(str);
+	return A4(
+		_elm_lang$core$Regex$replace,
+		_elm_lang$core$Regex$AtMost(1),
+		_elm_lang$core$Regex$regex(':\\d+'),
+		function (_p8) {
+			return '';
+		},
+		A4(
+			_elm_lang$core$Regex$replace,
+			_elm_lang$core$Regex$AtMost(1),
+			_elm_lang$core$Regex$regex(host),
+			function (_p9) {
+				return '';
+			},
+			A2(
+				_sporto$erl$Erl$leftFromOrSame,
+				'#',
+				A2(
+					_sporto$erl$Erl$leftFromOrSame,
+					'?',
+					A2(_sporto$erl$Erl$rightFromOrSame, '//', str)))));
+};
+var _sporto$erl$Erl$hasTrailingSlashFromAll = function (str) {
+	return A2(
+		_elm_lang$core$Regex$contains,
+		_elm_lang$core$Regex$regex('/$'),
+		_sporto$erl$Erl$extractPath(str));
+};
+var _sporto$erl$Erl$rightFrom = F2(
+	function (delimiter, str) {
+		var parts = A2(_elm_lang$core$String$split, delimiter, str);
+		var _p10 = _elm_lang$core$List$length(parts);
+		switch (_p10) {
+			case 0:
+				return '';
+			case 1:
+				return '';
+			default:
+				return A2(
+					_elm_lang$core$Maybe$withDefault,
+					'',
+					_elm_lang$core$List$head(
+						_elm_lang$core$List$reverse(parts)));
+		}
+	});
+var _sporto$erl$Erl$notEmpty = function (str) {
+	return _elm_lang$core$Basics$not(
+		_elm_lang$core$String$isEmpty(str));
+};
+var _sporto$erl$Erl$parsePath = function (str) {
+	return A2(
+		_elm_lang$core$List$map,
+		_evancz$elm_http$Http$uriDecode,
+		A2(
+			_elm_lang$core$List$filter,
+			_sporto$erl$Erl$notEmpty,
+			A2(_elm_lang$core$String$split, '/', str)));
+};
+var _sporto$erl$Erl$pathFromAll = function (str) {
+	return _sporto$erl$Erl$parsePath(
+		_sporto$erl$Erl$extractPath(str));
+};
+var _sporto$erl$Erl$parse = function (str) {
+	return {
+		host: _sporto$erl$Erl$host(str),
+		hash: _sporto$erl$Erl$hashFromAll(str),
+		password: '',
+		path: _sporto$erl$Erl$pathFromAll(str),
+		hasTrailingSlash: _sporto$erl$Erl$hasTrailingSlashFromAll(str),
+		port$: _sporto$erl$Erl$extractPort(str),
+		protocol: _sporto$erl$Erl$extractProtocol(str),
+		query: _sporto$erl$Erl$queryFromAll(str),
+		username: ''
+	};
+};
+var _sporto$erl$Erl$Url = F9(
+	function (a, b, c, d, e, f, g, h, i) {
+		return {protocol: a, username: b, password: c, host: d, port$: e, path: f, hasTrailingSlash: g, hash: h, query: i};
+	});
+
+var _rgrempel$elm_route_url$RouteUrl$url2path = function (url) {
+	return A2(
+		_elm_lang$core$Basics_ops['++'],
+		'/',
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			A2(_elm_lang$core$String$join, '/', url.path),
+			(url.hasTrailingSlash && _elm_lang$core$Basics$not(
+				_elm_lang$core$List$isEmpty(url.path))) ? '/' : ''));
+};
+var _rgrempel$elm_route_url$RouteUrl$eqUrl = F2(
+	function (u1, u2) {
+		return _elm_lang$core$Native_Utils.eq(u1.path, u2.path) && (_elm_lang$core$Native_Utils.eq(u1.hasTrailingSlash, u2.hasTrailingSlash) && (_elm_lang$core$Native_Utils.eq(u1.hash, u2.hash) && _elm_lang$core$Native_Utils.eq(
+			_elm_lang$core$Dict$toList(u1.query),
+			_elm_lang$core$Dict$toList(u2.query))));
+	});
+var _rgrempel$elm_route_url$RouteUrl$checkDistinctUrl = F2(
+	function (old, $new) {
+		return A2(
+			_rgrempel$elm_route_url$RouteUrl$eqUrl,
+			_sporto$erl$Erl$parse($new.url),
+			old) ? _elm_lang$core$Maybe$Nothing : _elm_lang$core$Maybe$Just($new);
+	});
+var _rgrempel$elm_route_url$RouteUrl$mapUrl = F2(
+	function (func, c1) {
+		return _elm_lang$core$Native_Utils.update(
+			c1,
+			{
+				url: func(c1.url)
+			});
+	});
+var _rgrempel$elm_route_url$RouteUrl$normalizeUrl = F2(
+	function (old, change) {
+		return A2(
+			_rgrempel$elm_route_url$RouteUrl$mapUrl,
+			A2(_elm_lang$core$String$startsWith, '?', change.url) ? function (url) {
+				return A2(
+					_elm_lang$core$Basics_ops['++'],
+					_rgrempel$elm_route_url$RouteUrl$url2path(old),
+					url);
+			} : (A2(_elm_lang$core$String$startsWith, '#', change.url) ? function (url) {
+				return A2(
+					_elm_lang$core$Basics_ops['++'],
+					_rgrempel$elm_route_url$RouteUrl$url2path(old),
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						_sporto$erl$Erl$queryToString(old),
+						url));
+			} : function (url) {
+				return url;
+			}),
+			change);
+	});
+var _rgrempel$elm_route_url$RouteUrl$urlChange2Cmd = function (change) {
+	return function () {
+		var _p0 = change.entry;
+		if (_p0.ctor === 'NewEntry') {
+			return _elm_lang$navigation$Navigation$newUrl;
+		} else {
+			return _elm_lang$navigation$Navigation$modifyUrl;
+		}
+	}()(change.url);
+};
+var _rgrempel$elm_route_url$RouteUrl$update = F3(
+	function (app, msg, model) {
+		var _p1 = A2(app.update, msg, model.user);
+		var newUserModel = _p1._0;
+		var userCommand = _p1._1;
+		var maybeUrlChange = A2(
+			_elm_lang$core$Maybe$andThen,
+			A2(
+				_elm_lang$core$Maybe$map,
+				_rgrempel$elm_route_url$RouteUrl$normalizeUrl(model.router.reportedUrl),
+				A2(app.delta2url, model.user, newUserModel)),
+			_rgrempel$elm_route_url$RouteUrl$checkDistinctUrl(model.router.reportedUrl));
+		var _p2 = maybeUrlChange;
+		if (_p2.ctor === 'Just') {
+			var _p3 = _p2._0;
+			return {
+				ctor: '_Tuple2',
+				_0: {
+					user: newUserModel,
+					router: {
+						reportedUrl: _sporto$erl$Erl$parse(_p3.url),
+						expectedUrlUpdates: model.router.expectedUrlUpdates + 1
+					}
+				},
+				_1: _elm_lang$core$Platform_Cmd$batch(
+					_elm_lang$core$Native_List.fromArray(
+						[
+							_rgrempel$elm_route_url$RouteUrl$urlChange2Cmd(_p3),
+							userCommand
+						]))
+			};
+		} else {
+			return {
+				ctor: '_Tuple2',
+				_0: {user: newUserModel, router: model.router},
+				_1: userCommand
+			};
+		}
+	});
+var _rgrempel$elm_route_url$RouteUrl$init = F3(
+	function (app, flags, location) {
+		var routerModel = {
+			expectedUrlUpdates: 0,
+			reportedUrl: _sporto$erl$Erl$parse(location.href)
+		};
+		var step = F2(
+			function (msg, _p4) {
+				var _p5 = _p4;
+				var _p6 = A2(app.update, msg, _p5._0);
+				return {
+					ctor: '_Tuple2',
+					_0: _p6._0,
+					_1: A2(_elm_lang$core$List_ops['::'], _p6._1, _p5._1)
+				};
+			});
+		var _p7 = app.init(flags);
+		var userModelFromFlags = _p7._0;
+		var commandFromFlags = _p7._1;
+		var _p8 = A3(
+			_elm_lang$core$List$foldl,
+			step,
+			{
+				ctor: '_Tuple2',
+				_0: userModelFromFlags,
+				_1: _elm_lang$core$Native_List.fromArray(
+					[commandFromFlags])
+			},
+			app.location2messages(location));
+		var userModelFromLocation = _p8._0;
+		var commands = _p8._1;
+		return {
+			ctor: '_Tuple2',
+			_0: {user: userModelFromLocation, router: routerModel},
+			_1: _elm_lang$core$Platform_Cmd$batch(commands)
+		};
+	});
+var _rgrempel$elm_route_url$RouteUrl$urlUpdate = F3(
+	function (app, location, model) {
+		var newRouterModel = {
+			reportedUrl: _sporto$erl$Erl$parse(location.href),
+			expectedUrlUpdates: (_elm_lang$core$Native_Utils.cmp(model.router.expectedUrlUpdates, 0) > 0) ? (model.router.expectedUrlUpdates - 1) : 0
+		};
+		if (_elm_lang$core$Native_Utils.cmp(model.router.expectedUrlUpdates, 0) > 0) {
+			return {
+				ctor: '_Tuple2',
+				_0: _elm_lang$core$Native_Utils.update(
+					model,
+					{router: newRouterModel}),
+				_1: _elm_lang$core$Platform_Cmd$none
+			};
+		} else {
+			var step = F2(
+				function (msg, _p9) {
+					var _p10 = _p9;
+					var _p11 = A2(app.update, msg, _p10._0);
+					return {
+						ctor: '_Tuple2',
+						_0: _p11._0,
+						_1: A2(_elm_lang$core$List_ops['::'], _p11._1, _p10._1)
+					};
+				});
+			var _p12 = A3(
+				_elm_lang$core$List$foldl,
+				step,
+				{
+					ctor: '_Tuple2',
+					_0: model.user,
+					_1: _elm_lang$core$Native_List.fromArray(
+						[])
+				},
+				app.location2messages(location));
+			var newUserModel = _p12._0;
+			var commands = _p12._1;
+			return {
+				ctor: '_Tuple2',
+				_0: {user: newUserModel, router: newRouterModel},
+				_1: _elm_lang$core$Platform_Cmd$batch(commands)
+			};
+		}
+	});
+var _rgrempel$elm_route_url$RouteUrl$subscriptions = F2(
+	function (app, model) {
+		return app.subscriptions(model.user);
+	});
+var _rgrempel$elm_route_url$RouteUrl$view = F2(
+	function (app, model) {
+		return app.view(model.user);
+	});
+var _rgrempel$elm_route_url$RouteUrl$runNavigationApp = function (app) {
+	return A2(
+		_elm_lang$navigation$Navigation$programWithFlags,
+		app.parser,
+		{init: app.init, update: app.update, urlUpdate: app.urlUpdate, view: app.view, subscriptions: app.subscriptions});
+};
+var _rgrempel$elm_route_url$RouteUrl$navigationAppWithFlags = function (app) {
+	return {
+		parser: _elm_lang$navigation$Navigation$makeParser(_elm_lang$core$Basics$identity),
+		init: _rgrempel$elm_route_url$RouteUrl$init(app),
+		update: _rgrempel$elm_route_url$RouteUrl$update(app),
+		urlUpdate: _rgrempel$elm_route_url$RouteUrl$urlUpdate(app),
+		view: _rgrempel$elm_route_url$RouteUrl$view(app),
+		subscriptions: _rgrempel$elm_route_url$RouteUrl$subscriptions(app)
+	};
+};
+var _rgrempel$elm_route_url$RouteUrl$programWithFlags = function (_p13) {
+	return _rgrempel$elm_route_url$RouteUrl$runNavigationApp(
+		_rgrempel$elm_route_url$RouteUrl$navigationAppWithFlags(_p13));
+};
+var _rgrempel$elm_route_url$RouteUrl$navigationApp = function (app) {
+	return _rgrempel$elm_route_url$RouteUrl$navigationAppWithFlags(
+		_elm_lang$core$Native_Utils.update(
+			app,
+			{
+				init: function (_p14) {
+					return app.init;
+				}
+			}));
+};
+var _rgrempel$elm_route_url$RouteUrl$program = function (_p15) {
+	return _rgrempel$elm_route_url$RouteUrl$runNavigationApp(
+		_rgrempel$elm_route_url$RouteUrl$navigationApp(_p15));
+};
+var _rgrempel$elm_route_url$RouteUrl$App = F6(
+	function (a, b, c, d, e, f) {
+		return {delta2url: a, location2messages: b, init: c, update: d, subscriptions: e, view: f};
+	});
+var _rgrempel$elm_route_url$RouteUrl$AppWithFlags = F6(
+	function (a, b, c, d, e, f) {
+		return {delta2url: a, location2messages: b, init: c, update: d, subscriptions: e, view: f};
+	});
+var _rgrempel$elm_route_url$RouteUrl$UrlChange = F2(
+	function (a, b) {
+		return {entry: a, url: b};
+	});
+var _rgrempel$elm_route_url$RouteUrl$RouterModel = F2(
+	function (a, b) {
+		return {reportedUrl: a, expectedUrlUpdates: b};
+	});
+var _rgrempel$elm_route_url$RouteUrl$Model = F2(
+	function (a, b) {
+		return {user: a, router: b};
+	});
+var _rgrempel$elm_route_url$RouteUrl$NavigationApp = F6(
+	function (a, b, c, d, e, f) {
+		return {parser: a, init: b, update: c, urlUpdate: d, view: e, subscriptions: f};
+	});
+var _rgrempel$elm_route_url$RouteUrl$ModifyEntry = {ctor: 'ModifyEntry'};
+var _rgrempel$elm_route_url$RouteUrl$NewEntry = {ctor: 'NewEntry'};
+
 var _pellagic_puffbomb$simpleservantblog$Types$Model = F3(
 	function (a, b, c) {
 		return {route: a, content: b, error: c};
@@ -11537,9 +12311,6 @@ var _pellagic_puffbomb$simpleservantblog$Types$SeePostDetail = function (a) {
 var _pellagic_puffbomb$simpleservantblog$Types$SeePostList = {ctor: 'SeePostList'};
 var _pellagic_puffbomb$simpleservantblog$Types$Error = function (a) {
 	return {ctor: 'Error', _0: a};
-};
-var _pellagic_puffbomb$simpleservantblog$Types$Navigate = function (a) {
-	return {ctor: 'Navigate', _0: a};
 };
 var _pellagic_puffbomb$simpleservantblog$Types$FromFrontend = function (a) {
 	return {ctor: 'FromFrontend', _0: a};
@@ -11746,84 +12517,7 @@ var _pellagic_puffbomb$simpleservantblog$Post$viewPost = function (post) {
 		_pellagic_puffbomb$simpleservantblog$Post$postBody(post));
 };
 
-var _pellagic_puffbomb$simpleservantblog$Routes$pathDecoder = _elm_lang$core$Json_Decode$oneOf(
-	_elm_lang$core$Native_List.fromArray(
-		[
-			A2(
-			_elm_lang$core$Json_Decode$at,
-			_elm_lang$core$Native_List.fromArray(
-				['data-navigate']),
-			_elm_lang$core$Json_Decode$string),
-			A2(
-			_elm_lang$core$Json_Decode$at,
-			_elm_lang$core$Native_List.fromArray(
-				['parentElement']),
-			_elm_community$elm_json_extra$Json_Decode_Extra$lazy(
-				function (_p0) {
-					return _pellagic_puffbomb$simpleservantblog$Routes$pathDecoder;
-				})),
-			_elm_lang$core$Json_Decode$fail('no path found for click')
-		]));
-var _pellagic_puffbomb$simpleservantblog$Routes$catchNavigationClicks = function (tagger) {
-	return A3(
-		_elm_lang$html$Html_Events$onWithOptions,
-		'click',
-		{stopPropagation: true, preventDefault: true},
-		A2(
-			_elm_lang$core$Json_Decode$map,
-			tagger,
-			A2(
-				_elm_lang$core$Json_Decode$at,
-				_elm_lang$core$Native_List.fromArray(
-					['target']),
-				_pellagic_puffbomb$simpleservantblog$Routes$pathDecoder)));
-};
-var _pellagic_puffbomb$simpleservantblog$Routes$encode = function (route) {
-	var _p1 = route;
-	switch (_p1.ctor) {
-		case 'HomeRoute':
-			return '/';
-		case 'PostDetailRoute':
-			return A2(
-				_elm_lang$core$Basics_ops['++'],
-				'/posts/',
-				_elm_lang$core$Basics$toString(_p1._0));
-		default:
-			return A2(
-				_elm_lang$core$Basics_ops['++'],
-				'/series/',
-				A2(
-					_elm_lang$core$Basics_ops['++'],
-					_elm_lang$core$Basics$toString(_p1._0),
-					A2(
-						_elm_lang$core$Basics_ops['++'],
-						'/posts/',
-						_elm_lang$core$Basics$toString(_p1._1))));
-	}
-};
-var _pellagic_puffbomb$simpleservantblog$Routes$navigate = function (route) {
-	return _elm_lang$navigation$Navigation$newUrl(
-		_pellagic_puffbomb$simpleservantblog$Routes$encode(route));
-};
-var _pellagic_puffbomb$simpleservantblog$Routes$linkAttrs = function (route) {
-	var path = _pellagic_puffbomb$simpleservantblog$Routes$encode(route);
-	return _elm_lang$core$Native_List.fromArray(
-		[
-			_elm_lang$html$Html_Attributes$href(path),
-			A2(_elm_lang$html$Html_Attributes$attribute, 'data-navigate', path)
-		]);
-};
-var _pellagic_puffbomb$simpleservantblog$Routes$linkTo = F3(
-	function (route, attrs, content) {
-		return A2(
-			_elm_lang$html$Html$a,
-			A2(
-				_elm_lang$core$Basics_ops['++'],
-				_pellagic_puffbomb$simpleservantblog$Routes$linkAttrs(route),
-				attrs),
-			content);
-	});
-var _pellagic_puffbomb$simpleservantblog$Routes$matchers = _evancz$url_parser$UrlParser$oneOf(
+var _pellagic_puffbomb$simpleservantblog$Routes$routeParser = _evancz$url_parser$UrlParser$oneOf(
 	_elm_lang$core$Native_List.fromArray(
 		[
 			A2(
@@ -11851,13 +12545,76 @@ var _pellagic_puffbomb$simpleservantblog$Routes$matchers = _evancz$url_parser$Ur
 						_evancz$url_parser$UrlParser$s('posts'),
 						_evancz$url_parser$UrlParser$int))))
 		]));
-var _pellagic_puffbomb$simpleservantblog$Routes$decode = function (location) {
+var _pellagic_puffbomb$simpleservantblog$Routes$fromUrl = function (location) {
 	return A3(
 		_evancz$url_parser$UrlParser$parse,
 		_elm_lang$core$Basics$identity,
-		_pellagic_puffbomb$simpleservantblog$Routes$matchers,
+		_pellagic_puffbomb$simpleservantblog$Routes$routeParser,
 		A2(_elm_lang$core$String$dropLeft, 1, location.pathname));
 };
+var _pellagic_puffbomb$simpleservantblog$Routes$location2messages = function (location) {
+	var _p0 = _pellagic_puffbomb$simpleservantblog$Routes$fromUrl(location);
+	if (_p0.ctor === 'Ok') {
+		var _p1 = _p0._0;
+		switch (_p1.ctor) {
+			case 'HomeRoute':
+				return _elm_lang$core$Native_List.fromArray(
+					[
+						_pellagic_puffbomb$simpleservantblog$Types$FromFrontend(_pellagic_puffbomb$simpleservantblog$Types$SeePostList)
+					]);
+			case 'PostDetailRoute':
+				return _elm_lang$core$Native_List.fromArray(
+					[
+						_pellagic_puffbomb$simpleservantblog$Types$FromFrontend(
+						_pellagic_puffbomb$simpleservantblog$Types$SeePostDetail(_p1._0))
+					]);
+			default:
+				return _elm_lang$core$Native_List.fromArray(
+					[
+						_pellagic_puffbomb$simpleservantblog$Types$FromFrontend(
+						A2(_pellagic_puffbomb$simpleservantblog$Types$SeeSeriesPostDetail, _p1._0, _p1._1))
+					]);
+		}
+	} else {
+		return _elm_lang$core$Native_List.fromArray(
+			[
+				_pellagic_puffbomb$simpleservantblog$Types$Error(_p0._0)
+			]);
+	}
+};
+var _pellagic_puffbomb$simpleservantblog$Routes$delta2url = F2(
+	function (previous, current) {
+		var _p2 = current.route;
+		switch (_p2.ctor) {
+			case 'HomeRoute':
+				return _elm_lang$core$Maybe$Just(
+					A2(_rgrempel$elm_route_url$RouteUrl$UrlChange, _rgrempel$elm_route_url$RouteUrl$NewEntry, '#/'));
+			case 'PostDetailRoute':
+				return _elm_lang$core$Maybe$Just(
+					A2(
+						_rgrempel$elm_route_url$RouteUrl$UrlChange,
+						_rgrempel$elm_route_url$RouteUrl$NewEntry,
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							'#/posts/',
+							_elm_lang$core$Basics$toString(_p2._0))));
+			default:
+				return _elm_lang$core$Maybe$Just(
+					A2(
+						_rgrempel$elm_route_url$RouteUrl$UrlChange,
+						_rgrempel$elm_route_url$RouteUrl$NewEntry,
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							'#/series/',
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								_elm_lang$core$Basics$toString(_p2._0),
+								A2(
+									_elm_lang$core$Basics_ops['++'],
+									'/posts/',
+									_elm_lang$core$Basics$toString(_p2._1))))));
+		}
+	});
 
 var _pellagic_puffbomb$simpleservantblog$Series$seriesIndexCurrent = function (post) {
 	return A2(
@@ -12160,57 +12917,12 @@ var _pellagic_puffbomb$simpleservantblog$Main$retrieveAll = A3(
 	_pellagic_puffbomb$simpleservantblog$Types$Error,
 	_pellagic_puffbomb$simpleservantblog$Main$postsToMessage,
 	A2(_elm_lang$core$Task$mapError, _elm_lang$core$Basics$toString, _pellagic_puffbomb$simpleservantblog$Api$getPost));
-var _pellagic_puffbomb$simpleservantblog$Main$urlUpdate = F2(
-	function (result, model) {
-		var _p1 = result;
-		if (_p1.ctor === 'Err') {
-			return A2(
-				_elm_lang$core$Platform_Cmd_ops['!'],
-				model,
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$navigation$Navigation$modifyUrl(
-						_pellagic_puffbomb$simpleservantblog$Routes$encode(model.route))
-					]));
-		} else {
-			switch (_p1._0.ctor) {
-				case 'HomeRoute':
-					return A2(
-						_elm_lang$core$Platform_Cmd_ops['!'],
-						_elm_lang$core$Native_Utils.update(
-							model,
-							{route: _p1._0}),
-						_elm_lang$core$Native_List.fromArray(
-							[_pellagic_puffbomb$simpleservantblog$Main$retrieveAll]));
-				case 'PostDetailRoute':
-					return A2(
-						_elm_lang$core$Platform_Cmd_ops['!'],
-						_elm_lang$core$Native_Utils.update(
-							model,
-							{route: _p1._0}),
-						_elm_lang$core$Native_List.fromArray(
-							[
-								_pellagic_puffbomb$simpleservantblog$Main$retrievePost(_p1._0._0)
-							]));
-				default:
-					return A2(
-						_elm_lang$core$Platform_Cmd_ops['!'],
-						_elm_lang$core$Native_Utils.update(
-							model,
-							{route: _p1._0}),
-						_elm_lang$core$Native_List.fromArray(
-							[
-								_pellagic_puffbomb$simpleservantblog$Main$retrieveSeriesPost(_p1._0._1)
-							]));
-			}
-		}
-	});
 var _pellagic_puffbomb$simpleservantblog$Main$update = F2(
 	function (message, model) {
 		update:
 		while (true) {
-			var _p2 = message;
-			switch (_p2.ctor) {
+			var _p1 = message;
+			switch (_p1.ctor) {
 				case 'NoOp':
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
@@ -12218,62 +12930,62 @@ var _pellagic_puffbomb$simpleservantblog$Main$update = F2(
 						_elm_lang$core$Native_List.fromArray(
 							[]));
 				case 'FromBackend':
-					var _p3 = _p2._0;
-					switch (_p3.ctor) {
+					var _p2 = _p1._0;
+					switch (_p2.ctor) {
 						case 'PostList':
 							return A2(
 								_elm_lang$core$Platform_Cmd_ops['!'],
 								_elm_lang$core$Native_Utils.update(
 									model,
 									{
-										content: _pellagic_puffbomb$simpleservantblog$Types$PostList(_p3._0),
+										content: _pellagic_puffbomb$simpleservantblog$Types$PostList(_p2._0),
 										error: _elm_lang$core$Maybe$Nothing,
 										route: _pellagic_puffbomb$simpleservantblog$Types$HomeRoute
 									}),
 								_elm_lang$core$Native_List.fromArray(
 									[]));
 						case 'SeriesPosts':
-							var _p4 = _p3._0;
+							var _p3 = _p2._0;
 							return A2(
 								_elm_lang$core$Platform_Cmd_ops['!'],
 								_elm_lang$core$Native_Utils.update(
 									model,
 									{
-										content: _pellagic_puffbomb$simpleservantblog$Types$SeriesPosts(_p4),
+										content: _pellagic_puffbomb$simpleservantblog$Types$SeriesPosts(_p3),
 										error: _elm_lang$core$Maybe$Nothing,
-										route: A2(_pellagic_puffbomb$simpleservantblog$Types$SeriesPostDetailRoute, _p4.series.sid, _p4.current.bid)
+										route: A2(_pellagic_puffbomb$simpleservantblog$Types$SeriesPostDetailRoute, _p3.series.sid, _p3.current.bid)
 									}),
 								_elm_lang$core$Native_List.fromArray(
 									[]));
 						case 'PostDetail':
-							var _p5 = _p3._0;
+							var _p4 = _p2._0;
 							return A2(
 								_elm_lang$core$Platform_Cmd_ops['!'],
 								_elm_lang$core$Native_Utils.update(
 									model,
 									{
-										content: _pellagic_puffbomb$simpleservantblog$Types$PostDetail(_p5),
+										content: _pellagic_puffbomb$simpleservantblog$Types$PostDetail(_p4),
 										error: _elm_lang$core$Maybe$Nothing,
-										route: _pellagic_puffbomb$simpleservantblog$Types$PostDetailRoute(_p5.bid)
+										route: _pellagic_puffbomb$simpleservantblog$Types$PostDetailRoute(_p4.bid)
 									}),
 								_elm_lang$core$Native_List.fromArray(
 									[]));
 						default:
-							var _p6 = _p3._0;
+							var _p5 = _p2._0;
 							return A2(
 								_elm_lang$core$Platform_Cmd_ops['!'],
 								_elm_lang$core$Native_Utils.update(
 									model,
 									{
-										content: _pellagic_puffbomb$simpleservantblog$Types$BackendError(_p6),
-										error: _elm_lang$core$Maybe$Just(_p6)
+										content: _pellagic_puffbomb$simpleservantblog$Types$BackendError(_p5),
+										error: _elm_lang$core$Maybe$Just(_p5)
 									}),
 								_elm_lang$core$Native_List.fromArray(
 									[]));
 					}
 				case 'FromFrontend':
-					var _p7 = _p2._0;
-					switch (_p7.ctor) {
+					var _p6 = _p1._0;
+					switch (_p6.ctor) {
 						case 'SeePostList':
 							return A2(
 								_elm_lang$core$Platform_Cmd_ops['!'],
@@ -12295,15 +13007,15 @@ var _pellagic_puffbomb$simpleservantblog$Main$update = F2(
 									{error: _elm_lang$core$Maybe$Nothing}),
 								_elm_lang$core$Native_List.fromArray(
 									[
-										_pellagic_puffbomb$simpleservantblog$Main$retrievePost(_p7._0)
+										_pellagic_puffbomb$simpleservantblog$Main$retrievePost(_p6._0)
 									]));
 						default:
-							var _p10 = _p7._0;
-							var _p8 = model.content;
-							if (_p8.ctor === 'SeriesPosts') {
-								var _p9 = _p8._0;
-								if (_elm_lang$core$Native_Utils.eq(_p7._1, _p9.series.sid)) {
-									var newSeries = A2(_pellagic_puffbomb$simpleservantblog$Series$updateFromCurrentSeries, _p10, _p9);
+							var _p9 = _p6._0;
+							var _p7 = model.content;
+							if (_p7.ctor === 'SeriesPosts') {
+								var _p8 = _p7._0;
+								if (_elm_lang$core$Native_Utils.eq(_p6._1, _p8.series.sid)) {
+									var newSeries = A2(_pellagic_puffbomb$simpleservantblog$Series$updateFromCurrentSeries, _p9, _p8);
 									var msg = _pellagic_puffbomb$simpleservantblog$Types$FromBackend(
 										_pellagic_puffbomb$simpleservantblog$Types$SeriesPosts(newSeries));
 									var newModel = _elm_lang$core$Native_Utils.update(
@@ -12311,10 +13023,10 @@ var _pellagic_puffbomb$simpleservantblog$Main$update = F2(
 										{
 											content: _pellagic_puffbomb$simpleservantblog$Types$SeriesPosts(newSeries)
 										});
-									var _v6 = msg,
-										_v7 = newModel;
-									message = _v6;
-									model = _v7;
+									var _v5 = msg,
+										_v6 = newModel;
+									message = _v5;
+									model = _v6;
 									continue update;
 								} else {
 									return A2(
@@ -12324,7 +13036,7 @@ var _pellagic_puffbomb$simpleservantblog$Main$update = F2(
 											{error: _elm_lang$core$Maybe$Nothing}),
 										_elm_lang$core$Native_List.fromArray(
 											[
-												_pellagic_puffbomb$simpleservantblog$Main$retrieveSeriesPost(_p10)
+												_pellagic_puffbomb$simpleservantblog$Main$retrieveSeriesPost(_p9)
 											]));
 								}
 							} else {
@@ -12335,27 +13047,19 @@ var _pellagic_puffbomb$simpleservantblog$Main$update = F2(
 										{error: _elm_lang$core$Maybe$Nothing}),
 									_elm_lang$core$Native_List.fromArray(
 										[
-											_pellagic_puffbomb$simpleservantblog$Main$retrieveSeriesPost(_p10)
+											_pellagic_puffbomb$simpleservantblog$Main$retrieveSeriesPost(_p9)
 										]));
 							}
 					}
-				case 'Navigate':
-					return A2(
-						_elm_lang$core$Platform_Cmd_ops['!'],
-						model,
-						_elm_lang$core$Native_List.fromArray(
-							[
-								_elm_lang$navigation$Navigation$newUrl(_p2._0)
-							]));
 				default:
-					var _p11 = _p2._0;
+					var _p10 = _p1._0;
 					return A2(
 						_elm_lang$core$Platform_Cmd_ops['!'],
 						_elm_lang$core$Native_Utils.update(
 							model,
 							{
-								content: _pellagic_puffbomb$simpleservantblog$Types$BackendError(_p11),
-								error: _elm_lang$core$Maybe$Just(_p11)
+								content: _pellagic_puffbomb$simpleservantblog$Types$BackendError(_p10),
+								error: _elm_lang$core$Maybe$Just(_p10)
 							}),
 						_elm_lang$core$Native_List.fromArray(
 							[]));
@@ -12373,11 +13077,13 @@ var _pellagic_puffbomb$simpleservantblog$Main$init = function () {
 	return {ctor: '_Tuple2', _0: state, _1: _pellagic_puffbomb$simpleservantblog$Main$retrieveAll};
 }();
 var _pellagic_puffbomb$simpleservantblog$Main$main = {
-	main: _elm_lang$html$Html_App$program(
+	main: _rgrempel$elm_route_url$RouteUrl$program(
 		{
+			delta2url: _pellagic_puffbomb$simpleservantblog$Routes$delta2url,
+			location2messages: _pellagic_puffbomb$simpleservantblog$Routes$location2messages,
 			init: _pellagic_puffbomb$simpleservantblog$Main$init,
 			update: _pellagic_puffbomb$simpleservantblog$Main$update,
-			subscriptions: function (_p12) {
+			subscriptions: function (_p11) {
 				return _elm_lang$core$Platform_Sub$none;
 			},
 			view: _pellagic_puffbomb$simpleservantblog$Main$view

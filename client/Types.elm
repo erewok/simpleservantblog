@@ -40,7 +40,6 @@ type Msg
     = NoOp
     | FromBackend Backend
     | FromFrontend Frontend
-    | Navigate String
     | Error String
 
 

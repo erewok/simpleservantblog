@@ -3,17 +3,47 @@ module Routes exposing (..)
 import String
 import UrlParser exposing (Parser, parse, (</>), format, int, oneOf, s, string)
 import Navigation exposing (Location)
-import Json.Decode as Json
-import Json.Decode.Extra exposing (lazy)
 import Html.Attributes exposing (href, attribute)
 import Html exposing (Html, Attribute, a)
 import Html.Events exposing (onWithOptions)
 import Api exposing (..)
 import Types exposing (..)
+import RouteUrl exposing (HistoryEntry(..), UrlChange)
 
 
-matchers : Parser (Route -> a) a
-matchers =
+delta2url : Model -> Model -> Maybe UrlChange
+delta2url previous current =
+    case current.route of
+        HomeRoute ->
+            Just <| UrlChange NewEntry "#/"
+
+        PostDetailRoute i ->
+            Just <| UrlChange NewEntry <| "#/posts/" ++ toString i
+
+        SeriesPostDetailRoute i j ->
+            Just <| UrlChange NewEntry <| "#/series/" ++ toString i ++ "/posts/" ++ toString j
+
+
+location2messages : Location -> List Msg
+location2messages location =
+    case fromUrl location of
+        Ok route ->
+            case route of
+                HomeRoute ->
+                    [ FromFrontend SeePostList ]
+
+                PostDetailRoute postId ->
+                    [ FromFrontend <| SeePostDetail postId ]
+
+                SeriesPostDetailRoute postId seriesId ->
+                    [ FromFrontend <| SeeSeriesPostDetail postId seriesId ]
+
+        Err error ->
+            [ Error error ]
+
+
+routeParser : Parser (Route -> a) a
+routeParser =
     oneOf
         [ format HomeRoute (s "")
         , format PostDetailRoute (s "posts" </> int)
@@ -21,58 +51,6 @@ matchers =
         ]
 
 
-decode : Location -> Result String Route
-decode location =
-    parse identity matchers (String.dropLeft 1 location.pathname)
-
-
-encode : Route -> String
-encode route =
-    case route of
-        HomeRoute ->
-            "/"
-
-        PostDetailRoute i ->
-            "/posts/" ++ toString i
-
-        SeriesPostDetailRoute i j ->
-            "/series/" ++ toString i ++ "/posts/" ++ toString j
-
-
-navigate : Route -> Cmd msg
-navigate route =
-    Navigation.newUrl (encode route)
-
-
-linkTo : Route -> List (Attribute msg) -> List (Html msg) -> Html msg
-linkTo route attrs content =
-    a ((linkAttrs route) ++ attrs) content
-
-
-linkAttrs : Route -> List (Attribute msg)
-linkAttrs route =
-    let
-        path =
-            encode route
-    in
-        [ href path
-        , attribute "data-navigate" path
-        ]
-
-
-catchNavigationClicks : (String -> msg) -> Attribute msg
-catchNavigationClicks tagger =
-    onWithOptions "click"
-        { stopPropagation = True
-        , preventDefault = True
-        }
-        (Json.map tagger (Json.at [ "target" ] pathDecoder))
-
-
-pathDecoder : Json.Decoder String
-pathDecoder =
-    Json.oneOf
-        [ Json.at [ "data-navigate" ] Json.string
-        , Json.at [ "parentElement" ] (lazy (\_ -> pathDecoder))
-        , Json.fail "no path found for click"
-        ]
+fromUrl : Location -> Result String Route
+fromUrl location =
+    parse identity routeParser (String.dropLeft 1 location.pathname)

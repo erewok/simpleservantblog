@@ -12,6 +12,7 @@ import Http
 import List exposing (..)
 import Task exposing (Task, perform, succeed)
 import Navigation
+import RouteUrl
 import Api exposing (..)
 import Post exposing (..)
 import Routes exposing (..)
@@ -21,8 +22,10 @@ import Types exposing (..)
 
 main : Program Never
 main =
-    program
-        { init = init
+    RouteUrl.program
+        { delta2url = delta2url
+        , location2messages = location2messages
+        , init = init
         , update = update
         , subscriptions = \_ -> Sub.none
         , view = view
@@ -102,9 +105,6 @@ update message model =
                         _ ->
                             { model | error = Nothing } ! [ retrieveSeriesPost postId ]
 
-        Navigate url ->
-            model ! [ Navigation.newUrl url ]
-
         Error msg ->
             { model | content = BackendError msg, error = Just msg } ! []
 
@@ -178,22 +178,3 @@ view state =
                     , p [] [ text error ]
                     ]
                 ]
-
-
-urlUpdate : Result String Route -> Model -> ( Model, Cmd Msg )
-urlUpdate result model =
-    case result of
-        Err _ ->
-            model ! [ Navigation.modifyUrl (Routes.encode model.route) ]
-
-        Ok (HomeRoute as route) ->
-            { model | route = route }
-                ! [ retrieveAll ]
-
-        Ok ((PostDetailRoute postId) as route) ->
-            { model | route = route }
-                ! [ retrievePost postId ]
-
-        Ok ((SeriesPostDetailRoute seriesId postId) as route) ->
-            { model | route = route }
-                ! [ retrieveSeriesPost postId ]
