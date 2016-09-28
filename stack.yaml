@@ -2,7 +2,7 @@
 # For more information, see: http://docs.haskellstack.org/en/stable/yaml_configuration/
 
 # Specifies the GHC version and set of packages available (e.g., lts-3.5, nightly-2015-09-21, ghc-7.10.2)
-resolver: nightly-2016-08-25
+resolver: lts-7.1
 
 # Local packages, usually specified by relative directory name
 packages:
@@ -13,7 +13,7 @@ packages:
   extra-dep: True
 - location:
     git: https://www.github.com/mattjbray/servant-elm
-    commit: e13c8def8127ea339e9801d804638854947193e8
+    commit: d303d2699c28bf39b0dde33627409e558ccb98ce
   extra-dep: True
 # Packages to be pulled from upstream that are not in the resolver (e.g., acme-missiles-0.3)
 extra-deps:
