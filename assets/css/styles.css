@@ -2,10 +2,12 @@ a {
   text-decoration: none;
   color: #2268DD;
 }
+a:hover {
+ cursor:pointer;
+}
 body {
     background: #DFDFCF;
 }
-
 #page-header {
   text-align: center;
 }

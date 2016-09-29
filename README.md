@@ -7,7 +7,7 @@ personal interest, so it may never be finished, but it's pretty fun to work on.
 
 ## ToDo
 
-- Implement routing and back button.
+- ~~Implement routing and back button.~~
 - ~~Fix syntax highlighting.~~
 - Implement series list page.
 - Add "prev/next" links for regular posts.
