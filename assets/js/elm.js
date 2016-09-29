@@ -12956,7 +12956,7 @@ var _pellagic_puffbomb$simpleservantblog$Main$update = F2(
 									{
 										content: _pellagic_puffbomb$simpleservantblog$Types$SeriesPosts(_p3),
 										error: _elm_lang$core$Maybe$Nothing,
-										route: A2(_pellagic_puffbomb$simpleservantblog$Types$SeriesPostDetailRoute, _p3.current.bid, _p3.series.sid)
+										route: A2(_pellagic_puffbomb$simpleservantblog$Types$SeriesPostDetailRoute, _p3.series.sid, _p3.current.bid)
 									}),
 								_elm_lang$core$Native_List.fromArray(
 									[]));
