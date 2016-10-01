@@ -7,7 +7,7 @@ module Models.Author (
   , authorColumns
   ) where
 
-import Prelude (Int, Eq, Show, Bool, (.), ($))
+import Prelude (Int, Eq, Show, (.), ($))
 import Control.Applicative ((<$>), (<*>))
 import           Data.Aeson
 import           Database.PostgreSQL.Simple.ToField (toField)

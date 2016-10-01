@@ -1,7 +1,5 @@
 module Main where
 
-import           Control.Exception        (throwIO)
-import           Data.Pool                (withResource)
 import           Network.Wai.Handler.Warp as Warp
 import           System.Environment       (lookupEnv)
 
@@ -21,7 +19,7 @@ main = do
     Just env -> pure (read env :: C.Environment)
 
   pool <- C.makePool
-  let cfg = C.Config { C.getPool = pool
-                     , C.getEnv =  environment}
-      logger = C.setLogger environment
+  -- let cfg = C.Config { C.getPool = pool
+  --                    , C.getEnv =  environment}
+  let logger = C.setLogger environment
   A.withAssetsApp pool >>= Warp.run port <$> logger

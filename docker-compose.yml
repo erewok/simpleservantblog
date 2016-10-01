@@ -1,0 +1,47 @@
+version: "2.0"
+services:
+  database:
+    image: sameersbn/postgresql:9.5-2
+    restart: always
+    ports:
+      - "5434:5434"
+    environment:
+      - DEBUG=false
+      - DB_USER=
+      - DB_PASSWD=
+      - DB_NAME=
+      - DB_TEMPLATE=
+      - DB_EXTENSION=
+      - REPLICATION_MODE=
+      - REPLICATION_USER=
+      - REPLICATION_PASS=
+      - REPLICATION_SSLMODE=
+    volumes:
+      - ./postgresql:/var/lib/postgresql
+  website:
+    build:
+      context: ./
+      dockerfile: ./deployment/Dockerfile.web
+    command: /opt/server/simpleservantblog-exe
+      - SERVER_PORT=9005
+      - DB_USER
+      - DB_PASSWD
+      - DB_NAME
+      - DB_HOST
+      - DB_PORT
+      - ENVIRONMENT
+    links:
+      - database
+    tty: false
+    ports:
+      - "3000:3000"
+    working_dir: /opt/server
+  nginx:
+    build:
+      context: ./
+      dockerfile: ./deployment/Dockerfile.nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    links:
+      - website

@@ -2,3 +2,8 @@
 .stack-work/
 elm-stuff/
 creds.sh
+node_modules/
+cert.pem
+privkey.pem
+postgresql/
+build/

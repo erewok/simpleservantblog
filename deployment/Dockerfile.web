@@ -1,0 +1,13 @@
+FROM ubuntu:16.04
+MAINTAINER Erik Aker
+
+RUN ["apt-get", "-y", "update"]
+RUN ["apt-get", "-y", "install", "libpq-dev"]
+
+RUN mkdir -p /opt/server
+
+COPY ./build/simpleservantblog-exe /opt/server/simpleservantblog-exe
+
+EXPOSE 3000
+
+ENTRYPOINT /opt/server/simpleservantblog-exe

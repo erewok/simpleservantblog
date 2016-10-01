@@ -1,0 +1,19 @@
+{
+  "name": "simpleservantblog",
+  "version": "1.0.0",
+  "description": "blog in elm with some haskell",
+  "main": "elm.js",
+  "dependencies": {
+    "gulp": "^3.9.1",
+    "gulp-minify": "^0.0.14"
+  },
+  "devDependencies": {
+    "gulp-clean-css": "^2.0.13",
+    "gulp-concat": "^2.6.0"
+  },
+  "scripts": {
+    "test": "make tests"
+  },
+  "author": "",
+  "license": "BSD3"
+}
