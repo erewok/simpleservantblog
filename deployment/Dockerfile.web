@@ -6,8 +6,10 @@ RUN ["apt-get", "-y", "install", "libpq-dev"]
 
 RUN mkdir -p /opt/server
 
+COPY ./assets /opt/server/assets/
+COPY ./client /opt/server/client/
 COPY ./build/simpleservantblog-exe /opt/server/simpleservantblog-exe
 
 EXPOSE 3000
 
-ENTRYPOINT /opt/server/simpleservantblog-exe
+ENTRYPOINT ["/opt/server/simpleservantblog-exe"]
