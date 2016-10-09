@@ -10,9 +10,7 @@ import           Control.Monad.Except
 import           Control.Monad.IO.Class     (liftIO)
 import           Data.Aeson
 import qualified Data.ByteString.Char8              as B
-import           Data.Maybe
 import           Data.Pool                  (withResource)
-import           Data.Proxy
 import qualified Data.Text as T
 import           Database.PostgreSQL.Simple
 import           Database.PostgreSQL.Simple.Types   (Query(..))
@@ -37,10 +35,10 @@ adminHandlers conn = userAddH
                 :<|> blogPostUpdateH
                 :<|> blogPostDeleteH
   where userAddH newUser = withResource conn $ flip addUser newUser
-        userUpdateH userId user = withResource conn $ flip (flip updateUser userId) user
+        userUpdateH userId user = withResource conn $ flip (`updateUser` userId) user
         userDeleteH userId = withResource conn $ flip deleteUser userId
         blogPostAddH newPost = withResource conn $ flip addPost newPost
-        blogPostUpdateH postId post = withResource conn $ flip (flip updatePost postId) post
+        blogPostUpdateH postId post = withResource conn $ flip (`updatePost` postId) post
         blogPostDeleteH postId = withResource conn $ flip deletePost postId
 
 addUser :: Connection -> Author -> Handler Author
@@ -89,7 +87,7 @@ updatePost conn postId newPost = do
   result <- liftIO $ execute conn q (authorId newPost
                                    , title newPost
                                    , body newPost
-                                   , seriesId newPost                                   
+                                   , seriesId newPost
                                    , synopsis newPost
                                    , pubdate newPost
                                    , ordinal newPost

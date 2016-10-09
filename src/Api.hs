@@ -8,8 +8,6 @@ module Api
     ( BlogApi
     , blogApi
     , withAssets
-    , server
-    , app
     , withAssetsApp
     ) where
 
@@ -48,21 +46,6 @@ apihandlers conn = homePage
                   :<|> userHandlers conn
                   -- :<|> adminHandlers conn
 
-blogApi :: Proxy BlogApi
-blogApi = Proxy
-
-withHtml :: Proxy WithHtml
-withHtml = Proxy
-
-withAssets :: Proxy WithAssets
-withAssets = Proxy
-
-server :: Pool Connection -> Server WithHtml
-server = apihandlers
-
-app :: Pool Connection -> Application
-app conn = serve withHtml $ server conn
-
 withAssetsApp :: Pool Connection -> IO Application
 withAssetsApp conn =
   serve withAssets <$> withAssetsServer conn
@@ -71,3 +54,12 @@ withAssetsServer :: Pool Connection -> IO (Server WithAssets)
 withAssetsServer conn = do
   assets <- serveAssets
   return $ apihandlers conn :<|> assets
+
+blogApi :: Proxy BlogApi
+blogApi = Proxy
+
+withHtml :: Proxy WithHtml
+withHtml = Proxy
+
+withAssets :: Proxy WithAssets
+withAssets = Proxy
