@@ -4,7 +4,7 @@
 module Config where
 
 import           Control.Exception                    (throwIO)
-import           Control.Monad.Except                 (ExceptT, MonadError)
+import           Control.Monad.Except                 (MonadError)
 import           Control.Monad.Reader                 (MonadIO, MonadReader,
                                                        ReaderT)
 import           Control.Monad.Trans.Maybe            (MaybeT (..), runMaybeT)
@@ -12,12 +12,9 @@ import qualified Data.ByteString.Char8                as BS
 import           Data.Monoid                          ((<>))
 import           Data.Pool
 import           Database.PostgreSQL.Simple
-
-import qualified Data.Word                            as W
 import           Network.Wai                          (Middleware)
 import           Network.Wai.Middleware.RequestLogger (logStdout, logStdoutDev)
 import           Servant
-import           Servant.Server
 import           System.Environment                   (lookupEnv)
 
 

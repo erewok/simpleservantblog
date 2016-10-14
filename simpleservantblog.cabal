@@ -17,7 +17,8 @@ library
   hs-source-dirs:      src
   exposed-modules:     Api
                      , Config
-                     , Api.Admin
+                     , Api.Admin.Admin
+                     , Api.Admin.Login
                      , Api.Post
                      , Api.User
                      , Html.Home
@@ -28,6 +29,8 @@ library
                      , aeson
                      , blaze-html
                      , bytestring
+                     , cereal
+                     , cryptonite
                      , elm-export
                      , monad-logger
                      , mtl
@@ -37,9 +40,12 @@ library
                      , servant-blaze
                      , servant-elm
                      , servant-server
+                     , servant-auth-cookie
                      , text
                      , time
                      , transformers
+                     , users
+                     , users-postgresql-simple
                      , wai
                      , wai-extra
                      , wai-make-assets
@@ -52,7 +58,10 @@ executable simpleservantblog-exe
   ghc-options:         -Wall -O2 -threaded -rtsopts -with-rtsopts=-N
   build-depends:       base
                      , simpleservantblog
+                     , cryptonite
+                     , data-default
                      , resource-pool
+                     , servant-auth-cookie
                      , warp
   default-language:    Haskell2010
 

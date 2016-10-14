@@ -13,47 +13,57 @@ module Api
 
 
 import           Control.Monad.Except
-import           Control.Monad.IO.Class             (liftIO)
+import           Control.Monad.IO.Class                  (liftIO)
 import           Data.Maybe
-import           Data.Pool                          (Pool)
+import           Data.Pool                               (Pool)
 import           Data.Proxy
 import           Data.Text
-
-import           Database.PostgreSQL.Simple
-import           Database.PostgreSQL.Simple.FromRow (fromRow)
-
-import           Servant
-
+import           Database.PostgreSQL.Simple              hiding ((:.))
+import           Database.PostgreSQL.Simple.FromRow      (fromRow)
 import           Network.Wai
-import           Network.Wai.Handler.Warp           as Warp
+import           Network.Wai.Handler.Warp                as Warp
 import           Network.Wai.MakeAssets
+import           Servant
+import           Servant.Server.Experimental.Auth        (AuthHandler)
+import           Servant.Server.Experimental.Auth.Cookie
+import qualified Web.Users.Types                         as WU
 
-import           Api.Admin
+import           Api.Admin.Admin
+import           Api.Admin.Login
 import           Api.Post
 import           Api.User
-import           Html.Home
 import           Html.About
+import           Html.Home
 
 
 -- This one is separate so elm can generate for it
-type BlogApi = PostApi :<|> UserApi -- :<|> AdminApi
-type WithHtml = HomePage :<|> "about" :> AboutPage :<|> BlogApi
-type WithAssets =  WithHtml :<|> "assets" :> Raw
+type BlogApi = PostApi :<|> UserApi
+type WithHtml = HomePage
+                :<|> "about" :> AboutPage
+                :<|> BlogApi
+type WithAssets =  WithHtml
+                  :<|> LoginApi
+                  :<|> AdminApi
+                  :<|> "assets" :> Raw
 
 apihandlers conn = homePage
                   :<|> aboutPage
                   :<|> postHandlers conn
                   :<|> userHandlers conn
-                  -- :<|> adminHandlers conn
 
-withAssetsApp :: Pool Connection -> IO Application
-withAssetsApp conn =
-  serve withAssets <$> withAssetsServer conn
+withAssetsApp :: Pool Connection -> AuthCookieSettings -> RandomSource -> ServerKey -> IO Application
+withAssetsApp conn settings rs key = do
+  let context = (defaultAuthHandler settings key :: AuthHandler Request Username) :. EmptyContext
+  server <- withAssetsServer conn settings rs key
+  return $ serveWithContext withAssets context server
 
-withAssetsServer :: Pool Connection -> IO (Server WithAssets)
-withAssetsServer conn = do
+withAssetsServer :: Pool Connection -> AuthCookieSettings -> RandomSource -> ServerKey -> IO (Server WithAssets)
+withAssetsServer conn settings rs key = do
   assets <- serveAssets
-  return $ apihandlers conn :<|> assets
+  return (apihandlers conn
+            :<|> loginServer conn settings rs key
+            :<|> adminHandlers conn
+            :<|> assets)
 
 blogApi :: Proxy BlogApi
 blogApi = Proxy
