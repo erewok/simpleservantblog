@@ -5,6 +5,10 @@
 Api.elm: GenerateElm.hs ../src/Api.hs
 	(cd ../ ; stack exec -- runhaskell -isrc client/GenerateElm.hs)
 
+Admin.elm: Admin.elm admin-elm.js
+	elm make Admin.elm --output admin-elm.js
+	mv admin-elm.js ../assets/js
+
 run-tests: tests.js
 	node tests.js
 

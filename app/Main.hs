@@ -21,7 +21,7 @@ import qualified Config                                  as C
 localCookieSettings :: AuthCookieSettings
 localCookieSettings = AuthCookieSettings
     { acsSessionField = "Session"
-    , acsCookieFlags  = []
+    , acsCookieFlags  = []  -- Normally we'd want "HttpOnly" and "Secure" here.
     , acsMaxAge       = fromIntegral (12 * 3600 :: Integer) -- 12 hours
     , acsExpirationFormat = "%0Y%m%d%H%M%S"
     , acsPath         = "/"
@@ -49,5 +49,5 @@ main = do
   let logger = C.setLogger environment
   cookieSettings <- case environment of
     C.Local -> pure localCookieSettings
-    _ -> def
+    _ -> def  -- From Default Library, uses Default instance
   A.withAssetsApp pool cookieSettings rs sk >>= Warp.run port <$> logger

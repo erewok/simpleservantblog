@@ -6,27 +6,21 @@
 
 module Api
     ( BlogApi
+    , adminProxyApi
     , blogApi
     , withAssets
     , withAssetsApp
     ) where
 
 
-import           Control.Monad.Except
-import           Control.Monad.IO.Class                  (liftIO)
-import           Data.Maybe
 import           Data.Pool                               (Pool)
 import           Data.Proxy
-import           Data.Text
 import           Database.PostgreSQL.Simple              hiding ((:.))
-import           Database.PostgreSQL.Simple.FromRow      (fromRow)
 import           Network.Wai
-import           Network.Wai.Handler.Warp                as Warp
 import           Network.Wai.MakeAssets
 import           Servant
 import           Servant.Server.Experimental.Auth        (AuthHandler)
 import           Servant.Server.Experimental.Auth.Cookie
-import qualified Web.Users.Types                         as WU
 
 import           Api.Admin.Admin
 import           Api.Admin.Login
@@ -43,7 +37,7 @@ type WithHtml = HomePage
                 :<|> BlogApi
 type WithAssets =  WithHtml
                   :<|> LoginApi
-                  :<|> AdminApi
+                  :<|> AdminBackend
                   :<|> "assets" :> Raw
 
 apihandlers conn = homePage
@@ -62,11 +56,17 @@ withAssetsServer conn settings rs key = do
   assets <- serveAssets
   return (apihandlers conn
             :<|> loginServer conn settings rs key
-            :<|> adminHandlers conn
+            :<|> adminBackendHandlers conn
             :<|> assets)
 
 blogApi :: Proxy BlogApi
 blogApi = Proxy
+
+adminBackendProxyApi :: Proxy AdminBackend
+adminBackendProxyApi = Proxy
+
+adminProxyApi :: Proxy AdminApi
+adminProxyApi = Proxy
 
 withHtml :: Proxy WithHtml
 withHtml = Proxy

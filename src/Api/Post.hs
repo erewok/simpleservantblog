@@ -14,17 +14,10 @@ import           Control.Monad.Except
 import           Control.Monad.IO.Class             (liftIO)
 import qualified Data.List                          as L
 import           Data.Maybe
-import           Data.Pool                          (withResource)
-import           Data.Proxy
-import           Data.Text                          hiding (dropWhile, filter,
-                                                     head, takeWhile)
+import           Data.Pool                          (Pool, withResource)
 import           Database.PostgreSQL.Simple
-import           Database.PostgreSQL.Simple.FromRow (fromRow)
-
 import           Servant
 
-import           Network.Wai
-import           Network.Wai.Handler.Warp           as Warp
 
 import           Models.Post
 
@@ -33,6 +26,7 @@ type PostApi = "post" :> Get '[JSON] [PostOverview]
   :<|> "post" :> Capture "id" Int  :> Get  '[JSON] BlogPost
   :<|> "series" :> "post" :> Capture "id" Int  :> Get  '[JSON] PostSeries
 
+postHandlers :: Pool Connection -> Server PostApi
 postHandlers conn = blogPostListH
               :<|> blogPostDetailH
               :<|> blogPostSeriesH

@@ -1,13 +1,13 @@
 name:                simpleservantblog
 version:             0.1.0.0
-synopsis:            Initial project template from stack
+synopsis:            A CMS, blog-CRUD thing using Servant and Elm
 description:         Please see README.md
 homepage:            https://github.com/pellagic-puffbomb/simpleservantblog#readme
 license:             BSD3
 license-file:        LICENSE
 author:              erik aker
 maintainer:          eraker@gmail.com
-copyright:           MIT
+copyright:           BSD3
 category:            coding
 build-type:          Simple
 -- extra-source-files:
@@ -38,6 +38,7 @@ library
                      , resource-pool
                      , servant
                      , servant-blaze
+                     , servant-foreign
                      , servant-elm
                      , servant-server
                      , servant-auth-cookie

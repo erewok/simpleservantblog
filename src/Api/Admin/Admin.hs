@@ -25,7 +25,7 @@ import           Text.Blaze.Html5                        as H
 import           Text.Blaze.Html5.Attributes             as A
 import qualified Web.Users.Types                         as WU
 
-import           Api.Admin.Login                         (Username)
+import           Api.Admin.Login                         (Username(..))
 import           Html.Home                               (pageSkeleton)
 import           Models.Author                           (Author (..))
 import qualified Models.Post                             as Post
@@ -40,18 +40,25 @@ instance ElmType ResultResp
 instance FromJSON ResultResp
 instance ToJSON ResultResp
 
-type AdminApi =
+-- Separated the HTML so we can use servant-elm to generate for APIs only below
+type AdminBackend =
   "admin" :> AuthProtect "cookie-auth" :> Get '[HTML] Html
-  :<|> "admin" :> "user" :> ReqBody '[JSON] Author :> AuthProtect "cookie-auth" :> Post '[JSON] Author
+  :<|> AdminApi
+
+
+type AdminApi = "admin" :> "user" :> ReqBody '[JSON] Author :> AuthProtect "cookie-auth" :> Post '[JSON] Author
   :<|> "admin" :> "user" :> Capture "id" Int :> ReqBody '[JSON] Author :> AuthProtect "cookie-auth" :> Put '[JSON] ResultResp
   :<|> "admin" :> "user" :> Capture "id" Int :> AuthProtect "cookie-auth" :> Delete '[JSON] ResultResp
   :<|> "admin" :> "post" :> ReqBody '[JSON] Post.BlogPost :> AuthProtect "cookie-auth" :> Post '[JSON] Post.BlogPost
   :<|> "admin" :> "post" :> Capture "id" Int :> ReqBody '[JSON] Post.BlogPost :> AuthProtect "cookie-auth" :> Put '[JSON] ResultResp
   :<|> "admin" :> "post" :> Capture "id" Int :> AuthProtect "cookie-auth" :> Delete '[JSON] ResultResp
 
+adminBackendHandlers :: Pool Connection -> Server AdminBackend
+adminBackendHandlers conn = adminPage
+                  :<|> adminHandlers conn
+
 adminHandlers :: Pool Connection -> Server AdminApi
-adminHandlers conn = adminPage
-                :<|> userAddH
+adminHandlers conn = userAddH
                 :<|> userUpdateH
                 :<|> userDeleteH
                 :<|> blogPostAddH
@@ -66,13 +73,7 @@ adminHandlers conn = adminPage
         go = withResource conn
 
 adminPage :: Username -> Handler Html
-adminPage username = return $ docTypeHtml $ pageSkeleton $
-      H.div ! A.class_ "row main" $
-        H.div ! A.id "admin-page" $
-          H.div ! A.class_ "admin-page-box" $
-            H.div ! A.class_ "twelve columns" $ do
-              H.p "Hello:"
-              H.p $ H.text $ T.pack $ show username
+adminPage uname = return $ docTypeHtml $ adminSkeleton uname
 
 addUser :: Author -> Connection -> Handler Author
 addUser newUser conn = do
@@ -136,3 +137,25 @@ deletePost postId conn = do
   case result of
     0 -> throwError err400
     _ -> return $ ResultResp "success" "post deleted"
+
+adminSkeleton :: Username -> H.Html
+adminSkeleton uname = do
+         H.head $ do
+           H.title "Ekadanta.co / erik aker"
+           H.meta ! A.name "viewport" ! A.content "width=device-width, initial-scale=1"
+           H.link ! A.href "//fonts.googleapis.com/css?family=Raleway:400,300,600" ! A.rel "stylesheet" ! A.type_ "text/css"
+           H.link ! A.href "assets/css/styles.min.css" ! A.rel "stylesheet" ! A.type_ "text/css"
+           H.link ! A.href "/assets/highlight/styles/default.css" ! A.rel "stylesheet" ! A.type_ "text/css"
+           H.link ! A.href "/assets/images/favicon.ico" ! A.rel "icon"
+           H.script ! A.src "/assets/highlight/highlight.pack.js" $ ""
+           H.script ! A.type_ "text/javascript" ! A.src "assets/js/admin-elm.min.js" $ ""
+         H.body $
+           H.div ! A.class_ "container" $ do
+            H.div ! A.id "elm-admin" ! A.class_ "admin-main" $ ""
+            H.script ! A.type_ "text/javascript" $
+                  H.text $ T.unlines [
+                    "const node = document.getElementById('elm-admin'); "
+                    , "const options = { 'username' :'" <> T.pack (username uname) <> "'}"
+                    , "var app = Elm.Main.embed(node, options); "
+                    , "hljs.initHighlightingOnLoad();"
+                    ]

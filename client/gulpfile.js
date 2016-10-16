@@ -21,4 +21,15 @@ gulp.task('compress-js', function() {
     .pipe(gulp.dest('../assets/js'))
 });
 
-gulp.task('default', ['minify-css', 'compress-js']);
+gulp.task('compress-admin-js', function() {
+  gulp.src('../assets/js/admin-elm.js')
+    .pipe(minify({
+        ext:{
+            src:'.js',
+            min:'.min.js'
+        }
+    }))
+    .pipe(gulp.dest('../assets/js'))
+});
+
+gulp.task('default', ['minify-css', 'compress-js', 'compress-admin-js']);

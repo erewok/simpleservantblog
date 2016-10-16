@@ -9,17 +9,22 @@ personal interest, so it may never be finished, but it's pretty fun to work on.
 
 - ~~Implement routing and back button.~~
 - ~~Fix syntax highlighting.~~
+- Build CMS-stuff: easy post-entry
+- Build User-add, User-edit admin stuff
+- Make elm-admin bundle
+- Make Posts FK to User table, not author, Or use author as one-to-one with User
 - Implement series list page.
+- Copy users-postgresql-simple initUserBackend functionality for other tables
 - Add "prev/next" links for regular posts.
 - Implement media associated with posts.
 - Add JS/static assets build pipeline
 - Write tests for Backend
 - Write tests for frontend
-- Build CMS-stuff: easy post-entry
-- Build session-less session handling (for admin work)
-- Begin working on dockerizing application
+- ~~Build session handling (for admin work)~~
+- ~~Begin working on dockerizing application~~
 - Nginx + Postgresql in docker-compose with shared volume for assets.
-
+- TLS Cert Auto-Renewal
+- Add GA to website
 
 
 ## Intended Series on building this thing
@@ -27,8 +32,7 @@ personal interest, so it may never be finished, but it's pretty fun to work on.
 2. Backend Setup: Tables and Models
 3. Creating an API using Servant
 4. Serving raw assets and HTML with Servant
-5. A minimal frontend with Elm
-6. Getting a bit fancier with Elm
-7. Docker, Nginx, and Deploying your Haskell Application
-8. Authentication, Authorization, and Session-less Sessions
-9. Moving Toward a more full-fledged CMS
+5. Frontend with Elm
+6. Docker, Nginx, and Deploying your Haskell Application
+7. Authentication, Authorization, and Session-less Sessions
+8. Moving Toward a more full-fledged CMS

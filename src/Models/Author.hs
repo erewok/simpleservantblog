@@ -4,7 +4,6 @@
 
 module Models.Author (
   Author(..)
-  , authorColumns
   ) where
 
 import Prelude (Int, Eq, Show, (.), ($))
@@ -18,7 +17,6 @@ import qualified Data.Text as T
 import           Servant.Elm
 
 
-authorColumns = "id, firstname, lastname, email"
 data Author = Author {
   aid :: !Int
   , firstName :: !T.Text
