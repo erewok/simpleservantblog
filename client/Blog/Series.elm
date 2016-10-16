@@ -1,4 +1,4 @@
-module Series exposing (..)
+module Blog.Series exposing (..)
 
 import Date exposing (..)
 import Debug exposing (..)
@@ -12,10 +12,11 @@ import Http
 import List as L
 import List.Extra as LX
 import Task exposing (Task, perform)
-import Post exposing (..)
-import Api exposing (..)
-import Routes exposing (..)
-import Types exposing (..)
+
+import Blog.Api exposing (..)
+import Blog.Post exposing (..)
+import Blog.Routes exposing (..)
+import Blog.Types exposing (..)
 
 
 -- Pick an arbitrarily large number so those without ordering are at the end.

@@ -1,4 +1,4 @@
-module Routes exposing (..)
+module Blog.Routes exposing (..)
 
 import String
 import UrlParser exposing (Parser, parse, (</>), format, int, oneOf, s, string)
@@ -6,8 +6,8 @@ import Navigation exposing (Location)
 import Html.Attributes exposing (href, attribute)
 import Html exposing (Html, Attribute, a)
 import Html.Events exposing (onWithOptions)
-import Api exposing (..)
-import Types exposing (..)
+import Blog.Api exposing (..)
+import Blog.Types exposing (..)
 import RouteUrl exposing (HistoryEntry(..), UrlChange)
 import Debug exposing (..)
 
@@ -33,14 +33,14 @@ routeParser =
 
 fromUrl : Location -> Result String Route
 fromUrl location =
-    log "parsed location" <| parse identity routeParser (String.dropLeft 1 location.hash)
+    parse identity routeParser (String.dropLeft 1 location.hash)
 
 
 location2messages : Location -> List Msg
 location2messages location =
     case fromUrl location of
         Ok route ->
-            case log "fromUrl route" route of
+            case route of
                 HomeRoute ->
                     [ FromFrontend SeePostList ]
 
@@ -56,7 +56,7 @@ location2messages location =
 
 toUrl : Route -> String
 toUrl route =
-    case log "toUrl route" route of
+    case route of
         HomeRoute ->
             "#"
 

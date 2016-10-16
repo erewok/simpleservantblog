@@ -13,11 +13,12 @@ import List exposing (..)
 import Task exposing (Task, perform, succeed)
 import Navigation
 import RouteUrl
-import Api exposing (..)
-import Post exposing (..)
-import Routes exposing (..)
-import Series exposing (..)
-import Types exposing (..)
+import Blog.Api as Api
+import Blog.Api exposing (..)
+import Blog.Post exposing (..)
+import Blog.Routes exposing (..)
+import Blog.Series exposing (..)
+import Blog.Types exposing (..)
 
 
 main : Program Never

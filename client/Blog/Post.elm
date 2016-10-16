@@ -1,4 +1,4 @@
-module Post exposing (..)
+module Blog.Post exposing (..)
 
 import Date exposing (..)
 import Dict exposing (..)
@@ -7,9 +7,9 @@ import Html.App exposing (program)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Markdown as M
-import Api exposing (..)
-import Routes exposing (..)
-import Types exposing (..)
+import Blog.Api exposing (..)
+import Blog.Routes exposing (..)
+import Blog.Types exposing (..)
 
 
 fromJustStr : Maybe String -> String

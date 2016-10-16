@@ -1,6 +1,6 @@
-module Types exposing (..)
+module Blog.Types exposing (..)
 
-import Api exposing (..)
+import Blog.Api as Api
 
 
 type alias Model =
@@ -11,9 +11,9 @@ type alias Model =
 
 
 type Backend
-    = PostList (List PostOverview)
-    | SeriesPosts PostSeries
-    | PostDetail BlogPost
+    = PostList (List Api.PostOverview)
+    | SeriesPosts Api.PostSeries
+    | PostDetail Api.BlogPost
     | BackendError String
 
 
