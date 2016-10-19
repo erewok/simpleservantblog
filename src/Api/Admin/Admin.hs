@@ -156,6 +156,6 @@ adminSkeleton uname = do
                   H.text $ T.unlines [
                     "const node = document.getElementById('elm-admin'); "
                     , "const options = { 'username' :'" <> T.pack (username uname) <> "'}"
-                    , "var app = Elm.Main.embed(node, options); "
+                    , "var app = Elm.Admin.embed(node, options); "
                     , "hljs.initHighlightingOnLoad();"
                     ]

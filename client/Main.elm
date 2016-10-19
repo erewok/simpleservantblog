@@ -5,7 +5,6 @@ import Date exposing (..)
 import Debug exposing (..)
 import Dict exposing (..)
 import Html exposing (..)
-import Html.App exposing (program)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Http

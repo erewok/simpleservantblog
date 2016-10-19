@@ -1,4 +1,4 @@
-module AdminApi exposing (..)
+module Admin.AdminApi exposing (..)
 
 import Date exposing (..)
 

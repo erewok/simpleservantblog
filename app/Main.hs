@@ -39,7 +39,7 @@ main = do
     Just p  -> pure $ read p
   environ <- lookupEnv "ENVIRONMENT"
   environment <- case environ of
-    Nothing  -> pure C.Local
+    Nothing  -> pure C.Production
     Just env -> pure (read env :: C.Environment)
   rs <- mkRandomSource drgNew 1000
   sk <- mkServerKey 24 Nothing
@@ -50,4 +50,6 @@ main = do
   cookieSettings <- case environment of
     C.Local -> pure localCookieSettings
     _ -> def  -- From Default Library, uses Default instance
-  A.withAssetsApp pool cookieSettings rs sk >>= Warp.run port <$> logger
+
+  let app = if environment == C.Local then A.withAssetsApp else A.withoutAssetsApp
+  app pool cookieSettings rs sk >>= Warp.run port <$> logger

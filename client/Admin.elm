@@ -1,11 +1,10 @@
-module Main exposing (..)
+module Admin exposing (..)
 
 import Platform.Cmd exposing (none)
 import Date exposing (..)
 import Debug exposing (..)
 import Dict exposing (..)
 import Html exposing (..)
-import Html.App exposing (program)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Http
@@ -14,11 +13,10 @@ import String exposing (..)
 import Task exposing (Task, perform, succeed)
 import Navigation
 import RouteUrl
-import Api exposing (..)
-import Post exposing (..)
-import Routes exposing (..)
-import Series exposing (..)
-import Types exposing (..)
+
+import Admin.AdminApi exposing (..)
+import Admin.Routes exposing (..)
+import Admin.Types exposing (..)
 
 
 type alias InvokeOptions = { username : String }
@@ -37,8 +35,45 @@ main =
 
 init : InvokeOptions -> (Model, Cmd Msg)
 init options =
-  { introText = String.concat
-    [ "username is "
-    , toString options.username
+  let
+      state =
+          { route = AdminMain, user = toString options.username,
+           content = Nothing, error = Nothing }
+  in
+      ( state, none )
+
+update : Msg -> Model -> ( Model, Cmd Msg )
+update message model =
+    case message of
+        NoOp ->
+            model ! []
+        GoToAdminMain ->
+          model ! []
+        ServerList _ ->
+          model ! []
+        ServerDetail _ _ ->
+          model ! []
+        SeeListContent _ ->
+          model ! []
+        SeeDetailContent _ ->
+          model ! []
+        Error error ->
+          { model | error = Just error } ! []
+
+view : Model -> Html Msg
+view state =
+  div [ class "container"] [
+    header [ id "page-header", class "top-nav"] [
+      div [ class "row" ] [
+        div [ class "four columns", style [("margin-top", "2%")] ] [
+          text "Users"
+          ]
+        , div [ class "four columns", style [("margin-top", "2%")] ] [
+          text "Posts"
+          ]
+        , div [ class "four columns", style [("margin-top", "2%")] ] [
+          text <| "Hi, ", (text state.user)
+          ]
+        ]
+      ]
     ]
-  } ! []

@@ -10,6 +10,8 @@ module Api
     , blogApi
     , withAssets
     , withAssetsApp
+    , withoutAssets
+    , withoutAssetsApp
     ) where
 
 
@@ -35,11 +37,15 @@ type BlogApi = PostApi :<|> UserApi
 type WithHtml = HomePage
                 :<|> "about" :> AboutPage
                 :<|> BlogApi
+type WithoutAssets =  WithHtml
+                    :<|> LoginApi
+                    :<|> AdminBackend
 type WithAssets =  WithHtml
                   :<|> LoginApi
                   :<|> AdminBackend
                   :<|> "assets" :> Raw
 
+apihandlers :: Pool Connection -> Server WithHtml
 apihandlers conn = homePage
                   :<|> aboutPage
                   :<|> postHandlers conn
@@ -59,6 +65,17 @@ withAssetsServer conn settings rs key = do
             :<|> adminBackendHandlers conn
             :<|> assets)
 
+withoutAssetsApp :: Pool Connection -> AuthCookieSettings -> RandomSource -> ServerKey -> IO Application
+withoutAssetsApp conn settings rs key = do
+  let context = (defaultAuthHandler settings key :: AuthHandler Request Username) :. EmptyContext
+  server <- withoutAssetsServer conn settings rs key
+  return $ serveWithContext withoutAssets context server
+
+withoutAssetsServer :: Pool Connection -> AuthCookieSettings -> RandomSource -> ServerKey -> IO (Server WithoutAssets)
+withoutAssetsServer conn settings rs key = return $ apihandlers conn
+                                      :<|> loginServer conn settings rs key
+                                      :<|> adminBackendHandlers conn
+
 blogApi :: Proxy BlogApi
 blogApi = Proxy
 
@@ -68,8 +85,8 @@ adminBackendProxyApi = Proxy
 adminProxyApi :: Proxy AdminApi
 adminProxyApi = Proxy
 
-withHtml :: Proxy WithHtml
-withHtml = Proxy
-
 withAssets :: Proxy WithAssets
 withAssets = Proxy
+
+withoutAssets :: Proxy WithoutAssets
+withoutAssets = Proxy
