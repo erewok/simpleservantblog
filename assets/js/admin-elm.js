@@ -11303,12 +11303,7 @@ var _pellagic_puffbomb$simpleservantblog$Admin$update = F2(
 		}
 	});
 var _pellagic_puffbomb$simpleservantblog$Admin$init = function (options) {
-	var state = {
-		route: _pellagic_puffbomb$simpleservantblog$Admin_Types$AdminMain,
-		user: _elm_lang$core$Basics$toString(options.username),
-		content: _elm_lang$core$Maybe$Nothing,
-		error: _elm_lang$core$Maybe$Nothing
-	};
+	var state = {route: _pellagic_puffbomb$simpleservantblog$Admin_Types$AdminMain, user: options.username, content: _elm_lang$core$Maybe$Nothing, error: _elm_lang$core$Maybe$Nothing};
 	return {ctor: '_Tuple2', _0: state, _1: _elm_lang$core$Platform_Cmd$none};
 };
 var _pellagic_puffbomb$simpleservantblog$Admin$main = {

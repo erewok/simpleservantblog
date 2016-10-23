@@ -25,14 +25,20 @@ import           Models.Post
 type PostApi = "post" :> Get '[JSON] [PostOverview]
   :<|> "post" :> Capture "id" Int  :> Get  '[JSON] BlogPost
   :<|> "series" :> "post" :> Capture "id" Int  :> Get  '[JSON] PostSeries
+  :<|> "series" :> Get  '[JSON] [BlogSeries]
+  :<|> "series" :> Capture "id" Int  :> Get '[JSON] BlogSeries
 
 postHandlers :: Pool Connection -> Server PostApi
 postHandlers conn = blogPostListH
               :<|> blogPostDetailH
               :<|> blogPostSeriesH
+              :<|> blogSeriesListH
+              :<|> blogSeriesDetailH
   where blogPostListH = withResource conn listPosts
         blogPostDetailH postId = withResource conn $ flip getPost postId
         blogPostSeriesH postId = withResource conn $ flip getPostWithSeries postId
+        blogSeriesListH = withResource conn listSeries
+        blogSeriesDetailH seriesId = withResource conn $ flip getSeries seriesId
 
 listPosts :: Connection -> Handler [PostOverview]
 listPosts conn = liftIO $ query_ conn postOverviewAllQuery
@@ -64,3 +70,14 @@ prevCurrNextPost postId posts
         post = fromJust findPost
         prev = filter (\p -> ordinal p < ordinal post) posts
         next = filter (\p -> ordinal p > ordinal post) posts
+
+listSeries :: Connection -> Handler [BlogSeries]
+listSeries conn = liftIO $ query_ conn "select * from series"
+
+getSeries :: Connection -> Int -> Handler BlogSeries
+getSeries conn seriesId = do
+  let q = "select * from series where id = ?"
+  res <- liftIO $ query conn q (Only seriesId)
+  case res of
+    (x:_) -> return x
+    _ -> throwError err404

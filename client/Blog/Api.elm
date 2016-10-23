@@ -149,6 +149,43 @@ getSeriesPostById id =
       decodePostSeries
       (Http.send Http.defaultSettings request)
 
+getSeries : Task.Task Http.Error (List (BlogSeries))
+getSeries =
+  let
+    request =
+      { verb =
+          "GET"
+      , headers =
+          [("Content-Type", "application/json")]
+      , url =
+          "/" ++ "series"
+      , body =
+          Http.empty
+      }
+  in
+    Http.fromJson
+      (Json.Decode.list decodeBlogSeries)
+      (Http.send Http.defaultSettings request)
+
+getSeriesById : Int -> Task.Task Http.Error (BlogSeries)
+getSeriesById id =
+  let
+    request =
+      { verb =
+          "GET"
+      , headers =
+          [("Content-Type", "application/json")]
+      , url =
+          "/" ++ "series"
+          ++ "/" ++ (id |> toString |> Http.uriEncode)
+      , body =
+          Http.empty
+      }
+  in
+    Http.fromJson
+      decodeBlogSeries
+      (Http.send Http.defaultSettings request)
+
 type alias Author =
   { aid : Int
   , firstName : String
@@ -200,4 +237,23 @@ getUserByLastName lastName =
   in
     Http.fromJson
       (Json.Decode.list decodeAuthor)
+      (Http.send Http.defaultSettings request)
+
+getUserById : Int -> Task.Task Http.Error (Author)
+getUserById id =
+  let
+    request =
+      { verb =
+          "GET"
+      , headers =
+          [("Content-Type", "application/json")]
+      , url =
+          "/" ++ "user"
+          ++ "/" ++ (id |> toString |> Http.uriEncode)
+      , body =
+          Http.empty
+      }
+  in
+    Http.fromJson
+      decodeAuthor
       (Http.send Http.defaultSettings request)

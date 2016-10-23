@@ -19,6 +19,33 @@ type alias Author =
   , email : String
   }
 
+decodeAuthor : Json.Decode.Decoder Author
+decodeAuthor =
+  Json.Decode.succeed Author
+    |: ("aid" := Json.Decode.int)
+    |: ("firstName" := Json.Decode.string)
+    |: ("lastName" := Json.Decode.string)
+    |: ("email" := Json.Decode.string)
+
+getAdminUser : Task.Task Http.Error (List (Author))
+getAdminUser =
+  let
+    request =
+      { verb =
+          "GET"
+      , headers =
+          [("Content-Type", "application/json")]
+      , url =
+          "/" ++ "admin"
+          ++ "/" ++ "user"
+      , body =
+          Http.empty
+      }
+  in
+    Http.fromJson
+      (Json.Decode.list decodeAuthor)
+      (Http.send Http.defaultSettings request)
+
 encodeAuthor : Author -> Json.Encode.Value
 encodeAuthor x =
   Json.Encode.object
@@ -27,14 +54,6 @@ encodeAuthor x =
     , ( "lastName", Json.Encode.string x.lastName )
     , ( "email", Json.Encode.string x.email )
     ]
-
-decodeAuthor : Json.Decode.Decoder Author
-decodeAuthor =
-  Json.Decode.succeed Author
-    |: ("aid" := Json.Decode.int)
-    |: ("firstName" := Json.Decode.string)
-    |: ("lastName" := Json.Decode.string)
-    |: ("email" := Json.Decode.string)
 
 postAdminUser : Author -> Task.Task Http.Error (Author)
 postAdminUser body =

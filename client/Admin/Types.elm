@@ -1,48 +1,63 @@
 module Admin.Types exposing (..)
 
 import Admin.AdminApi exposing (..)
+import Blog.Api as Api
 
 type alias Model =
     { route : Route
     , user : String
-    , content : Maybe Content
-    , error : Maybe String
+    , content : Maybe AdminBackend
     }
 
 type Msg
     = NoOp
     | GoToAdminMain
-    | ServerList Content
-    | ServerDetail Verb Content
-    | SeeListContent Content
-    | SeeDetailContent Content
+    | FromAdminBackend AdminBackend
+    | FromAdminFrontend Frontend
     | Error String
+
+type AdminBackend
+    = AdminPostList (List BlogPost)
+    | AdminPostDetail BlogPost
+    | AdminSeriesList (List Api.BlogSeries)
+    | AdminSeriesDetail Api.BlogSeries
+    | AdminUserList (List Author)
+    | AdminUserDetail Author
+    | AdminResultResp ResultResp
+    | BackendError String
+
+type Frontend
+    = AdminGetList ListThing
+    | AdminGetDetail DetailThing
+    | AdminDelete Item
+    | AdminCreate Item
+    | AdminEdit Item
+
+type ListThing
+  = ListPosts
+  | ListUsers
+  | ListSeries (List Api.BlogSeries)
+
+type DetailThing
+  = DetailPost PostId
+  | DetailSeries SeriesId
+  | DetailUser UserId
+
+type Item
+  = BlogPost
+  | Author
+  | Series
+
+type Route
+    = AdminMainR
+    | AdminPostListR
+    | AdminUserListR
+    | AdminPostDetailR PostId
+    | AdminUserDetailR UserId
 
 type Editable
   = Inline
   | SeparatePage
-
-type Content
-  = ListPosts (List BlogPost)
-  -- | ListSeries (List Series)
-  | ListUsers (List Author)
-  | DetailPost PostId
-  | DetailSeries SeriesId
-  | DetailUser UserId
-
-type Verb
-  = Get
-  | Put
-  | Post
-  | Delete
-
-
-type Route
-    = AdminMain
-    | AdminPostList
-    | AdminUserList
-    | AdminPostDetail PostId
-    | AdminUserDetail UserId
 
 type alias PostId = Int
 type alias SeriesId = Int

@@ -26,11 +26,11 @@ delta2url previous current =
 routeParser : Parser (Route -> a) a
 routeParser =
     oneOf
-        [ format AdminPostList (s "posts")
-        , format AdminPostDetail (s "posts"  </> int)
-        , format AdminUserList (s "users")
-        , format AdminUserDetail (s "users" </> int)
-        , format AdminMain (s "")
+        [ format AdminPostListR (s "posts")
+        , format AdminPostDetailR (s "posts"  </> int)
+        , format AdminUserListR (s "users")
+        , format AdminUserDetailR (s "users" </> int)
+        , format AdminMainR (s "")
         ]
 
 fromUrl : Location -> Result String Route
@@ -43,16 +43,16 @@ location2messages location =
     case fromUrl location of
         Ok route ->
             case route of
-                AdminMain ->
+                AdminMainR ->
                     [ GoToAdminMain ]
-                AdminPostList ->
-                  [ SeeListContent <| ListPosts [] ]
-                AdminPostDetail postId ->
-                  [ SeeDetailContent <| DetailPost postId ]
-                AdminUserList ->
-                  [ SeeListContent <| ListUsers [] ]
-                AdminUserDetail userId ->
-                  [ SeeDetailContent <| DetailUser userId ]
+                AdminPostListR ->
+                  [ FromAdminFrontend <| AdminGetList ListPosts ]
+                AdminPostDetailR postId ->
+                  [ FromAdminFrontend <| AdminGetDetail <| DetailPost postId ]
+                AdminUserListR ->
+                  [ FromAdminFrontend <| AdminGetList ListUsers ]
+                AdminUserDetailR userId ->
+                  [ FromAdminFrontend <| AdminGetDetail <| DetailUser userId ]
         Err error ->
             [ Error error ]
 
@@ -60,13 +60,13 @@ location2messages location =
 toUrl : Route -> String
 toUrl route =
     case route of
-        AdminMain ->
+        AdminMainR ->
             "#"
-        AdminPostList ->
+        AdminPostListR ->
           "#posts"
-        AdminPostDetail postId ->
+        AdminPostDetailR postId ->
           "#posts/" ++ toString postId
-        AdminUserList ->
+        AdminUserListR ->
           "#users"
-        AdminUserDetail userId ->
+        AdminUserDetailR userId ->
           "#users/" ++ toString userId

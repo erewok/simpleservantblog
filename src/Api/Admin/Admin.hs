@@ -46,7 +46,8 @@ type AdminBackend =
   :<|> AdminApi
 
 
-type AdminApi = "admin" :> "user" :> ReqBody '[JSON] Author :> AuthProtect "cookie-auth" :> Post '[JSON] Author
+type AdminApi = "admin" :> "user" :> AuthProtect "cookie-auth" :> Get '[JSON] [Author]
+  :<|> "admin" :> "user" :> ReqBody '[JSON] Author :> AuthProtect "cookie-auth" :> Post '[JSON] Author
   :<|> "admin" :> "user" :> Capture "id" Int :> ReqBody '[JSON] Author :> AuthProtect "cookie-auth" :> Put '[JSON] ResultResp
   :<|> "admin" :> "user" :> Capture "id" Int :> AuthProtect "cookie-auth" :> Delete '[JSON] ResultResp
   :<|> "admin" :> "post" :> ReqBody '[JSON] Post.BlogPost :> AuthProtect "cookie-auth" :> Post '[JSON] Post.BlogPost
@@ -58,13 +59,15 @@ adminBackendHandlers conn = adminPage
                   :<|> adminHandlers conn
 
 adminHandlers :: Pool Connection -> Server AdminApi
-adminHandlers conn = userAddH
+adminHandlers conn = getUsersH
+                :<|> userAddH
                 :<|> userUpdateH
                 :<|> userDeleteH
                 :<|> blogPostAddH
                 :<|> blogPostUpdateH
                 :<|> blogPostDeleteH
-  where userAddH newUser _ = go $ addUser newUser
+  where getUsersH _ = go getUsers
+        userAddH newUser _ = go $ addUser newUser
         userUpdateH userId user _ = go $ updateUser userId user
         userDeleteH userId _ = go $ deleteUser userId
         blogPostAddH newPost _ = go $ addPost newPost
@@ -74,6 +77,11 @@ adminHandlers conn = userAddH
 
 adminPage :: Username -> Handler Html
 adminPage uname = return $ docTypeHtml $ adminSkeleton uname
+
+getUsers :: Connection -> Handler [Author]
+getUsers conn = do
+  let q = "select * from author"
+  liftIO $ query_ conn q
 
 addUser :: Author -> Connection -> Handler Author
 addUser newUser conn = do
