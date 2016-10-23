@@ -17,7 +17,7 @@ type Msg
     | Error String
 
 type AdminBackend
-    = AdminPostList (List BlogPost)
+    = AdminPostList (List Api.PostOverview)
     | AdminPostDetail BlogPost
     | AdminSeriesList (List Api.BlogSeries)
     | AdminSeriesDetail Api.BlogSeries
@@ -36,7 +36,7 @@ type Frontend
 type ListThing
   = ListPosts
   | ListUsers
-  | ListSeries (List Api.BlogSeries)
+  | ListSeries
 
 type DetailThing
   = DetailPost PostId
@@ -44,9 +44,9 @@ type DetailThing
   | DetailUser UserId
 
 type Item
-  = BlogPost
-  | Author
-  | Series
+  = PI BlogPost
+  | AI Author
+  | SI BlogSeries
 
 type Route
     = AdminMainR

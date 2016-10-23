@@ -53,6 +53,9 @@ type AdminApi = "admin" :> "user" :> AuthProtect "cookie-auth" :> Get '[JSON] [A
   :<|> "admin" :> "post" :> ReqBody '[JSON] Post.BlogPost :> AuthProtect "cookie-auth" :> Post '[JSON] Post.BlogPost
   :<|> "admin" :> "post" :> Capture "id" Int :> ReqBody '[JSON] Post.BlogPost :> AuthProtect "cookie-auth" :> Put '[JSON] ResultResp
   :<|> "admin" :> "post" :> Capture "id" Int :> AuthProtect "cookie-auth" :> Delete '[JSON] ResultResp
+  :<|> "admin" :> "series" :> ReqBody '[JSON] Post.BlogSeries :> AuthProtect "cookie-auth" :> Post '[JSON] Post.BlogSeries
+  :<|> "admin" :> "series" :> Capture "id" Int :> ReqBody '[JSON] Post.BlogSeries :> AuthProtect "cookie-auth" :> Put '[JSON] ResultResp
+  :<|> "admin" :> "series" :> Capture "id" Int :> AuthProtect "cookie-auth" :> Delete '[JSON] ResultResp
 
 adminBackendHandlers :: Pool Connection -> Server AdminBackend
 adminBackendHandlers conn = adminPage
@@ -66,6 +69,9 @@ adminHandlers conn = getUsersH
                 :<|> blogPostAddH
                 :<|> blogPostUpdateH
                 :<|> blogPostDeleteH
+                :<|> blogSeriesAddH
+                :<|> blogSeriesUpdateH
+                :<|> blogSeriesDeleteH
   where getUsersH _ = go getUsers
         userAddH newUser _ = go $ addUser newUser
         userUpdateH userId user _ = go $ updateUser userId user
@@ -73,6 +79,9 @@ adminHandlers conn = getUsersH
         blogPostAddH newPost _ = go $ addPost newPost
         blogPostUpdateH postId post _ = go $ updatePost postId post
         blogPostDeleteH postId _ = go $ deletePost postId
+        blogSeriesAddH newSeries _ = go $ addSeries newSeries
+        blogSeriesUpdateH seriesId series _ = go $ updateSeries seriesId series
+        blogSeriesDeleteH seriesId _ = go $ deleteSeries seriesId
         go = withResource conn
 
 adminPage :: Username -> Handler Html
@@ -145,6 +154,36 @@ deletePost postId conn = do
   case result of
     0 -> throwError err400
     _ -> return $ ResultResp "success" "post deleted"
+
+
+addSeries :: Post.BlogSeries -> Connection -> Handler Post.BlogSeries
+addSeries newSeries conn = do
+  let q = "insert into series values (?, ?, ?)"
+  result <- liftIO $ query conn q newSeries
+  case result of
+    (x:_) -> return x
+    []    -> throwError err404
+
+
+updateSeries :: Int -> Post.BlogSeries -> Connection -> Handler ResultResp
+updateSeries seriesId newSeries conn = do
+  let q = Query $ B.unwords ["update series set name = ?, description = ?, parentid = ? "
+                           , "where id = ?"]
+  result <- liftIO $ execute conn q (Post.name newSeries
+                                   , Post.description newSeries
+                                   , Post.parentid newSeries
+                                   , seriesId)
+  case result of
+    0 -> throwError err400
+    _ -> return $ ResultResp "success" "series updated"
+
+deleteSeries :: Int -> Connection -> Handler ResultResp
+deleteSeries seriesId conn = do
+  let q = "delete CASCADE from series where id = ?"
+  result <- liftIO $ execute conn q (Only seriesId)
+  case result of
+    0 -> throwError err400
+    _ -> return $ ResultResp "success" "series and posts deleted"
 
 adminSkeleton :: Username -> H.Html
 adminSkeleton uname = do

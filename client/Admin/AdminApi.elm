@@ -225,3 +225,86 @@ deleteAdminPostById id =
     Http.fromJson
       decodeResultResp
       (Http.send Http.defaultSettings request)
+
+type alias BlogSeries =
+  { sid : Int
+  , name : String
+  , description : String
+  , parentid : Maybe Int
+  }
+
+encodeBlogSeries : BlogSeries -> Json.Encode.Value
+encodeBlogSeries x =
+  Json.Encode.object
+    [ ( "sid", Json.Encode.int x.sid )
+    , ( "name", Json.Encode.string x.name )
+    , ( "description", Json.Encode.string x.description )
+    , ( "parentid", (Maybe.withDefault Json.Encode.null << Maybe.map Json.Encode.int) x.parentid )
+    ]
+
+decodeBlogSeries : Json.Decode.Decoder BlogSeries
+decodeBlogSeries =
+  Json.Decode.succeed BlogSeries
+    |: ("sid" := Json.Decode.int)
+    |: ("name" := Json.Decode.string)
+    |: ("description" := Json.Decode.string)
+    |: ("parentid" := Json.Decode.maybe Json.Decode.int)
+
+postAdminSeries : BlogSeries -> Task.Task Http.Error (BlogSeries)
+postAdminSeries body =
+  let
+    request =
+      { verb =
+          "POST"
+      , headers =
+          [("Content-Type", "application/json")]
+      , url =
+          "/" ++ "admin"
+          ++ "/" ++ "series"
+      , body =
+          Http.string (Json.Encode.encode 0 (encodeBlogSeries body))
+      }
+  in
+    Http.fromJson
+      decodeBlogSeries
+      (Http.send Http.defaultSettings request)
+
+putAdminSeriesById : Int -> BlogSeries -> Task.Task Http.Error (ResultResp)
+putAdminSeriesById id body =
+  let
+    request =
+      { verb =
+          "PUT"
+      , headers =
+          [("Content-Type", "application/json")]
+      , url =
+          "/" ++ "admin"
+          ++ "/" ++ "series"
+          ++ "/" ++ (id |> toString |> Http.uriEncode)
+      , body =
+          Http.string (Json.Encode.encode 0 (encodeBlogSeries body))
+      }
+  in
+    Http.fromJson
+      decodeResultResp
+      (Http.send Http.defaultSettings request)
+
+deleteAdminSeriesById : Int -> Task.Task Http.Error (ResultResp)
+deleteAdminSeriesById id =
+  let
+    request =
+      { verb =
+          "DELETE"
+      , headers =
+          [("Content-Type", "application/json")]
+      , url =
+          "/" ++ "admin"
+          ++ "/" ++ "series"
+          ++ "/" ++ (id |> toString |> Http.uriEncode)
+      , body =
+          Http.empty
+      }
+  in
+    Http.fromJson
+      decodeResultResp
+      (Http.send Http.defaultSettings request)

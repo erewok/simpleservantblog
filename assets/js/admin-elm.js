@@ -10595,6 +10595,37 @@ var _rgrempel$elm_route_url$RouteUrl$NavigationApp = F6(
 var _rgrempel$elm_route_url$RouteUrl$ModifyEntry = {ctor: 'ModifyEntry'};
 var _rgrempel$elm_route_url$RouteUrl$NewEntry = {ctor: 'NewEntry'};
 
+var _pellagic_puffbomb$simpleservantblog$Admin_AdminApi$encodeBlogSeries = function (x) {
+	return _elm_lang$core$Json_Encode$object(
+		_elm_lang$core$Native_List.fromArray(
+			[
+				{
+				ctor: '_Tuple2',
+				_0: 'sid',
+				_1: _elm_lang$core$Json_Encode$int(x.sid)
+			},
+				{
+				ctor: '_Tuple2',
+				_0: 'name',
+				_1: _elm_lang$core$Json_Encode$string(x.name)
+			},
+				{
+				ctor: '_Tuple2',
+				_0: 'description',
+				_1: _elm_lang$core$Json_Encode$string(x.description)
+			},
+				{
+				ctor: '_Tuple2',
+				_0: 'parentid',
+				_1: function (_p0) {
+					return A2(
+						_elm_lang$core$Maybe$withDefault,
+						_elm_lang$core$Json_Encode$null,
+						A2(_elm_lang$core$Maybe$map, _elm_lang$core$Json_Encode$int, _p0));
+				}(x.parentid)
+			}
+			]));
+};
 var _pellagic_puffbomb$simpleservantblog$Admin_AdminApi$encodeBlogPost = function (x) {
 	return _elm_lang$core$Json_Encode$object(
 		_elm_lang$core$Native_List.fromArray(
@@ -10612,11 +10643,11 @@ var _pellagic_puffbomb$simpleservantblog$Admin_AdminApi$encodeBlogPost = functio
 				{
 				ctor: '_Tuple2',
 				_0: 'seriesId',
-				_1: function (_p0) {
+				_1: function (_p1) {
 					return A2(
 						_elm_lang$core$Maybe$withDefault,
 						_elm_lang$core$Json_Encode$null,
-						A2(_elm_lang$core$Maybe$map, _elm_lang$core$Json_Encode$int, _p0));
+						A2(_elm_lang$core$Maybe$map, _elm_lang$core$Json_Encode$int, _p1));
 				}(x.seriesId)
 			},
 				{
@@ -10627,71 +10658,71 @@ var _pellagic_puffbomb$simpleservantblog$Admin_AdminApi$encodeBlogPost = functio
 				{
 				ctor: '_Tuple2',
 				_0: 'body',
-				_1: function (_p1) {
-					return A2(
-						_elm_lang$core$Maybe$withDefault,
-						_elm_lang$core$Json_Encode$null,
-						A2(_elm_lang$core$Maybe$map, _elm_lang$core$Json_Encode$string, _p1));
-				}(x.body)
-			},
-				{
-				ctor: '_Tuple2',
-				_0: 'synopsis',
 				_1: function (_p2) {
 					return A2(
 						_elm_lang$core$Maybe$withDefault,
 						_elm_lang$core$Json_Encode$null,
 						A2(_elm_lang$core$Maybe$map, _elm_lang$core$Json_Encode$string, _p2));
+				}(x.body)
+			},
+				{
+				ctor: '_Tuple2',
+				_0: 'synopsis',
+				_1: function (_p3) {
+					return A2(
+						_elm_lang$core$Maybe$withDefault,
+						_elm_lang$core$Json_Encode$null,
+						A2(_elm_lang$core$Maybe$map, _elm_lang$core$Json_Encode$string, _p3));
 				}(x.synopsis)
 			},
 				{
 				ctor: '_Tuple2',
 				_0: 'created',
-				_1: function (_p3) {
+				_1: function (_p4) {
 					return _elm_lang$core$Json_Encode$string(
-						_krisajenkins$elm_exts$Exts_Date$toISOString(_p3));
+						_krisajenkins$elm_exts$Exts_Date$toISOString(_p4));
 				}(x.created)
 			},
 				{
 				ctor: '_Tuple2',
 				_0: 'modified',
-				_1: function (_p4) {
+				_1: function (_p5) {
 					return A2(
 						_elm_lang$core$Maybe$withDefault,
 						_elm_lang$core$Json_Encode$null,
 						A2(
 							_elm_lang$core$Maybe$map,
-							function (_p5) {
+							function (_p6) {
 								return _elm_lang$core$Json_Encode$string(
-									_krisajenkins$elm_exts$Exts_Date$toISOString(_p5));
+									_krisajenkins$elm_exts$Exts_Date$toISOString(_p6));
 							},
-							_p4));
+							_p5));
 				}(x.modified)
 			},
 				{
 				ctor: '_Tuple2',
 				_0: 'pubdate',
-				_1: function (_p6) {
+				_1: function (_p7) {
 					return A2(
 						_elm_lang$core$Maybe$withDefault,
 						_elm_lang$core$Json_Encode$null,
 						A2(
 							_elm_lang$core$Maybe$map,
-							function (_p7) {
+							function (_p8) {
 								return _elm_lang$core$Json_Encode$string(
-									_krisajenkins$elm_exts$Exts_Date$toISOString(_p7));
+									_krisajenkins$elm_exts$Exts_Date$toISOString(_p8));
 							},
-							_p6));
+							_p7));
 				}(x.pubdate)
 			},
 				{
 				ctor: '_Tuple2',
 				_0: 'ordinal',
-				_1: function (_p8) {
+				_1: function (_p9) {
 					return A2(
 						_elm_lang$core$Maybe$withDefault,
 						_elm_lang$core$Json_Encode$null,
-						A2(_elm_lang$core$Maybe$map, _elm_lang$core$Json_Encode$int, _p8));
+						A2(_elm_lang$core$Maybe$map, _elm_lang$core$Json_Encode$int, _p9));
 				}(x.ordinal)
 			}
 			]));
@@ -10739,6 +10770,27 @@ var _pellagic_puffbomb$simpleservantblog$Admin_AdminApi$decodeAuthor = A2(
 			A2(_elm_lang$core$Json_Decode_ops[':='], 'firstName', _elm_lang$core$Json_Decode$string)),
 		A2(_elm_lang$core$Json_Decode_ops[':='], 'lastName', _elm_lang$core$Json_Decode$string)),
 	A2(_elm_lang$core$Json_Decode_ops[':='], 'email', _elm_lang$core$Json_Decode$string));
+var _pellagic_puffbomb$simpleservantblog$Admin_AdminApi$getAdminUser = function () {
+	var request = {
+		verb: 'GET',
+		headers: _elm_lang$core$Native_List.fromArray(
+			[
+				{ctor: '_Tuple2', _0: 'Content-Type', _1: 'application/json'}
+			]),
+		url: A2(
+			_elm_lang$core$Basics_ops['++'],
+			'/',
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				'admin',
+				A2(_elm_lang$core$Basics_ops['++'], '/', 'user'))),
+		body: _evancz$elm_http$Http$empty
+	};
+	return A2(
+		_evancz$elm_http$Http$fromJson,
+		_elm_lang$core$Json_Decode$list(_pellagic_puffbomb$simpleservantblog$Admin_AdminApi$decodeAuthor),
+		A2(_evancz$elm_http$Http$send, _evancz$elm_http$Http$defaultSettings, request));
+}();
 var _pellagic_puffbomb$simpleservantblog$Admin_AdminApi$postAdminUser = function (body) {
 	var request = {
 		verb: 'POST',
@@ -10909,6 +10961,73 @@ var _pellagic_puffbomb$simpleservantblog$Admin_AdminApi$deleteAdminPostById = fu
 		_pellagic_puffbomb$simpleservantblog$Admin_AdminApi$decodeResultResp,
 		A2(_evancz$elm_http$Http$send, _evancz$elm_http$Http$defaultSettings, request));
 };
+var _pellagic_puffbomb$simpleservantblog$Admin_AdminApi$putAdminSeriesById = F2(
+	function (id, body) {
+		var request = {
+			verb: 'PUT',
+			headers: _elm_lang$core$Native_List.fromArray(
+				[
+					{ctor: '_Tuple2', _0: 'Content-Type', _1: 'application/json'}
+				]),
+			url: A2(
+				_elm_lang$core$Basics_ops['++'],
+				'/',
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					'admin',
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						'/',
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							'series',
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								'/',
+								_evancz$elm_http$Http$uriEncode(
+									_elm_lang$core$Basics$toString(id))))))),
+			body: _evancz$elm_http$Http$string(
+				A2(
+					_elm_lang$core$Json_Encode$encode,
+					0,
+					_pellagic_puffbomb$simpleservantblog$Admin_AdminApi$encodeBlogSeries(body)))
+		};
+		return A2(
+			_evancz$elm_http$Http$fromJson,
+			_pellagic_puffbomb$simpleservantblog$Admin_AdminApi$decodeResultResp,
+			A2(_evancz$elm_http$Http$send, _evancz$elm_http$Http$defaultSettings, request));
+	});
+var _pellagic_puffbomb$simpleservantblog$Admin_AdminApi$deleteAdminSeriesById = function (id) {
+	var request = {
+		verb: 'DELETE',
+		headers: _elm_lang$core$Native_List.fromArray(
+			[
+				{ctor: '_Tuple2', _0: 'Content-Type', _1: 'application/json'}
+			]),
+		url: A2(
+			_elm_lang$core$Basics_ops['++'],
+			'/',
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				'admin',
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					'/',
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						'series',
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							'/',
+							_evancz$elm_http$Http$uriEncode(
+								_elm_lang$core$Basics$toString(id))))))),
+		body: _evancz$elm_http$Http$empty
+	};
+	return A2(
+		_evancz$elm_http$Http$fromJson,
+		_pellagic_puffbomb$simpleservantblog$Admin_AdminApi$decodeResultResp,
+		A2(_evancz$elm_http$Http$send, _evancz$elm_http$Http$defaultSettings, request));
+};
 var _pellagic_puffbomb$simpleservantblog$Admin_AdminApi$BlogPost = function (a) {
 	return function (b) {
 		return function (c) {
@@ -11004,31 +11123,473 @@ var _pellagic_puffbomb$simpleservantblog$Admin_AdminApi$postAdminPost = function
 		_pellagic_puffbomb$simpleservantblog$Admin_AdminApi$decodeBlogPost,
 		A2(_evancz$elm_http$Http$send, _evancz$elm_http$Http$defaultSettings, request));
 };
-
-var _pellagic_puffbomb$simpleservantblog$Admin_Types$Model = F4(
+var _pellagic_puffbomb$simpleservantblog$Admin_AdminApi$BlogSeries = F4(
 	function (a, b, c, d) {
-		return {route: a, user: b, content: c, error: d};
+		return {sid: a, name: b, description: c, parentid: d};
+	});
+var _pellagic_puffbomb$simpleservantblog$Admin_AdminApi$decodeBlogSeries = A2(
+	_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
+	A2(
+		_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
+		A2(
+			_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
+			A2(
+				_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
+				_elm_lang$core$Json_Decode$succeed(_pellagic_puffbomb$simpleservantblog$Admin_AdminApi$BlogSeries),
+				A2(_elm_lang$core$Json_Decode_ops[':='], 'sid', _elm_lang$core$Json_Decode$int)),
+			A2(_elm_lang$core$Json_Decode_ops[':='], 'name', _elm_lang$core$Json_Decode$string)),
+		A2(_elm_lang$core$Json_Decode_ops[':='], 'description', _elm_lang$core$Json_Decode$string)),
+	A2(
+		_elm_lang$core$Json_Decode_ops[':='],
+		'parentid',
+		_elm_lang$core$Json_Decode$maybe(_elm_lang$core$Json_Decode$int)));
+var _pellagic_puffbomb$simpleservantblog$Admin_AdminApi$postAdminSeries = function (body) {
+	var request = {
+		verb: 'POST',
+		headers: _elm_lang$core$Native_List.fromArray(
+			[
+				{ctor: '_Tuple2', _0: 'Content-Type', _1: 'application/json'}
+			]),
+		url: A2(
+			_elm_lang$core$Basics_ops['++'],
+			'/',
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				'admin',
+				A2(_elm_lang$core$Basics_ops['++'], '/', 'series'))),
+		body: _evancz$elm_http$Http$string(
+			A2(
+				_elm_lang$core$Json_Encode$encode,
+				0,
+				_pellagic_puffbomb$simpleservantblog$Admin_AdminApi$encodeBlogSeries(body)))
+	};
+	return A2(
+		_evancz$elm_http$Http$fromJson,
+		_pellagic_puffbomb$simpleservantblog$Admin_AdminApi$decodeBlogSeries,
+		A2(_evancz$elm_http$Http$send, _evancz$elm_http$Http$defaultSettings, request));
+};
+
+var _pellagic_puffbomb$simpleservantblog$Blog_Api$PostOverview = F8(
+	function (a, b, c, d, e, f, g, h) {
+		return {pid: a, ptitle: b, psynopsis: c, ppubdate: d, pordinal: e, pseriesid: f, pseriesname: g, pseriesdescription: h};
+	});
+var _pellagic_puffbomb$simpleservantblog$Blog_Api$decodePostOverview = A2(
+	_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
+	A2(
+		_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
+		A2(
+			_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
+			A2(
+				_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
+				A2(
+					_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
+					A2(
+						_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
+						A2(
+							_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
+							A2(
+								_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
+								_elm_lang$core$Json_Decode$succeed(_pellagic_puffbomb$simpleservantblog$Blog_Api$PostOverview),
+								A2(_elm_lang$core$Json_Decode_ops[':='], 'pid', _elm_lang$core$Json_Decode$int)),
+							A2(_elm_lang$core$Json_Decode_ops[':='], 'ptitle', _elm_lang$core$Json_Decode$string)),
+						A2(
+							_elm_lang$core$Json_Decode_ops[':='],
+							'psynopsis',
+							_elm_lang$core$Json_Decode$maybe(_elm_lang$core$Json_Decode$string))),
+					A2(
+						_elm_lang$core$Json_Decode_ops[':='],
+						'ppubdate',
+						_elm_lang$core$Json_Decode$maybe(_elm_community$elm_json_extra$Json_Decode_Extra$date))),
+				A2(
+					_elm_lang$core$Json_Decode_ops[':='],
+					'pordinal',
+					_elm_lang$core$Json_Decode$maybe(_elm_lang$core$Json_Decode$int))),
+			A2(
+				_elm_lang$core$Json_Decode_ops[':='],
+				'pseriesid',
+				_elm_lang$core$Json_Decode$maybe(_elm_lang$core$Json_Decode$int))),
+		A2(
+			_elm_lang$core$Json_Decode_ops[':='],
+			'pseriesname',
+			_elm_lang$core$Json_Decode$maybe(_elm_lang$core$Json_Decode$string))),
+	A2(
+		_elm_lang$core$Json_Decode_ops[':='],
+		'pseriesdescription',
+		_elm_lang$core$Json_Decode$maybe(_elm_lang$core$Json_Decode$string)));
+var _pellagic_puffbomb$simpleservantblog$Blog_Api$getPost = function () {
+	var request = {
+		verb: 'GET',
+		headers: _elm_lang$core$Native_List.fromArray(
+			[
+				{ctor: '_Tuple2', _0: 'Content-Type', _1: 'application/json'}
+			]),
+		url: A2(_elm_lang$core$Basics_ops['++'], '/', 'post'),
+		body: _evancz$elm_http$Http$empty
+	};
+	return A2(
+		_evancz$elm_http$Http$fromJson,
+		_elm_lang$core$Json_Decode$list(_pellagic_puffbomb$simpleservantblog$Blog_Api$decodePostOverview),
+		A2(_evancz$elm_http$Http$send, _evancz$elm_http$Http$defaultSettings, request));
+}();
+var _pellagic_puffbomb$simpleservantblog$Blog_Api$BlogPost = function (a) {
+	return function (b) {
+		return function (c) {
+			return function (d) {
+				return function (e) {
+					return function (f) {
+						return function (g) {
+							return function (h) {
+								return function (i) {
+									return function (j) {
+										return {bid: a, authorId: b, seriesId: c, title: d, body: e, synopsis: f, created: g, modified: h, pubdate: i, ordinal: j};
+									};
+								};
+							};
+						};
+					};
+				};
+			};
+		};
+	};
+};
+var _pellagic_puffbomb$simpleservantblog$Blog_Api$decodeBlogPost = A2(
+	_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
+	A2(
+		_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
+		A2(
+			_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
+			A2(
+				_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
+				A2(
+					_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
+					A2(
+						_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
+						A2(
+							_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
+							A2(
+								_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
+								A2(
+									_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
+									A2(
+										_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
+										_elm_lang$core$Json_Decode$succeed(_pellagic_puffbomb$simpleservantblog$Blog_Api$BlogPost),
+										A2(_elm_lang$core$Json_Decode_ops[':='], 'bid', _elm_lang$core$Json_Decode$int)),
+									A2(_elm_lang$core$Json_Decode_ops[':='], 'authorId', _elm_lang$core$Json_Decode$int)),
+								A2(
+									_elm_lang$core$Json_Decode_ops[':='],
+									'seriesId',
+									_elm_lang$core$Json_Decode$maybe(_elm_lang$core$Json_Decode$int))),
+							A2(_elm_lang$core$Json_Decode_ops[':='], 'title', _elm_lang$core$Json_Decode$string)),
+						A2(
+							_elm_lang$core$Json_Decode_ops[':='],
+							'body',
+							_elm_lang$core$Json_Decode$maybe(_elm_lang$core$Json_Decode$string))),
+					A2(
+						_elm_lang$core$Json_Decode_ops[':='],
+						'synopsis',
+						_elm_lang$core$Json_Decode$maybe(_elm_lang$core$Json_Decode$string))),
+				A2(_elm_lang$core$Json_Decode_ops[':='], 'created', _elm_community$elm_json_extra$Json_Decode_Extra$date)),
+			A2(
+				_elm_lang$core$Json_Decode_ops[':='],
+				'modified',
+				_elm_lang$core$Json_Decode$maybe(_elm_community$elm_json_extra$Json_Decode_Extra$date))),
+		A2(
+			_elm_lang$core$Json_Decode_ops[':='],
+			'pubdate',
+			_elm_lang$core$Json_Decode$maybe(_elm_community$elm_json_extra$Json_Decode_Extra$date))),
+	A2(
+		_elm_lang$core$Json_Decode_ops[':='],
+		'ordinal',
+		_elm_lang$core$Json_Decode$maybe(_elm_lang$core$Json_Decode$int)));
+var _pellagic_puffbomb$simpleservantblog$Blog_Api$getPostById = function (id) {
+	var request = {
+		verb: 'GET',
+		headers: _elm_lang$core$Native_List.fromArray(
+			[
+				{ctor: '_Tuple2', _0: 'Content-Type', _1: 'application/json'}
+			]),
+		url: A2(
+			_elm_lang$core$Basics_ops['++'],
+			'/',
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				'post',
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					'/',
+					_evancz$elm_http$Http$uriEncode(
+						_elm_lang$core$Basics$toString(id))))),
+		body: _evancz$elm_http$Http$empty
+	};
+	return A2(
+		_evancz$elm_http$Http$fromJson,
+		_pellagic_puffbomb$simpleservantblog$Blog_Api$decodeBlogPost,
+		A2(_evancz$elm_http$Http$send, _evancz$elm_http$Http$defaultSettings, request));
+};
+var _pellagic_puffbomb$simpleservantblog$Blog_Api$PostSeries = F4(
+	function (a, b, c, d) {
+		return {previous: a, current: b, next: c, series: d};
+	});
+var _pellagic_puffbomb$simpleservantblog$Blog_Api$BlogSeries = F4(
+	function (a, b, c, d) {
+		return {sid: a, name: b, description: c, parentid: d};
+	});
+var _pellagic_puffbomb$simpleservantblog$Blog_Api$decodeBlogSeries = A2(
+	_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
+	A2(
+		_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
+		A2(
+			_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
+			A2(
+				_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
+				_elm_lang$core$Json_Decode$succeed(_pellagic_puffbomb$simpleservantblog$Blog_Api$BlogSeries),
+				A2(_elm_lang$core$Json_Decode_ops[':='], 'sid', _elm_lang$core$Json_Decode$int)),
+			A2(_elm_lang$core$Json_Decode_ops[':='], 'name', _elm_lang$core$Json_Decode$string)),
+		A2(_elm_lang$core$Json_Decode_ops[':='], 'description', _elm_lang$core$Json_Decode$string)),
+	A2(
+		_elm_lang$core$Json_Decode_ops[':='],
+		'parentid',
+		_elm_lang$core$Json_Decode$maybe(_elm_lang$core$Json_Decode$int)));
+var _pellagic_puffbomb$simpleservantblog$Blog_Api$decodePostSeries = A2(
+	_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
+	A2(
+		_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
+		A2(
+			_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
+			A2(
+				_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
+				_elm_lang$core$Json_Decode$succeed(_pellagic_puffbomb$simpleservantblog$Blog_Api$PostSeries),
+				A2(
+					_elm_lang$core$Json_Decode_ops[':='],
+					'previous',
+					_elm_lang$core$Json_Decode$list(_pellagic_puffbomb$simpleservantblog$Blog_Api$decodeBlogPost))),
+			A2(_elm_lang$core$Json_Decode_ops[':='], 'current', _pellagic_puffbomb$simpleservantblog$Blog_Api$decodeBlogPost)),
+		A2(
+			_elm_lang$core$Json_Decode_ops[':='],
+			'next',
+			_elm_lang$core$Json_Decode$list(_pellagic_puffbomb$simpleservantblog$Blog_Api$decodeBlogPost))),
+	A2(_elm_lang$core$Json_Decode_ops[':='], 'series', _pellagic_puffbomb$simpleservantblog$Blog_Api$decodeBlogSeries));
+var _pellagic_puffbomb$simpleservantblog$Blog_Api$getSeriesPostById = function (id) {
+	var request = {
+		verb: 'GET',
+		headers: _elm_lang$core$Native_List.fromArray(
+			[
+				{ctor: '_Tuple2', _0: 'Content-Type', _1: 'application/json'}
+			]),
+		url: A2(
+			_elm_lang$core$Basics_ops['++'],
+			'/',
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				'series',
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					'/',
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						'post',
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							'/',
+							_evancz$elm_http$Http$uriEncode(
+								_elm_lang$core$Basics$toString(id))))))),
+		body: _evancz$elm_http$Http$empty
+	};
+	return A2(
+		_evancz$elm_http$Http$fromJson,
+		_pellagic_puffbomb$simpleservantblog$Blog_Api$decodePostSeries,
+		A2(_evancz$elm_http$Http$send, _evancz$elm_http$Http$defaultSettings, request));
+};
+var _pellagic_puffbomb$simpleservantblog$Blog_Api$getSeries = function () {
+	var request = {
+		verb: 'GET',
+		headers: _elm_lang$core$Native_List.fromArray(
+			[
+				{ctor: '_Tuple2', _0: 'Content-Type', _1: 'application/json'}
+			]),
+		url: A2(_elm_lang$core$Basics_ops['++'], '/', 'series'),
+		body: _evancz$elm_http$Http$empty
+	};
+	return A2(
+		_evancz$elm_http$Http$fromJson,
+		_elm_lang$core$Json_Decode$list(_pellagic_puffbomb$simpleservantblog$Blog_Api$decodeBlogSeries),
+		A2(_evancz$elm_http$Http$send, _evancz$elm_http$Http$defaultSettings, request));
+}();
+var _pellagic_puffbomb$simpleservantblog$Blog_Api$getSeriesById = function (id) {
+	var request = {
+		verb: 'GET',
+		headers: _elm_lang$core$Native_List.fromArray(
+			[
+				{ctor: '_Tuple2', _0: 'Content-Type', _1: 'application/json'}
+			]),
+		url: A2(
+			_elm_lang$core$Basics_ops['++'],
+			'/',
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				'series',
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					'/',
+					_evancz$elm_http$Http$uriEncode(
+						_elm_lang$core$Basics$toString(id))))),
+		body: _evancz$elm_http$Http$empty
+	};
+	return A2(
+		_evancz$elm_http$Http$fromJson,
+		_pellagic_puffbomb$simpleservantblog$Blog_Api$decodeBlogSeries,
+		A2(_evancz$elm_http$Http$send, _evancz$elm_http$Http$defaultSettings, request));
+};
+var _pellagic_puffbomb$simpleservantblog$Blog_Api$Author = F4(
+	function (a, b, c, d) {
+		return {aid: a, firstName: b, lastName: c, email: d};
+	});
+var _pellagic_puffbomb$simpleservantblog$Blog_Api$decodeAuthor = A2(
+	_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
+	A2(
+		_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
+		A2(
+			_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
+			A2(
+				_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
+				_elm_lang$core$Json_Decode$succeed(_pellagic_puffbomb$simpleservantblog$Blog_Api$Author),
+				A2(_elm_lang$core$Json_Decode_ops[':='], 'aid', _elm_lang$core$Json_Decode$int)),
+			A2(_elm_lang$core$Json_Decode_ops[':='], 'firstName', _elm_lang$core$Json_Decode$string)),
+		A2(_elm_lang$core$Json_Decode_ops[':='], 'lastName', _elm_lang$core$Json_Decode$string)),
+	A2(_elm_lang$core$Json_Decode_ops[':='], 'email', _elm_lang$core$Json_Decode$string));
+var _pellagic_puffbomb$simpleservantblog$Blog_Api$getUserByFirstName = function (firstName) {
+	var request = {
+		verb: 'GET',
+		headers: _elm_lang$core$Native_List.fromArray(
+			[
+				{ctor: '_Tuple2', _0: 'Content-Type', _1: 'application/json'}
+			]),
+		url: A2(
+			_elm_lang$core$Basics_ops['++'],
+			'/',
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				'user',
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					'/',
+					_evancz$elm_http$Http$uriEncode(
+						_elm_lang$core$Basics$toString(firstName))))),
+		body: _evancz$elm_http$Http$empty
+	};
+	return A2(
+		_evancz$elm_http$Http$fromJson,
+		_elm_lang$core$Json_Decode$list(_pellagic_puffbomb$simpleservantblog$Blog_Api$decodeAuthor),
+		A2(_evancz$elm_http$Http$send, _evancz$elm_http$Http$defaultSettings, request));
+};
+var _pellagic_puffbomb$simpleservantblog$Blog_Api$getUserByLastName = function (lastName) {
+	var request = {
+		verb: 'GET',
+		headers: _elm_lang$core$Native_List.fromArray(
+			[
+				{ctor: '_Tuple2', _0: 'Content-Type', _1: 'application/json'}
+			]),
+		url: A2(
+			_elm_lang$core$Basics_ops['++'],
+			'/',
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				'user',
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					'/',
+					_evancz$elm_http$Http$uriEncode(
+						_elm_lang$core$Basics$toString(lastName))))),
+		body: _evancz$elm_http$Http$empty
+	};
+	return A2(
+		_evancz$elm_http$Http$fromJson,
+		_elm_lang$core$Json_Decode$list(_pellagic_puffbomb$simpleservantblog$Blog_Api$decodeAuthor),
+		A2(_evancz$elm_http$Http$send, _evancz$elm_http$Http$defaultSettings, request));
+};
+var _pellagic_puffbomb$simpleservantblog$Blog_Api$getUserById = function (id) {
+	var request = {
+		verb: 'GET',
+		headers: _elm_lang$core$Native_List.fromArray(
+			[
+				{ctor: '_Tuple2', _0: 'Content-Type', _1: 'application/json'}
+			]),
+		url: A2(
+			_elm_lang$core$Basics_ops['++'],
+			'/',
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				'user',
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					'/',
+					_evancz$elm_http$Http$uriEncode(
+						_elm_lang$core$Basics$toString(id))))),
+		body: _evancz$elm_http$Http$empty
+	};
+	return A2(
+		_evancz$elm_http$Http$fromJson,
+		_pellagic_puffbomb$simpleservantblog$Blog_Api$decodeAuthor,
+		A2(_evancz$elm_http$Http$send, _evancz$elm_http$Http$defaultSettings, request));
+};
+
+var _pellagic_puffbomb$simpleservantblog$Admin_Types$Model = F3(
+	function (a, b, c) {
+		return {route: a, user: b, content: c};
 	});
 var _pellagic_puffbomb$simpleservantblog$Admin_Types$Error = function (a) {
 	return {ctor: 'Error', _0: a};
 };
-var _pellagic_puffbomb$simpleservantblog$Admin_Types$SeeDetailContent = function (a) {
-	return {ctor: 'SeeDetailContent', _0: a};
+var _pellagic_puffbomb$simpleservantblog$Admin_Types$FromAdminFrontend = function (a) {
+	return {ctor: 'FromAdminFrontend', _0: a};
 };
-var _pellagic_puffbomb$simpleservantblog$Admin_Types$SeeListContent = function (a) {
-	return {ctor: 'SeeListContent', _0: a};
-};
-var _pellagic_puffbomb$simpleservantblog$Admin_Types$ServerDetail = F2(
-	function (a, b) {
-		return {ctor: 'ServerDetail', _0: a, _1: b};
-	});
-var _pellagic_puffbomb$simpleservantblog$Admin_Types$ServerList = function (a) {
-	return {ctor: 'ServerList', _0: a};
+var _pellagic_puffbomb$simpleservantblog$Admin_Types$FromAdminBackend = function (a) {
+	return {ctor: 'FromAdminBackend', _0: a};
 };
 var _pellagic_puffbomb$simpleservantblog$Admin_Types$GoToAdminMain = {ctor: 'GoToAdminMain'};
 var _pellagic_puffbomb$simpleservantblog$Admin_Types$NoOp = {ctor: 'NoOp'};
-var _pellagic_puffbomb$simpleservantblog$Admin_Types$SeparatePage = {ctor: 'SeparatePage'};
-var _pellagic_puffbomb$simpleservantblog$Admin_Types$Inline = {ctor: 'Inline'};
+var _pellagic_puffbomb$simpleservantblog$Admin_Types$BackendError = function (a) {
+	return {ctor: 'BackendError', _0: a};
+};
+var _pellagic_puffbomb$simpleservantblog$Admin_Types$AdminResultResp = function (a) {
+	return {ctor: 'AdminResultResp', _0: a};
+};
+var _pellagic_puffbomb$simpleservantblog$Admin_Types$AdminUserDetail = function (a) {
+	return {ctor: 'AdminUserDetail', _0: a};
+};
+var _pellagic_puffbomb$simpleservantblog$Admin_Types$AdminUserList = function (a) {
+	return {ctor: 'AdminUserList', _0: a};
+};
+var _pellagic_puffbomb$simpleservantblog$Admin_Types$AdminSeriesDetail = function (a) {
+	return {ctor: 'AdminSeriesDetail', _0: a};
+};
+var _pellagic_puffbomb$simpleservantblog$Admin_Types$AdminSeriesList = function (a) {
+	return {ctor: 'AdminSeriesList', _0: a};
+};
+var _pellagic_puffbomb$simpleservantblog$Admin_Types$AdminPostDetail = function (a) {
+	return {ctor: 'AdminPostDetail', _0: a};
+};
+var _pellagic_puffbomb$simpleservantblog$Admin_Types$AdminPostList = function (a) {
+	return {ctor: 'AdminPostList', _0: a};
+};
+var _pellagic_puffbomb$simpleservantblog$Admin_Types$AdminEdit = function (a) {
+	return {ctor: 'AdminEdit', _0: a};
+};
+var _pellagic_puffbomb$simpleservantblog$Admin_Types$AdminCreate = function (a) {
+	return {ctor: 'AdminCreate', _0: a};
+};
+var _pellagic_puffbomb$simpleservantblog$Admin_Types$AdminDelete = function (a) {
+	return {ctor: 'AdminDelete', _0: a};
+};
+var _pellagic_puffbomb$simpleservantblog$Admin_Types$AdminGetDetail = function (a) {
+	return {ctor: 'AdminGetDetail', _0: a};
+};
+var _pellagic_puffbomb$simpleservantblog$Admin_Types$AdminGetList = function (a) {
+	return {ctor: 'AdminGetList', _0: a};
+};
+var _pellagic_puffbomb$simpleservantblog$Admin_Types$ListSeries = {ctor: 'ListSeries'};
+var _pellagic_puffbomb$simpleservantblog$Admin_Types$ListUsers = {ctor: 'ListUsers'};
+var _pellagic_puffbomb$simpleservantblog$Admin_Types$ListPosts = {ctor: 'ListPosts'};
 var _pellagic_puffbomb$simpleservantblog$Admin_Types$DetailUser = function (a) {
 	return {ctor: 'DetailUser', _0: a};
 };
@@ -11038,39 +11599,40 @@ var _pellagic_puffbomb$simpleservantblog$Admin_Types$DetailSeries = function (a)
 var _pellagic_puffbomb$simpleservantblog$Admin_Types$DetailPost = function (a) {
 	return {ctor: 'DetailPost', _0: a};
 };
-var _pellagic_puffbomb$simpleservantblog$Admin_Types$ListUsers = function (a) {
-	return {ctor: 'ListUsers', _0: a};
+var _pellagic_puffbomb$simpleservantblog$Admin_Types$SI = function (a) {
+	return {ctor: 'SI', _0: a};
 };
-var _pellagic_puffbomb$simpleservantblog$Admin_Types$ListPosts = function (a) {
-	return {ctor: 'ListPosts', _0: a};
+var _pellagic_puffbomb$simpleservantblog$Admin_Types$AI = function (a) {
+	return {ctor: 'AI', _0: a};
 };
-var _pellagic_puffbomb$simpleservantblog$Admin_Types$Delete = {ctor: 'Delete'};
-var _pellagic_puffbomb$simpleservantblog$Admin_Types$Post = {ctor: 'Post'};
-var _pellagic_puffbomb$simpleservantblog$Admin_Types$Put = {ctor: 'Put'};
-var _pellagic_puffbomb$simpleservantblog$Admin_Types$Get = {ctor: 'Get'};
-var _pellagic_puffbomb$simpleservantblog$Admin_Types$AdminUserDetail = function (a) {
-	return {ctor: 'AdminUserDetail', _0: a};
+var _pellagic_puffbomb$simpleservantblog$Admin_Types$PI = function (a) {
+	return {ctor: 'PI', _0: a};
 };
-var _pellagic_puffbomb$simpleservantblog$Admin_Types$AdminPostDetail = function (a) {
-	return {ctor: 'AdminPostDetail', _0: a};
+var _pellagic_puffbomb$simpleservantblog$Admin_Types$AdminUserDetailR = function (a) {
+	return {ctor: 'AdminUserDetailR', _0: a};
 };
-var _pellagic_puffbomb$simpleservantblog$Admin_Types$AdminUserList = {ctor: 'AdminUserList'};
-var _pellagic_puffbomb$simpleservantblog$Admin_Types$AdminPostList = {ctor: 'AdminPostList'};
-var _pellagic_puffbomb$simpleservantblog$Admin_Types$AdminMain = {ctor: 'AdminMain'};
+var _pellagic_puffbomb$simpleservantblog$Admin_Types$AdminPostDetailR = function (a) {
+	return {ctor: 'AdminPostDetailR', _0: a};
+};
+var _pellagic_puffbomb$simpleservantblog$Admin_Types$AdminUserListR = {ctor: 'AdminUserListR'};
+var _pellagic_puffbomb$simpleservantblog$Admin_Types$AdminPostListR = {ctor: 'AdminPostListR'};
+var _pellagic_puffbomb$simpleservantblog$Admin_Types$AdminMainR = {ctor: 'AdminMainR'};
+var _pellagic_puffbomb$simpleservantblog$Admin_Types$SeparatePage = {ctor: 'SeparatePage'};
+var _pellagic_puffbomb$simpleservantblog$Admin_Types$Inline = {ctor: 'Inline'};
 
 var _pellagic_puffbomb$simpleservantblog$Admin_Routes$toUrl = function (route) {
 	var _p0 = route;
 	switch (_p0.ctor) {
-		case 'AdminMain':
+		case 'AdminMainR':
 			return '#';
-		case 'AdminPostList':
+		case 'AdminPostListR':
 			return '#posts';
-		case 'AdminPostDetail':
+		case 'AdminPostDetailR':
 			return A2(
 				_elm_lang$core$Basics_ops['++'],
 				'#posts/',
 				_elm_lang$core$Basics$toString(_p0._0));
-		case 'AdminUserList':
+		case 'AdminUserListR':
 			return '#users';
 		default:
 			return A2(
@@ -11084,29 +11646,29 @@ var _pellagic_puffbomb$simpleservantblog$Admin_Routes$routeParser = _evancz$url_
 		[
 			A2(
 			_evancz$url_parser$UrlParser$format,
-			_pellagic_puffbomb$simpleservantblog$Admin_Types$AdminPostList,
+			_pellagic_puffbomb$simpleservantblog$Admin_Types$AdminPostListR,
 			_evancz$url_parser$UrlParser$s('posts')),
 			A2(
 			_evancz$url_parser$UrlParser$format,
-			_pellagic_puffbomb$simpleservantblog$Admin_Types$AdminPostDetail,
+			_pellagic_puffbomb$simpleservantblog$Admin_Types$AdminPostDetailR,
 			A2(
 				_evancz$url_parser$UrlParser_ops['</>'],
 				_evancz$url_parser$UrlParser$s('posts'),
 				_evancz$url_parser$UrlParser$int)),
 			A2(
 			_evancz$url_parser$UrlParser$format,
-			_pellagic_puffbomb$simpleservantblog$Admin_Types$AdminUserList,
+			_pellagic_puffbomb$simpleservantblog$Admin_Types$AdminUserListR,
 			_evancz$url_parser$UrlParser$s('users')),
 			A2(
 			_evancz$url_parser$UrlParser$format,
-			_pellagic_puffbomb$simpleservantblog$Admin_Types$AdminUserDetail,
+			_pellagic_puffbomb$simpleservantblog$Admin_Types$AdminUserDetailR,
 			A2(
 				_evancz$url_parser$UrlParser_ops['</>'],
 				_evancz$url_parser$UrlParser$s('users'),
 				_evancz$url_parser$UrlParser$int)),
 			A2(
 			_evancz$url_parser$UrlParser$format,
-			_pellagic_puffbomb$simpleservantblog$Admin_Types$AdminMain,
+			_pellagic_puffbomb$simpleservantblog$Admin_Types$AdminMainR,
 			_evancz$url_parser$UrlParser$s(''))
 		]));
 var _pellagic_puffbomb$simpleservantblog$Admin_Routes$fromUrl = function (location) {
@@ -11121,36 +11683,34 @@ var _pellagic_puffbomb$simpleservantblog$Admin_Routes$location2messages = functi
 	if (_p1.ctor === 'Ok') {
 		var _p2 = _p1._0;
 		switch (_p2.ctor) {
-			case 'AdminMain':
+			case 'AdminMainR':
 				return _elm_lang$core$Native_List.fromArray(
 					[_pellagic_puffbomb$simpleservantblog$Admin_Types$GoToAdminMain]);
-			case 'AdminPostList':
+			case 'AdminPostListR':
 				return _elm_lang$core$Native_List.fromArray(
 					[
-						_pellagic_puffbomb$simpleservantblog$Admin_Types$SeeListContent(
-						_pellagic_puffbomb$simpleservantblog$Admin_Types$ListPosts(
-							_elm_lang$core$Native_List.fromArray(
-								[])))
+						_pellagic_puffbomb$simpleservantblog$Admin_Types$FromAdminFrontend(
+						_pellagic_puffbomb$simpleservantblog$Admin_Types$AdminGetList(_pellagic_puffbomb$simpleservantblog$Admin_Types$ListPosts))
 					]);
-			case 'AdminPostDetail':
+			case 'AdminPostDetailR':
 				return _elm_lang$core$Native_List.fromArray(
 					[
-						_pellagic_puffbomb$simpleservantblog$Admin_Types$SeeDetailContent(
-						_pellagic_puffbomb$simpleservantblog$Admin_Types$DetailPost(_p2._0))
+						_pellagic_puffbomb$simpleservantblog$Admin_Types$FromAdminFrontend(
+						_pellagic_puffbomb$simpleservantblog$Admin_Types$AdminGetDetail(
+							_pellagic_puffbomb$simpleservantblog$Admin_Types$DetailPost(_p2._0)))
 					]);
-			case 'AdminUserList':
+			case 'AdminUserListR':
 				return _elm_lang$core$Native_List.fromArray(
 					[
-						_pellagic_puffbomb$simpleservantblog$Admin_Types$SeeListContent(
-						_pellagic_puffbomb$simpleservantblog$Admin_Types$ListUsers(
-							_elm_lang$core$Native_List.fromArray(
-								[])))
+						_pellagic_puffbomb$simpleservantblog$Admin_Types$FromAdminFrontend(
+						_pellagic_puffbomb$simpleservantblog$Admin_Types$AdminGetList(_pellagic_puffbomb$simpleservantblog$Admin_Types$ListUsers))
 					]);
 			default:
 				return _elm_lang$core$Native_List.fromArray(
 					[
-						_pellagic_puffbomb$simpleservantblog$Admin_Types$SeeDetailContent(
-						_pellagic_puffbomb$simpleservantblog$Admin_Types$DetailUser(_p2._0))
+						_pellagic_puffbomb$simpleservantblog$Admin_Types$FromAdminFrontend(
+						_pellagic_puffbomb$simpleservantblog$Admin_Types$AdminGetDetail(
+							_pellagic_puffbomb$simpleservantblog$Admin_Types$DetailUser(_p2._0)))
 					]);
 		}
 	} else {
@@ -11174,6 +11734,284 @@ var _pellagic_puffbomb$simpleservantblog$Admin_Routes$delta2url = F2(
 		}
 	});
 
+var _pellagic_puffbomb$simpleservantblog$Blog_Types$Model = F3(
+	function (a, b, c) {
+		return {route: a, content: b, error: c};
+	});
+var _pellagic_puffbomb$simpleservantblog$Blog_Types$BackendError = function (a) {
+	return {ctor: 'BackendError', _0: a};
+};
+var _pellagic_puffbomb$simpleservantblog$Blog_Types$PostDetail = function (a) {
+	return {ctor: 'PostDetail', _0: a};
+};
+var _pellagic_puffbomb$simpleservantblog$Blog_Types$SeriesPosts = function (a) {
+	return {ctor: 'SeriesPosts', _0: a};
+};
+var _pellagic_puffbomb$simpleservantblog$Blog_Types$PostList = function (a) {
+	return {ctor: 'PostList', _0: a};
+};
+var _pellagic_puffbomb$simpleservantblog$Blog_Types$SeeSeriesPostDetail = F2(
+	function (a, b) {
+		return {ctor: 'SeeSeriesPostDetail', _0: a, _1: b};
+	});
+var _pellagic_puffbomb$simpleservantblog$Blog_Types$SeePostDetail = function (a) {
+	return {ctor: 'SeePostDetail', _0: a};
+};
+var _pellagic_puffbomb$simpleservantblog$Blog_Types$SeePostList = {ctor: 'SeePostList'};
+var _pellagic_puffbomb$simpleservantblog$Blog_Types$Error = function (a) {
+	return {ctor: 'Error', _0: a};
+};
+var _pellagic_puffbomb$simpleservantblog$Blog_Types$FromFrontend = function (a) {
+	return {ctor: 'FromFrontend', _0: a};
+};
+var _pellagic_puffbomb$simpleservantblog$Blog_Types$FromBackend = function (a) {
+	return {ctor: 'FromBackend', _0: a};
+};
+var _pellagic_puffbomb$simpleservantblog$Blog_Types$NoOp = {ctor: 'NoOp'};
+var _pellagic_puffbomb$simpleservantblog$Blog_Types$SeriesPostDetailRoute = F2(
+	function (a, b) {
+		return {ctor: 'SeriesPostDetailRoute', _0: a, _1: b};
+	});
+var _pellagic_puffbomb$simpleservantblog$Blog_Types$PostDetailRoute = function (a) {
+	return {ctor: 'PostDetailRoute', _0: a};
+};
+var _pellagic_puffbomb$simpleservantblog$Blog_Types$HomeRoute = {ctor: 'HomeRoute'};
+
+var _pellagic_puffbomb$simpleservantblog$Admin$editSeries = function (series) {
+	return A3(
+		_elm_lang$core$Task$perform,
+		_pellagic_puffbomb$simpleservantblog$Admin_Types$Error,
+		function (rr) {
+			return _pellagic_puffbomb$simpleservantblog$Admin_Types$FromAdminBackend(
+				_pellagic_puffbomb$simpleservantblog$Admin_Types$AdminResultResp(rr));
+		},
+		A2(
+			_elm_lang$core$Task$mapError,
+			_elm_lang$core$Basics$toString,
+			A2(_pellagic_puffbomb$simpleservantblog$Admin_AdminApi$putAdminSeriesById, series.sid, series)));
+};
+var _pellagic_puffbomb$simpleservantblog$Admin$editAuthor = function (author) {
+	return A3(
+		_elm_lang$core$Task$perform,
+		_pellagic_puffbomb$simpleservantblog$Admin_Types$Error,
+		function (rr) {
+			return _pellagic_puffbomb$simpleservantblog$Admin_Types$FromAdminBackend(
+				_pellagic_puffbomb$simpleservantblog$Admin_Types$AdminResultResp(rr));
+		},
+		A2(
+			_elm_lang$core$Task$mapError,
+			_elm_lang$core$Basics$toString,
+			A2(_pellagic_puffbomb$simpleservantblog$Admin_AdminApi$putAdminUserById, author.aid, author)));
+};
+var _pellagic_puffbomb$simpleservantblog$Admin$editBlogPost = function (post) {
+	return A3(
+		_elm_lang$core$Task$perform,
+		_pellagic_puffbomb$simpleservantblog$Admin_Types$Error,
+		function (rr) {
+			return _pellagic_puffbomb$simpleservantblog$Admin_Types$FromAdminBackend(
+				_pellagic_puffbomb$simpleservantblog$Admin_Types$AdminResultResp(rr));
+		},
+		A2(
+			_elm_lang$core$Task$mapError,
+			_elm_lang$core$Basics$toString,
+			A2(_pellagic_puffbomb$simpleservantblog$Admin_AdminApi$putAdminPostById, post.bid, post)));
+};
+var _pellagic_puffbomb$simpleservantblog$Admin$createSeries = function (series) {
+	return A3(
+		_elm_lang$core$Task$perform,
+		_pellagic_puffbomb$simpleservantblog$Admin_Types$Error,
+		function (series) {
+			return _pellagic_puffbomb$simpleservantblog$Admin_Types$FromAdminBackend(
+				_pellagic_puffbomb$simpleservantblog$Admin_Types$AdminSeriesDetail(series));
+		},
+		A2(
+			_elm_lang$core$Task$mapError,
+			_elm_lang$core$Basics$toString,
+			_pellagic_puffbomb$simpleservantblog$Admin_AdminApi$postAdminSeries(series)));
+};
+var _pellagic_puffbomb$simpleservantblog$Admin$createAuthor = function (author) {
+	return A3(
+		_elm_lang$core$Task$perform,
+		_pellagic_puffbomb$simpleservantblog$Admin_Types$Error,
+		function (user) {
+			return _pellagic_puffbomb$simpleservantblog$Admin_Types$FromAdminBackend(
+				_pellagic_puffbomb$simpleservantblog$Admin_Types$AdminUserDetail(user));
+		},
+		A2(
+			_elm_lang$core$Task$mapError,
+			_elm_lang$core$Basics$toString,
+			_pellagic_puffbomb$simpleservantblog$Admin_AdminApi$postAdminUser(author)));
+};
+var _pellagic_puffbomb$simpleservantblog$Admin$createBlogPost = function (post) {
+	return A3(
+		_elm_lang$core$Task$perform,
+		_pellagic_puffbomb$simpleservantblog$Admin_Types$Error,
+		function (post) {
+			return _pellagic_puffbomb$simpleservantblog$Admin_Types$FromAdminBackend(
+				_pellagic_puffbomb$simpleservantblog$Admin_Types$AdminPostDetail(post));
+		},
+		A2(
+			_elm_lang$core$Task$mapError,
+			_elm_lang$core$Basics$toString,
+			_pellagic_puffbomb$simpleservantblog$Admin_AdminApi$postAdminPost(post)));
+};
+var _pellagic_puffbomb$simpleservantblog$Admin$deleteSeries = function (series) {
+	return A3(
+		_elm_lang$core$Task$perform,
+		_pellagic_puffbomb$simpleservantblog$Admin_Types$Error,
+		function (rr) {
+			return _pellagic_puffbomb$simpleservantblog$Admin_Types$FromAdminBackend(
+				_pellagic_puffbomb$simpleservantblog$Admin_Types$AdminResultResp(rr));
+		},
+		A2(
+			_elm_lang$core$Task$mapError,
+			_elm_lang$core$Basics$toString,
+			_pellagic_puffbomb$simpleservantblog$Admin_AdminApi$deleteAdminSeriesById(series.sid)));
+};
+var _pellagic_puffbomb$simpleservantblog$Admin$deleteAuthor = function (author) {
+	return A3(
+		_elm_lang$core$Task$perform,
+		_pellagic_puffbomb$simpleservantblog$Admin_Types$Error,
+		function (rr) {
+			return _pellagic_puffbomb$simpleservantblog$Admin_Types$FromAdminBackend(
+				_pellagic_puffbomb$simpleservantblog$Admin_Types$AdminResultResp(rr));
+		},
+		A2(
+			_elm_lang$core$Task$mapError,
+			_elm_lang$core$Basics$toString,
+			_pellagic_puffbomb$simpleservantblog$Admin_AdminApi$deleteAdminUserById(author.aid)));
+};
+var _pellagic_puffbomb$simpleservantblog$Admin$deleteBlogPost = function (post) {
+	return A3(
+		_elm_lang$core$Task$perform,
+		_pellagic_puffbomb$simpleservantblog$Admin_Types$Error,
+		function (rr) {
+			return _pellagic_puffbomb$simpleservantblog$Admin_Types$FromAdminBackend(
+				_pellagic_puffbomb$simpleservantblog$Admin_Types$AdminResultResp(rr));
+		},
+		A2(
+			_elm_lang$core$Task$mapError,
+			_elm_lang$core$Basics$toString,
+			_pellagic_puffbomb$simpleservantblog$Admin_AdminApi$deleteAdminPostById(post.bid)));
+};
+var _pellagic_puffbomb$simpleservantblog$Admin$retrieveUser = function (userId) {
+	return A3(
+		_elm_lang$core$Task$perform,
+		_pellagic_puffbomb$simpleservantblog$Admin_Types$Error,
+		function (user) {
+			return _pellagic_puffbomb$simpleservantblog$Admin_Types$FromAdminBackend(
+				_pellagic_puffbomb$simpleservantblog$Admin_Types$AdminUserDetail(user));
+		},
+		A2(
+			_elm_lang$core$Task$mapError,
+			_elm_lang$core$Basics$toString,
+			_pellagic_puffbomb$simpleservantblog$Blog_Api$getUserById(userId)));
+};
+var _pellagic_puffbomb$simpleservantblog$Admin$retrieveSeries = function (seriesId) {
+	return A3(
+		_elm_lang$core$Task$perform,
+		_pellagic_puffbomb$simpleservantblog$Admin_Types$Error,
+		function (series) {
+			return _pellagic_puffbomb$simpleservantblog$Admin_Types$FromAdminBackend(
+				_pellagic_puffbomb$simpleservantblog$Admin_Types$AdminSeriesDetail(series));
+		},
+		A2(
+			_elm_lang$core$Task$mapError,
+			_elm_lang$core$Basics$toString,
+			_pellagic_puffbomb$simpleservantblog$Blog_Api$getSeriesById(seriesId)));
+};
+var _pellagic_puffbomb$simpleservantblog$Admin$retrievePost = function (postId) {
+	return A3(
+		_elm_lang$core$Task$perform,
+		_pellagic_puffbomb$simpleservantblog$Admin_Types$Error,
+		function (post) {
+			return _pellagic_puffbomb$simpleservantblog$Admin_Types$FromAdminBackend(
+				_pellagic_puffbomb$simpleservantblog$Admin_Types$AdminPostDetail(post));
+		},
+		A2(
+			_elm_lang$core$Task$mapError,
+			_elm_lang$core$Basics$toString,
+			_pellagic_puffbomb$simpleservantblog$Blog_Api$getPostById(postId)));
+};
+var _pellagic_puffbomb$simpleservantblog$Admin$retrieveUserList = A3(
+	_elm_lang$core$Task$perform,
+	_pellagic_puffbomb$simpleservantblog$Admin_Types$Error,
+	function (posts) {
+		return _pellagic_puffbomb$simpleservantblog$Admin_Types$FromAdminBackend(
+			_pellagic_puffbomb$simpleservantblog$Admin_Types$AdminUserList(posts));
+	},
+	A2(_elm_lang$core$Task$mapError, _elm_lang$core$Basics$toString, _pellagic_puffbomb$simpleservantblog$Admin_AdminApi$getAdminUser));
+var _pellagic_puffbomb$simpleservantblog$Admin$retrieveSeriesList = A3(
+	_elm_lang$core$Task$perform,
+	_pellagic_puffbomb$simpleservantblog$Admin_Types$Error,
+	function (series) {
+		return _pellagic_puffbomb$simpleservantblog$Admin_Types$FromAdminBackend(
+			_pellagic_puffbomb$simpleservantblog$Admin_Types$AdminSeriesList(series));
+	},
+	A2(_elm_lang$core$Task$mapError, _elm_lang$core$Basics$toString, _pellagic_puffbomb$simpleservantblog$Blog_Api$getSeries));
+var _pellagic_puffbomb$simpleservantblog$Admin$retrievePostList = A3(
+	_elm_lang$core$Task$perform,
+	_pellagic_puffbomb$simpleservantblog$Admin_Types$Error,
+	function (posts) {
+		return _pellagic_puffbomb$simpleservantblog$Admin_Types$FromAdminBackend(
+			_pellagic_puffbomb$simpleservantblog$Admin_Types$AdminPostList(posts));
+	},
+	A2(_elm_lang$core$Task$mapError, _elm_lang$core$Basics$toString, _pellagic_puffbomb$simpleservantblog$Blog_Api$getPost));
+var _pellagic_puffbomb$simpleservantblog$Admin$editItem = function (item) {
+	var _p0 = item;
+	switch (_p0.ctor) {
+		case 'PI':
+			return _pellagic_puffbomb$simpleservantblog$Admin$editBlogPost(_p0._0);
+		case 'AI':
+			return _pellagic_puffbomb$simpleservantblog$Admin$editAuthor(_p0._0);
+		default:
+			return _pellagic_puffbomb$simpleservantblog$Admin$editSeries(_p0._0);
+	}
+};
+var _pellagic_puffbomb$simpleservantblog$Admin$createItem = function (item) {
+	var _p1 = item;
+	switch (_p1.ctor) {
+		case 'PI':
+			return _pellagic_puffbomb$simpleservantblog$Admin$createBlogPost(_p1._0);
+		case 'AI':
+			return _pellagic_puffbomb$simpleservantblog$Admin$createAuthor(_p1._0);
+		default:
+			return _pellagic_puffbomb$simpleservantblog$Admin$createSeries(_p1._0);
+	}
+};
+var _pellagic_puffbomb$simpleservantblog$Admin$deleteItem = function (item) {
+	var _p2 = item;
+	switch (_p2.ctor) {
+		case 'PI':
+			return _pellagic_puffbomb$simpleservantblog$Admin$deleteBlogPost(_p2._0);
+		case 'AI':
+			return _pellagic_puffbomb$simpleservantblog$Admin$deleteAuthor(_p2._0);
+		default:
+			return _pellagic_puffbomb$simpleservantblog$Admin$deleteSeries(_p2._0);
+	}
+};
+var _pellagic_puffbomb$simpleservantblog$Admin$retrieveThing = function (someThing) {
+	var _p3 = someThing;
+	switch (_p3.ctor) {
+		case 'DetailPost':
+			return _pellagic_puffbomb$simpleservantblog$Admin$retrievePost(_p3._0);
+		case 'DetailSeries':
+			return _pellagic_puffbomb$simpleservantblog$Admin$retrieveSeries(_p3._0);
+		default:
+			return _pellagic_puffbomb$simpleservantblog$Admin$retrieveUser(_p3._0);
+	}
+};
+var _pellagic_puffbomb$simpleservantblog$Admin$retrieveSomeList = function (someList) {
+	var _p4 = someList;
+	switch (_p4.ctor) {
+		case 'ListPosts':
+			return _pellagic_puffbomb$simpleservantblog$Admin$retrievePostList;
+		case 'ListUsers':
+			return _pellagic_puffbomb$simpleservantblog$Admin$retrieveUserList;
+		default:
+			return _pellagic_puffbomb$simpleservantblog$Admin$retrieveSeriesList;
+	}
+};
 var _pellagic_puffbomb$simpleservantblog$Admin$view = function (state) {
 	return A2(
 		_elm_lang$html$Html$div,
@@ -11213,7 +12051,19 @@ var _pellagic_puffbomb$simpleservantblog$Admin$view = function (state) {
 									]),
 								_elm_lang$core$Native_List.fromArray(
 									[
-										_elm_lang$html$Html$text('Users')
+										A2(
+										_elm_lang$html$Html$a,
+										_elm_lang$core$Native_List.fromArray(
+											[
+												_elm_lang$html$Html_Events$onClick(
+												_pellagic_puffbomb$simpleservantblog$Admin_Types$FromAdminFrontend(
+													_pellagic_puffbomb$simpleservantblog$Admin_Types$AdminGetList(_pellagic_puffbomb$simpleservantblog$Admin_Types$ListUsers))),
+												_elm_lang$html$Html_Attributes$class('button')
+											]),
+										_elm_lang$core$Native_List.fromArray(
+											[
+												_elm_lang$html$Html$text('Users')
+											]))
 									])),
 								A2(
 								_elm_lang$html$Html$div,
@@ -11228,7 +12078,19 @@ var _pellagic_puffbomb$simpleservantblog$Admin$view = function (state) {
 									]),
 								_elm_lang$core$Native_List.fromArray(
 									[
-										_elm_lang$html$Html$text('Posts')
+										A2(
+										_elm_lang$html$Html$a,
+										_elm_lang$core$Native_List.fromArray(
+											[
+												_elm_lang$html$Html_Events$onClick(
+												_pellagic_puffbomb$simpleservantblog$Admin_Types$FromAdminFrontend(
+													_pellagic_puffbomb$simpleservantblog$Admin_Types$AdminGetList(_pellagic_puffbomb$simpleservantblog$Admin_Types$ListPosts))),
+												_elm_lang$html$Html_Attributes$class('button')
+											]),
+										_elm_lang$core$Native_List.fromArray(
+											[
+												_elm_lang$html$Html$text('Posts')
+											]))
 									])),
 								A2(
 								_elm_lang$html$Html$div,
@@ -11243,8 +12105,18 @@ var _pellagic_puffbomb$simpleservantblog$Admin$view = function (state) {
 									]),
 								_elm_lang$core$Native_List.fromArray(
 									[
-										_elm_lang$html$Html$text('Hi, '),
-										_elm_lang$html$Html$text(state.user)
+										A2(
+										_elm_lang$html$Html$a,
+										_elm_lang$core$Native_List.fromArray(
+											[
+												_elm_lang$html$Html_Events$onClick(_pellagic_puffbomb$simpleservantblog$Admin_Types$GoToAdminMain),
+												_elm_lang$html$Html_Attributes$class('button')
+											]),
+										_elm_lang$core$Native_List.fromArray(
+											[
+												_elm_lang$html$Html$text('Hi, '),
+												_elm_lang$html$Html$text(state.user)
+											]))
 									]))
 							]))
 					]))
@@ -11252,8 +12124,8 @@ var _pellagic_puffbomb$simpleservantblog$Admin$view = function (state) {
 };
 var _pellagic_puffbomb$simpleservantblog$Admin$update = F2(
 	function (message, model) {
-		var _p0 = message;
-		switch (_p0.ctor) {
+		var _p5 = message;
+		switch (_p5.ctor) {
 			case 'NoOp':
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
@@ -11263,47 +12135,92 @@ var _pellagic_puffbomb$simpleservantblog$Admin$update = F2(
 			case 'GoToAdminMain':
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
-					model,
+					_elm_lang$core$Native_Utils.update(
+						model,
+						{content: _elm_lang$core$Maybe$Nothing}),
 					_elm_lang$core$Native_List.fromArray(
 						[]));
-			case 'ServerList':
-				return A2(
-					_elm_lang$core$Platform_Cmd_ops['!'],
-					model,
-					_elm_lang$core$Native_List.fromArray(
-						[]));
-			case 'ServerDetail':
-				return A2(
-					_elm_lang$core$Platform_Cmd_ops['!'],
-					model,
-					_elm_lang$core$Native_List.fromArray(
-						[]));
-			case 'SeeListContent':
-				return A2(
-					_elm_lang$core$Platform_Cmd_ops['!'],
-					model,
-					_elm_lang$core$Native_List.fromArray(
-						[]));
-			case 'SeeDetailContent':
-				return A2(
-					_elm_lang$core$Platform_Cmd_ops['!'],
-					model,
-					_elm_lang$core$Native_List.fromArray(
-						[]));
+			case 'FromAdminBackend':
+				var _p7 = _p5._0;
+				var _p6 = _p7;
+				if (_p6.ctor === 'AdminResultResp') {
+					return A2(
+						_elm_lang$core$Platform_Cmd_ops['!'],
+						_elm_lang$core$Native_Utils.update(
+							model,
+							{content: _elm_lang$core$Maybe$Nothing}),
+						_elm_lang$core$Native_List.fromArray(
+							[]));
+				} else {
+					return A2(
+						_elm_lang$core$Platform_Cmd_ops['!'],
+						_elm_lang$core$Native_Utils.update(
+							model,
+							{
+								content: _elm_lang$core$Maybe$Just(_p7)
+							}),
+						_elm_lang$core$Native_List.fromArray(
+							[]));
+				}
+			case 'FromAdminFrontend':
+				var _p8 = _p5._0;
+				switch (_p8.ctor) {
+					case 'AdminGetList':
+						return A2(
+							_elm_lang$core$Platform_Cmd_ops['!'],
+							model,
+							_elm_lang$core$Native_List.fromArray(
+								[
+									_pellagic_puffbomb$simpleservantblog$Admin$retrieveSomeList(_p8._0)
+								]));
+					case 'AdminGetDetail':
+						return A2(
+							_elm_lang$core$Platform_Cmd_ops['!'],
+							model,
+							_elm_lang$core$Native_List.fromArray(
+								[
+									_pellagic_puffbomb$simpleservantblog$Admin$retrieveThing(_p8._0)
+								]));
+					case 'AdminDelete':
+						return A2(
+							_elm_lang$core$Platform_Cmd_ops['!'],
+							model,
+							_elm_lang$core$Native_List.fromArray(
+								[
+									_pellagic_puffbomb$simpleservantblog$Admin$deleteItem(_p8._0)
+								]));
+					case 'AdminCreate':
+						return A2(
+							_elm_lang$core$Platform_Cmd_ops['!'],
+							model,
+							_elm_lang$core$Native_List.fromArray(
+								[
+									_pellagic_puffbomb$simpleservantblog$Admin$createItem(_p8._0)
+								]));
+					default:
+						return A2(
+							_elm_lang$core$Platform_Cmd_ops['!'],
+							model,
+							_elm_lang$core$Native_List.fromArray(
+								[
+									_pellagic_puffbomb$simpleservantblog$Admin$editItem(_p8._0)
+								]));
+				}
 			default:
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					_elm_lang$core$Native_Utils.update(
 						model,
 						{
-							error: _elm_lang$core$Maybe$Just(_p0._0)
+							content: _elm_lang$core$Maybe$Just(
+								_pellagic_puffbomb$simpleservantblog$Admin_Types$BackendError(_p5._0))
 						}),
 					_elm_lang$core$Native_List.fromArray(
 						[]));
 		}
 	});
 var _pellagic_puffbomb$simpleservantblog$Admin$init = function (options) {
-	var state = {route: _pellagic_puffbomb$simpleservantblog$Admin_Types$AdminMain, user: options.username, content: _elm_lang$core$Maybe$Nothing, error: _elm_lang$core$Maybe$Nothing};
+	var state = {route: _pellagic_puffbomb$simpleservantblog$Admin_Types$AdminMainR, user: options.username, content: _elm_lang$core$Maybe$Nothing};
 	return {ctor: '_Tuple2', _0: state, _1: _elm_lang$core$Platform_Cmd$none};
 };
 var _pellagic_puffbomb$simpleservantblog$Admin$main = {
@@ -11313,7 +12230,7 @@ var _pellagic_puffbomb$simpleservantblog$Admin$main = {
 			location2messages: _pellagic_puffbomb$simpleservantblog$Admin_Routes$location2messages,
 			init: _pellagic_puffbomb$simpleservantblog$Admin$init,
 			update: _pellagic_puffbomb$simpleservantblog$Admin$update,
-			subscriptions: function (_p1) {
+			subscriptions: function (_p9) {
 				return _elm_lang$core$Platform_Sub$none;
 			},
 			view: _pellagic_puffbomb$simpleservantblog$Admin$view
