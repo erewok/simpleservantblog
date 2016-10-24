@@ -58,12 +58,11 @@ withAssetsApp conn settings rs key = do
   return $ serveWithContext withAssets context server
 
 withAssetsServer :: Pool Connection -> AuthCookieSettings -> RandomSource -> ServerKey -> IO (Server WithAssets)
-withAssetsServer conn settings rs key = do
-  assets <- serveAssets
+withAssetsServer conn settings rs key =
   return (apihandlers conn
             :<|> loginServer conn settings rs key
             :<|> adminBackendHandlers conn
-            :<|> assets)
+            :<|> serveDirectory "assets")
 
 withoutAssetsApp :: Pool Connection -> AuthCookieSettings -> RandomSource -> ServerKey -> IO Application
 withoutAssetsApp conn settings rs key = do

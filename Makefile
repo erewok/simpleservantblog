@@ -17,7 +17,7 @@ server-setup:
 server-build:
 	stack build
 
-server-start: server-build
+server-start: client-build server-build
 	stack exec simpleservantblog-exe
 
 server-start-reserve:

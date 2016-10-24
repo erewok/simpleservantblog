@@ -13,7 +13,7 @@ type Msg
     = NoOp
     | GoToAdminMain
     | FromAdminBackend AdminBackend
-    | FromAdminFrontend Frontend
+    | FromAdminFrontend AdminFrontend
     | Error String
 
 type AdminBackend
@@ -26,7 +26,7 @@ type AdminBackend
     | AdminResultResp ResultResp
     | BackendError String
 
-type Frontend
+type AdminFrontend
     = AdminGetList ListThing
     | AdminGetDetail DetailThing
     | AdminDelete Item

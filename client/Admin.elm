@@ -2,7 +2,6 @@ module Admin exposing (..)
 
 import Platform.Cmd exposing (none)
 import Date exposing (..)
-import Debug exposing (..)
 import Dict exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -17,6 +16,7 @@ import RouteUrl
 import Admin.AdminApi exposing (..)
 import Admin.Routes exposing (..)
 import Admin.Types exposing (..)
+import Admin.Views exposing (..)
 import Blog.Api as Api
 import Blog.Types as BlogTypes
 
@@ -71,26 +71,6 @@ update message model =
         Error error ->
           { model | content = Just <| BackendError error } ! []
 
-view : Model -> Html Msg
-view state =
-  div [ class "container"] [
-    header [ id "page-header", class "top-nav"] [
-      div [ class "row" ] [
-        div [ class "four columns", style [("margin-top", "2%")] ] [
-          a [ onClick (FromAdminFrontend <| AdminGetList ListUsers), class "button"]
-            [ text "Users" ]
-          ]
-        , div [ class "four columns", style [("margin-top", "2%")] ] [
-            a [ onClick (FromAdminFrontend <| AdminGetList ListPosts), class "button" ]
-              [ text "Posts" ]
-          ]
-        , div [ class "four columns", style [("margin-top", "2%")] ] [
-            a [ onClick GoToAdminMain, class "button" ]
-              [ text <| "Hi, ", (text state.user) ]
-          ]
-        ]
-      ]
-    ]
 
 retrieveSomeList : ListThing -> Cmd Msg
 retrieveSomeList someList = case someList of
