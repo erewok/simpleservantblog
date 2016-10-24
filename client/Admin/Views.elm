@@ -7,6 +7,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Http
 import List exposing (..)
+import Markdown as M
 import String exposing (..)
 
 import Admin.AdminApi exposing (..)
@@ -21,21 +22,25 @@ view state =
   div [ class "container"] [
     header [ id "page-header", class "top-nav"] [
       div [ class "row" ] [
-        div [ class "four columns", style [("margin-top", "2%")] ] [
-          a [ onClick (FromAdminFrontend <| AdminGetList ListUsers), class "button"]
+        div [ class "two columns", style [("margin-top", "2%")] ] [
+          a [ onClick GoToAdminMain, class "button admin-button" ]
+            [ text <| "Hi, ", (text state.user) ]
+          ]
+        , div [ class "two columns", style [("margin-top", "2%")] ] [
+          a [ onClick (FromAdminFrontend <| AdminGetList ListUsers), class "button admin-button"]
             [ text "Users" ]
           ]
-        , div [ class "four columns", style [("margin-top", "2%")] ] [
-            a [ onClick (FromAdminFrontend <| AdminGetList ListSeries), class "button" ]
+        , div [ class "two columns", style [("margin-top", "2%")] ] [
+            a [ onClick (FromAdminFrontend <| AdminGetList ListSeries), class "button admin-button" ]
               [ text "Series" ]
           ]
-        , div [ class "four columns", style [("margin-top", "2%")] ] [
-            a [ onClick (FromAdminFrontend <| AdminGetList ListPosts), class "button" ]
+        , div [ class "two columns", style [("margin-top", "2%")] ] [
+            a [ onClick (FromAdminFrontend <| AdminGetList ListPosts), class "button admin-button" ]
               [ text "Posts" ]
           ]
-        , div [ class "four columns", style [("margin-top", "2%")] ] [
-            a [ onClick GoToAdminMain, class "button" ]
-              [ text <| "Hi, ", (text state.user) ]
+        , div [ class "two columns", style [("margin-top", "2%")] ] [
+            a [ class "button admin-button", href "/"]
+              [ text <| "View Site" ]
           ]
         ]
       ]
@@ -79,7 +84,6 @@ adminPostsTable posts =
         th [] [ text "Id" ]
         , th [] [ text "Title" ]
         , th [] [ text "Pubdate" ]
-        , th [] [ text "Synopsis" ]
         , th [] [ text "Order" ]
         , th [] [ text "Series Id" ]
         , th [] [ text "Series Name" ]
@@ -89,15 +93,13 @@ adminPostsTable posts =
   ]
 viewPostInTable : Api.PostOverview -> Html Msg
 viewPostInTable post =
-  tr [] [
-    th [] [ a [ onClick (FromAdminFrontend
-                          <| AdminGetDetail
-                          <| DetailPost post.pid) ] [
-          text (toString post.pid) ]
-      ]
+  tr [ class "admin-editable"
+      , onClick (FromAdminFrontend
+                  <| AdminGetDetail
+                  <| DetailPost post.pid) ] [
+    th [] [ text (toString post.pid) ]
     , th [] [ text post.ptitle ]
     , th [] [ text (BlogViews.fromJustDate post.ppubdate) ]
-    , th [] [ text (BlogViews.fromJustStr post.psynopsis) ]
     , th [] [ text (toString post.pordinal) ]
     , th [] [ text (toString post.pseriesid) ]
     , th [] [ text (BlogViews.fromJustStr post.pseriesname) ]
@@ -119,12 +121,11 @@ adminSeriesTable series =
   ]
 viewSeriesInTable : Api.BlogSeries -> Html Msg
 viewSeriesInTable series =
-  tr [] [
-    th [] [ a [ onClick (FromAdminFrontend
-                          <| AdminGetDetail
-                          <| DetailSeries series.sid) ] [
-          text (toString series.sid) ]
-        ]
+  tr [ class "admin-editable"
+      , onClick (FromAdminFrontend
+                  <| AdminGetDetail
+                  <| DetailSeries series.sid) ] [
+    th [] [ text (toString series.sid) ]
     , th [] [ text series.name ]
     , th [] [ text series.description ]
     , th [] [ text (toString series.parentid) ]
@@ -145,12 +146,11 @@ adminAuthorTable authors =
   ]
 viewAuthorInTable : Api.Author -> Html Msg
 viewAuthorInTable author =
-  tr [] [
-    th [] [ a [ onClick (FromAdminFrontend
-                          <| AdminGetDetail
-                          <| DetailUser author.aid) ] [
-          text (toString author.aid) ]
-      ]
+  tr [ class "admin-editable"
+      , onClick (FromAdminFrontend
+                  <| AdminGetDetail
+                  <| DetailUser author.aid) ] [
+      th [] [ text (toString author.aid) ]
     , th [] [ text author.firstName ]
     , th [] [ text author.lastName ]
     , th [] [ text author.email ]

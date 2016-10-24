@@ -31,14 +31,11 @@ data SearchType = FirstName Text
 
 type UserApi = "user" :> Capture "firstName" Text  :> Get  '[JSON] [Author]
   :<|> "user" :> Capture "lastName" Text  :> Get  '[JSON] [Author]
-  :<|> "user" :> Capture "id" Int  :> Get  '[JSON] Author
 
 userHandlers conn = userFNameSearchH
                    :<|> userLNameSearchH
-                   :<|> userDetailH
   where userFNameSearchH name = withResource conn $ flip getUser (FirstName name)
         userLNameSearchH name = withResource conn $ flip getUser (LastName name)
-        userDetailH userId = withResource conn $ flip getUserById userId
 
 getUser :: Connection -> SearchType -> Handler [Author]
 getUser conn searchValue = case searchValue of
@@ -49,11 +46,3 @@ getUser conn searchValue = case searchValue of
       let q = "select from author where lastName = ?"
       liftIO $ query conn q (Only lname)
     _ -> return []
-
-getUserById :: Connection -> Int -> Handler Author
-getUserById conn userId = do
-  let q = "select * from author where id = ?"
-  res <- liftIO $ query conn q (Only userId)
-  case res of
-    (x:_) -> return x
-    _ -> throwError err404

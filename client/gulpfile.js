@@ -32,4 +32,9 @@ gulp.task('compress-admin-js', function() {
     .pipe(gulp.dest('../assets/js'))
 });
 
+gulp.task('watch', function() {
+  gulp.watch('../assets/**/*js', ['compress-js', 'compress-admin-js']);
+  gulp.watch('../assets/**/*css', ['minify-css']);
+});
+
 gulp.task('default', ['minify-css', 'compress-js', 'compress-admin-js']);

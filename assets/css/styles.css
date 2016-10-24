@@ -64,3 +64,18 @@ body {
   background-color: rgba(245, 245, 245, 0.3);
   padding-left: 1rem;
 }
+
+a.admin-button {
+  border: none;
+  background-color: rgba(245, 245, 245, 0.5);
+}
+
+tr.admin-editable {
+  text-decoration: none;
+  color: #222;
+}
+
+tr.admin-editable:hover {
+  background-color: rgba(245, 245, 245, 0.3);
+  color: #2268DD;
+}

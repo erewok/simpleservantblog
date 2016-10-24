@@ -11685,31 +11685,6 @@ var _pellagic_puffbomb$simpleservantblog$Blog_Api$getUserByLastName = function (
 		_elm_lang$core$Json_Decode$list(_pellagic_puffbomb$simpleservantblog$Blog_Api$decodeAuthor),
 		A2(_evancz$elm_http$Http$send, _evancz$elm_http$Http$defaultSettings, request));
 };
-var _pellagic_puffbomb$simpleservantblog$Blog_Api$getUserById = function (id) {
-	var request = {
-		verb: 'GET',
-		headers: _elm_lang$core$Native_List.fromArray(
-			[
-				{ctor: '_Tuple2', _0: 'Content-Type', _1: 'application/json'}
-			]),
-		url: A2(
-			_elm_lang$core$Basics_ops['++'],
-			'/',
-			A2(
-				_elm_lang$core$Basics_ops['++'],
-				'user',
-				A2(
-					_elm_lang$core$Basics_ops['++'],
-					'/',
-					_evancz$elm_http$Http$uriEncode(
-						_elm_lang$core$Basics$toString(id))))),
-		body: _evancz$elm_http$Http$empty
-	};
-	return A2(
-		_evancz$elm_http$Http$fromJson,
-		_pellagic_puffbomb$simpleservantblog$Blog_Api$decodeAuthor,
-		A2(_evancz$elm_http$Http$send, _evancz$elm_http$Http$defaultSettings, request));
-};
 
 var _pellagic_puffbomb$simpleservantblog$Blog_Types$Model = F3(
 	function (a, b, c) {

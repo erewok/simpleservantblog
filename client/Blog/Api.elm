@@ -238,22 +238,3 @@ getUserByLastName lastName =
     Http.fromJson
       (Json.Decode.list decodeAuthor)
       (Http.send Http.defaultSettings request)
-
-getUserById : Int -> Task.Task Http.Error (Author)
-getUserById id =
-  let
-    request =
-      { verb =
-          "GET"
-      , headers =
-          [("Content-Type", "application/json")]
-      , url =
-          "/" ++ "user"
-          ++ "/" ++ (id |> toString |> Http.uriEncode)
-      , body =
-          Http.empty
-      }
-  in
-    Http.fromJson
-      decodeAuthor
-      (Http.send Http.defaultSettings request)

@@ -46,6 +46,26 @@ getAdminUser =
       (Json.Decode.list decodeAuthor)
       (Http.send Http.defaultSettings request)
 
+getAdminUserById : Int -> Task.Task Http.Error (Author)
+getAdminUserById id =
+  let
+    request =
+      { verb =
+          "GET"
+      , headers =
+          [("Content-Type", "application/json")]
+      , url =
+          "/" ++ "admin"
+          ++ "/" ++ "user"
+          ++ "/" ++ (id |> toString |> Http.uriEncode)
+      , body =
+          Http.empty
+      }
+  in
+    Http.fromJson
+      decodeAuthor
+      (Http.send Http.defaultSettings request)
+
 encodeAuthor : Author -> Json.Encode.Value
 encodeAuthor x =
   Json.Encode.object

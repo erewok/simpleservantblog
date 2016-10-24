@@ -1,8 +1,8 @@
-all: setup build
+all: setup build server-start
 
 setup: client-setup server-setup
 
-build: client-build server-build
+build: server-build client-build
 
 client-setup:
 	(cd client ; elm package install -y)
@@ -17,7 +17,7 @@ server-setup:
 server-build:
 	stack build
 
-server-start: client-build server-build
+server-start: build
 	stack exec simpleservantblog-exe
 
 server-start-reserve:

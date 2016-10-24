@@ -47,6 +47,7 @@ type AdminBackend =
 
 
 type AdminApi = "admin" :> "user" :> AuthProtect "cookie-auth" :> Get '[JSON] [Author]
+  :<|> "admin" :> "user" :> Capture "id" Int  :> AuthProtect "cookie-auth" :> Get '[JSON] Author
   :<|> "admin" :> "user" :> ReqBody '[JSON] Author :> AuthProtect "cookie-auth" :> Post '[JSON] Author
   :<|> "admin" :> "user" :> Capture "id" Int :> ReqBody '[JSON] Author :> AuthProtect "cookie-auth" :> Put '[JSON] ResultResp
   :<|> "admin" :> "user" :> Capture "id" Int :> AuthProtect "cookie-auth" :> Delete '[JSON] ResultResp
@@ -63,6 +64,7 @@ adminBackendHandlers conn = adminPage
 
 adminHandlers :: Pool Connection -> Server AdminApi
 adminHandlers conn = getUsersH
+                :<|> userDetailH
                 :<|> userAddH
                 :<|> userUpdateH
                 :<|> userDeleteH
@@ -73,6 +75,7 @@ adminHandlers conn = getUsersH
                 :<|> blogSeriesUpdateH
                 :<|> blogSeriesDeleteH
   where getUsersH _ = go getUsers
+        userDetailH userId _ = go $ getUserById userId
         userAddH newUser _ = go $ addUser newUser
         userUpdateH userId user _ = go $ updateUser userId user
         userDeleteH userId _ = go $ deleteUser userId
@@ -91,6 +94,14 @@ getUsers :: Connection -> Handler [Author]
 getUsers conn = do
   let q = "select * from author"
   liftIO $ query_ conn q
+
+getUserById :: Int -> Connection -> Handler Author
+getUserById userId conn = do
+  let q = "select * from author where id = ?"
+  res <- liftIO $ query conn q (Only userId)
+  case res of
+    (x:_) -> return x
+    _ -> throwError err404
 
 addUser :: Author -> Connection -> Handler Author
 addUser newUser conn = do

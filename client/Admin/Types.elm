@@ -52,8 +52,10 @@ type Route
     = AdminMainR
     | AdminPostListR
     | AdminUserListR
+    | AdminSeriesListR
     | AdminPostDetailR PostId
     | AdminUserDetailR UserId
+    | AdminSeriesDetailR SeriesId
 
 type Editable
   = Inline

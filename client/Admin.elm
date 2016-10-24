@@ -49,7 +49,7 @@ update message model =
         NoOp ->
           model ! []
         GoToAdminMain ->
-          {model | content = Nothing } ! []
+          { model | content = Nothing, route = AdminMainR } ! []
         FromAdminBackend backend ->
           case backend of
             AdminResultResp _ ->
@@ -59,9 +59,21 @@ update message model =
         FromAdminFrontend frontend ->
           case frontend of
             AdminGetList someList ->
-              model ! [ retrieveSomeList someList ]
+              case someList of
+                ListPosts ->
+                  { model | route = AdminPostListR } ! [ retrievePostList ]
+                ListUsers ->
+                  { model | route = AdminUserListR } ! [ retrieveUserList ]
+                ListSeries ->
+                  { model | route = AdminSeriesListR } ! [ retrieveSeriesList ]
             AdminGetDetail someThing ->
-              model ! [ retrieveThing someThing]
+              case someThing of
+                DetailPost postId ->
+                  { model | route = AdminPostDetailR postId } ! [ retrievePost postId ]
+                DetailSeries seriesId ->
+                    { model | route = AdminSeriesDetailR seriesId } ! [ retrieveSeries seriesId ]
+                DetailUser userId ->
+                  { model | route = AdminUserDetailR userId } ! [ retrieveUser userId ]
             AdminDelete item ->
               model ! [ deleteItem item ]
             AdminCreate item ->
@@ -71,18 +83,6 @@ update message model =
         Error error ->
           { model | content = Just <| BackendError error } ! []
 
-
-retrieveSomeList : ListThing -> Cmd Msg
-retrieveSomeList someList = case someList of
-  ListPosts -> retrievePostList
-  ListUsers -> retrieveUserList
-  ListSeries -> retrieveSeriesList
-
-retrieveThing : DetailThing -> Cmd Msg
-retrieveThing someThing =  case someThing of
-  DetailPost postId -> retrievePost postId
-  DetailSeries seriesId -> retrieveSeries seriesId
-  DetailUser userId -> retrieveUser userId
 
 deleteItem : Item -> Cmd Msg
 deleteItem item = case item of
@@ -134,7 +134,7 @@ retrieveSeries seriesId =
 
 retrieveUser : UserId -> Cmd Msg
 retrieveUser userId =
-  Api.getUserById userId
+  getAdminUserById userId
     |> Task.mapError toString
     |> Task.perform Error (\user -> FromAdminBackend <| AdminUserDetail user)
 

@@ -30,6 +30,8 @@ routeParser =
         , format AdminPostDetailR (s "posts"  </> int)
         , format AdminUserListR (s "users")
         , format AdminUserDetailR (s "users" </> int)
+        , format AdminSeriesListR (s "series")
+        , format AdminSeriesDetailR (s "series" </> int)
         , format AdminMainR (s "")
         ]
 
@@ -53,6 +55,10 @@ location2messages location =
                   [ FromAdminFrontend <| AdminGetList ListUsers ]
                 AdminUserDetailR userId ->
                   [ FromAdminFrontend <| AdminGetDetail <| DetailUser userId ]
+                AdminSeriesListR ->
+                  [ FromAdminFrontend <| AdminGetList ListSeries ]
+                AdminSeriesDetailR seriesId ->
+                  [ FromAdminFrontend <| AdminGetDetail <| DetailSeries seriesId ]
         Err error ->
             [ Error error ]
 
@@ -70,3 +76,7 @@ toUrl route =
           "#users"
         AdminUserDetailR userId ->
           "#users/" ++ toString userId
+        AdminSeriesListR ->
+          "#series"
+        AdminSeriesDetailR seriesId ->
+          "#series/" ++ toString seriesId
