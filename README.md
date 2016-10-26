@@ -13,7 +13,7 @@ personal interest, so it may never be finished, but it's pretty fun to work on.
 - Build User-add, User-edit admin stuff
 - Make elm-admin bundle
 - Make Posts FK to User table, not author, Or use author as one-to-one with User
-- Implement series list page.
+- ~~Implement series list page.~~
 - Copy users-postgresql-simple initUserBackend functionality for other tables
 - Add "prev/next" links for regular posts.
 - Implement media associated with posts.

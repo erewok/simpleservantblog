@@ -79,3 +79,9 @@ tr.admin-editable:hover {
   background-color: rgba(245, 245, 245, 0.3);
   color: #2268DD;
 }
+.post-body-input {
+  height: 800px;
+}
+.post-synopsis-input {
+  height: 300px;
+}

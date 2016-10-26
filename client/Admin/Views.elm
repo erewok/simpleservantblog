@@ -19,7 +19,7 @@ import Blog.Post as BlogViews
 
 view : Model -> Html Msg
 view state =
-  div [ class "container"] [
+  div [] [
     header [ id "page-header", class "top-nav"] [
       div [ class "row" ] [
         div [ class "two columns", style [("margin-top", "2%")] ] [
@@ -158,12 +158,68 @@ viewAuthorInTable author =
 
 adminPostEdit : Api.BlogPost -> Html Msg
 adminPostEdit post =
-  div [] [ text "edit post" ]
+  div [ class "edit-main" ] [
+    div [ class "row" ] [
+      div [ class "eight columns" ] [
+          p [] [ b [] [ text "Id: " ], text (toString post.bid) ]
+          , p [] [ ]
+          , p [] [ text "title" ]
+          , p [] [ text post.title ]
+          , p [] [ text "pubdate" ]
+          , p [] [ text (BlogViews.fromJustDate post.pubdate) ]
+          , p [] [ text "Order" ]
+          , p [] [ text (toString post.ordinal) ]
+          ]
+    , div [ class "four columns" ] [
+      a [ class "button button-primary"
+          , onClick <| FromAdminFrontend <| AdminEdit <| PI post
+        ] [ text "Save" ]
+      ]
+    ]
+  , hr [] []
+  , div [class "row" ] [
+      div [class "six columns" ] [
+        textarea [ style [("width", "100%")]
+                 , placeholder "Body"
+                 , class "post-synopsis-input"
+                 , onInput (updatePostSynopsis post) ] [
+                    text (BlogViews.fromJustStr post.synopsis)
+                ]
+      ]
+      , div [class "six columns" ] [
+        M.toHtml [ class "post-synopsis" ]  (BlogViews.fromJustStr post.synopsis)
+      ]
+    ]
+  , hr [] []
+  , div [class "row" ] [
+      div [ class "six columns" ] [
+        textarea [ style [("width", "100%") ]
+                 , placeholder "Body"
+                 , class "post-body-input"
+                 , onInput (updatePostBody post) ] [
+                    text (BlogViews.fromJustStr post.body)
+                ]
+      ]
+    , div [ class "six columns" ] [
+        M.toHtml [ class "post-body" ] (BlogViews.fromJustStr post.body)
+      ]
+    ]
+  ]
+
+updatePostBody : Api.BlogPost -> String -> Msg
+updatePostBody post body = case body of
+  "" -> FromAdminBackend (AdminPostDetail { post | body = Nothing })
+  _ -> FromAdminBackend (AdminPostDetail { post | body = Just body })
+
+updatePostSynopsis : Api.BlogPost -> String -> Msg
+updatePostSynopsis post synopsis = case synopsis of
+  "" -> FromAdminBackend (AdminPostDetail { post | synopsis = Nothing })
+  _ -> FromAdminBackend (AdminPostDetail { post | synopsis = Just synopsis })
 
 adminSeriesEdit : Api.BlogSeries -> Html Msg
 adminSeriesEdit series =
-  div [] [ text "edit series" ]
+  div [ class "edit-main" ] [ text "edit series" ]
 
 adminAuthorEdit : Api.Author -> Html Msg
 adminAuthorEdit author =
-  div [] [ text "edit author" ]
+  div [ class "edit-main" ] [ text "edit author" ]
