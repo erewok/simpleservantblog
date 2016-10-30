@@ -8,6 +8,7 @@ module Api
     ( BlogApi
     , adminProxyApi
     , blogApi
+    , createAllTables
     , withAssets
     , withAssetsApp
     , withoutAssets
@@ -23,6 +24,7 @@ import           Network.Wai.MakeAssets
 import           Servant
 import           Servant.Server.Experimental.Auth        (AuthHandler)
 import           Servant.Server.Experimental.Auth.Cookie
+import           Web.Users.Types                         (UserStorageBackend (..))
 
 import           Api.Admin.Admin
 import           Api.Admin.Login
@@ -30,6 +32,9 @@ import           Api.Post
 import           Api.User
 import           Html.About
 import           Html.Home
+import           Models.Author                           (createAuthorTable)
+import           Models.Post                             (createPostTable,
+                                                          createSeriesTable)
 
 
 -- This one is separate so elm can generate for it
@@ -74,6 +79,13 @@ withoutAssetsServer :: Pool Connection -> AuthCookieSettings -> RandomSource -> 
 withoutAssetsServer conn settings rs key = return $ apihandlers conn
                                       :<|> loginServer conn settings rs key
                                       :<|> adminBackendHandlers conn
+
+createAllTables :: Connection -> IO ()
+createAllTables conn = initUserBackend conn >>
+    execute_ conn createAuthorTable >>
+      execute_ conn createSeriesTable >>
+        execute_ conn createPostTable >>
+          return ()
 
 blogApi :: Proxy BlogApi
 blogApi = Proxy

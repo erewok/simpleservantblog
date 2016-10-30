@@ -14,6 +14,7 @@ import Task
 
 type alias Author =
   { aid : Int
+  , userid : Int
   , firstName : String
   , lastName : String
   , email : String
@@ -23,6 +24,7 @@ decodeAuthor : Json.Decode.Decoder Author
 decodeAuthor =
   Json.Decode.succeed Author
     |: ("aid" := Json.Decode.int)
+    |: ("userid" := Json.Decode.int)
     |: ("firstName" := Json.Decode.string)
     |: ("lastName" := Json.Decode.string)
     |: ("email" := Json.Decode.string)
@@ -70,6 +72,7 @@ encodeAuthor : Author -> Json.Encode.Value
 encodeAuthor x =
   Json.Encode.object
     [ ( "aid", Json.Encode.int x.aid )
+    , ( "userid", Json.Encode.int x.userid )
     , ( "firstName", Json.Encode.string x.firstName )
     , ( "lastName", Json.Encode.string x.lastName )
     , ( "email", Json.Encode.string x.email )

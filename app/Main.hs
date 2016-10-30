@@ -2,15 +2,16 @@
 
 module Main where
 
+import           Crypto.Cipher.AES                       (AES256)
+import           Crypto.Cipher.Types
+import           Crypto.Hash.Algorithms                  (SHA256)
 import           Crypto.Random                           (drgNew)
-import Crypto.Cipher.AES (AES256)
-import Crypto.Hash.Algorithms (SHA256)
-import Crypto.Cipher.Types
 import           Data.Default
-import Data.Proxy
+import           Data.Proxy
 import           Network.Wai.Handler.Warp                as Warp
 import           Servant.Server.Experimental.Auth.Cookie
 import           System.Environment                      (lookupEnv)
+
 
 import qualified Api                                     as A
 import qualified Config                                  as C
@@ -49,7 +50,7 @@ main = do
   let logger = C.setLogger environment
   cookieSettings <- case environment of
     C.Local -> pure localCookieSettings
-    _ -> def  -- From Default Library, uses Default instance
+    _       -> def  -- From Default Library, uses Default instance
 
   let app = if environment == C.Local then A.withAssetsApp else A.withoutAssetsApp
   app pool cookieSettings rs sk >>= Warp.run port <$> logger

@@ -2,6 +2,7 @@
 {-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE NoImplicitPrelude     #-}
 {-# LANGUAGE OverloadedStrings     #-}
+{-# LANGUAGE QuasiQuotes           #-}
 
 module Models.Post (
   BlogSeries(..)
@@ -10,6 +11,8 @@ module Models.Post (
   , PostOverview(..)
   , postOverviewAllQuery
   , seriesPostsQuery
+  , createSeriesTable
+  , createPostTable
   ) where
 
 import           Control.Applicative                ((<$>), (<*>))
@@ -19,12 +22,12 @@ import           Data.Maybe
 import qualified Data.Text                          as T
 import           Data.Time                          (UTCTime)
 import           Database.PostgreSQL.Simple.FromRow (FromRow, field, fromRow)
+import           Database.PostgreSQL.Simple.SqlQQ
 import           Database.PostgreSQL.Simple.ToField (toField)
 import           Database.PostgreSQL.Simple.ToRow   (ToRow, toRow)
 import           Database.PostgreSQL.Simple.Types   (Query(..))
 import           GHC.Generics
-import           Prelude                            (Bool, Eq, Int, Show, ($),
-                                                     (++), (.))
+import           Prelude                            (Eq, Int, Show, ($), (.))
 import           Servant.Elm
 
 --
@@ -33,7 +36,7 @@ import           Servant.Elm
 
 -- PostOverview
 data PostOverview = PostOverview {
-  pid                 :: !Int
+  pid                  :: !Int
   , ptitle             :: !T.Text
   , psynopsis          :: Maybe T.Text
   , ppubdate           :: Maybe UTCTime
@@ -66,10 +69,10 @@ seriesPostsQuery = Query $ B.unwords [
                               , "order by ordinal"
                               ]
 data PostSeries = PostSeries {
-  previous :: [BlogPost]
+  previous  :: [BlogPost]
   , current :: BlogPost
-  , next :: [BlogPost]
-  , series :: BlogSeries
+  , next    :: [BlogPost]
+  , series  :: BlogSeries
 } deriving (Eq, Show, Generic)
 instance ElmType PostSeries
 instance ToJSON PostSeries
@@ -133,3 +136,43 @@ instance ToRow BlogPost where
              , toField $ pubdate p
              , toField $ ordinal p
              ]
+
+
+createPostTable :: Query
+createPostTable =
+   [sql|
+         CREATE TABLE IF NOT EXISTS post (
+            id            SERIAL UNIQUE,
+            authorid      INTEGER NOT NULL,
+            seriesid      integer,
+            title         character varying(255) NOT NULL,
+            body          text,
+            synopsis      text,
+            created       timestamp with time zone NOT NULL,
+            modified      timestamp with time zone,
+            pubdate       timestamp with time zone,
+            ordinal       integer,
+            CONSTRAINT post_pkey PRIMARY KEY (id),
+            CONSTRAINT author_id_post_fk FOREIGN KEY (authorid)
+                REFERENCES public.author (id) MATCH SIMPLE
+                ON UPDATE NO ACTION ON DELETE CASCADE,
+            CONSTRAINT series_id_post_fk FOREIGN KEY (seriesid)
+                REFERENCES public.series (id) MATCH SIMPLE
+                ON UPDATE NO ACTION ON DELETE NO ACTION
+         );
+   |]
+
+
+createSeriesTable :: Query
+createSeriesTable =
+  [sql|
+     CREATE TABLE series (
+       id          serial primary key,
+       name        text NOT NULL,
+       description text NOT NULL,
+       parentid    integer,
+       CONSTRAINT parent_series_fkey FOREIGN KEY (parentid)
+           REFERENCES public.series (id) MATCH SIMPLE
+           ON UPDATE NO ACTION ON DELETE NO ACTION
+    );
+  |]
