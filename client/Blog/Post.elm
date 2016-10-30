@@ -22,18 +22,21 @@ fromJustStr someval =
             t
 
 
+dateToString : Date -> String
+dateToString date =
+  toString (day date)
+      ++ " "
+      ++ toString (month date)
+      ++ " "
+      ++ toString (year date)
+
 fromJustDate : Maybe Date -> String
 fromJustDate somedate =
     case somedate of
         Nothing ->
             ""
 
-        Just date ->
-            toString (day date)
-                ++ " "
-                ++ toString (month date)
-                ++ " "
-                ++ toString (year date)
+        Just date -> dateToString date
 
 
 viewPostSummary : PostOverview -> Html Msg

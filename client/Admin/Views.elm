@@ -167,6 +167,8 @@ adminPostEdit post =
           , p [] [ text post.title ]
           , p [] [ text "pubdate" ]
           , p [] [ text (BlogViews.fromJustDate post.pubdate) ]
+          , p [] [ text "Created" ]
+          , p [] [ text (BlogViews.dateToString post.created) ]
           , p [] [ text "Order" ]
           , p [] [ text (toString post.ordinal) ]
           ]

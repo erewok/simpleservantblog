@@ -12059,33 +12059,35 @@ var _pellagic_puffbomb$simpleservantblog$Blog_Routes$delta2url = F2(
 		}
 	});
 
+var _pellagic_puffbomb$simpleservantblog$Blog_Post$dateToString = function (date) {
+	return A2(
+		_elm_lang$core$Basics_ops['++'],
+		_elm_lang$core$Basics$toString(
+			_elm_lang$core$Date$day(date)),
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			' ',
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				_elm_lang$core$Basics$toString(
+					_elm_lang$core$Date$month(date)),
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					' ',
+					_elm_lang$core$Basics$toString(
+						_elm_lang$core$Date$year(date))))));
+};
 var _pellagic_puffbomb$simpleservantblog$Blog_Post$fromJustDate = function (somedate) {
 	var _p0 = somedate;
 	if (_p0.ctor === 'Nothing') {
 		return '';
 	} else {
-		var _p1 = _p0._0;
-		return A2(
-			_elm_lang$core$Basics_ops['++'],
-			_elm_lang$core$Basics$toString(
-				_elm_lang$core$Date$day(_p1)),
-			A2(
-				_elm_lang$core$Basics_ops['++'],
-				' ',
-				A2(
-					_elm_lang$core$Basics_ops['++'],
-					_elm_lang$core$Basics$toString(
-						_elm_lang$core$Date$month(_p1)),
-					A2(
-						_elm_lang$core$Basics_ops['++'],
-						' ',
-						_elm_lang$core$Basics$toString(
-							_elm_lang$core$Date$year(_p1))))));
+		return _pellagic_puffbomb$simpleservantblog$Blog_Post$dateToString(_p0._0);
 	}
 };
 var _pellagic_puffbomb$simpleservantblog$Blog_Post$postTitle = function (po) {
-	var _p2 = po.pseriesid;
-	if (_p2.ctor === 'Nothing') {
+	var _p1 = po.pseriesid;
+	if (_p1.ctor === 'Nothing') {
 		return A2(
 			_elm_lang$html$Html$div,
 			_elm_lang$core$Native_List.fromArray(
@@ -12150,7 +12152,7 @@ var _pellagic_puffbomb$simpleservantblog$Blog_Post$postTitle = function (po) {
 								[
 									_elm_lang$html$Html_Events$onClick(
 									_pellagic_puffbomb$simpleservantblog$Blog_Types$FromFrontend(
-										A2(_pellagic_puffbomb$simpleservantblog$Blog_Types$SeeSeriesPostDetail, po.pid, _p2._0)))
+										A2(_pellagic_puffbomb$simpleservantblog$Blog_Types$SeeSeriesPostDetail, po.pid, _p1._0)))
 								]),
 							_elm_lang$core$Native_List.fromArray(
 								[
@@ -12172,11 +12174,11 @@ var _pellagic_puffbomb$simpleservantblog$Blog_Post$postTitle = function (po) {
 	}
 };
 var _pellagic_puffbomb$simpleservantblog$Blog_Post$fromJustStr = function (someval) {
-	var _p3 = someval;
-	if (_p3.ctor === 'Nothing') {
+	var _p2 = someval;
+	if (_p2.ctor === 'Nothing') {
 		return '';
 	} else {
-		return _p3._0;
+		return _p2._0;
 	}
 };
 var _pellagic_puffbomb$simpleservantblog$Blog_Post$postTitleAndSynopsis = function (po) {
@@ -12388,6 +12390,23 @@ var _pellagic_puffbomb$simpleservantblog$Admin_Views$adminPostEdit = function (p
 									[
 										_elm_lang$html$Html$text(
 										_pellagic_puffbomb$simpleservantblog$Blog_Post$fromJustDate(post.pubdate))
+									])),
+								A2(
+								_elm_lang$html$Html$p,
+								_elm_lang$core$Native_List.fromArray(
+									[]),
+								_elm_lang$core$Native_List.fromArray(
+									[
+										_elm_lang$html$Html$text('Created')
+									])),
+								A2(
+								_elm_lang$html$Html$p,
+								_elm_lang$core$Native_List.fromArray(
+									[]),
+								_elm_lang$core$Native_List.fromArray(
+									[
+										_elm_lang$html$Html$text(
+										_pellagic_puffbomb$simpleservantblog$Blog_Post$dateToString(post.created))
 									])),
 								A2(
 								_elm_lang$html$Html$p,

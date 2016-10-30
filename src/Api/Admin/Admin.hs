@@ -13,6 +13,7 @@ import qualified Data.ByteString.Char8                   as B
 import           Data.Monoid                             ((<>))
 import           Data.Pool                               (Pool, withResource)
 import qualified Data.Text                               as T
+import           Data.Time                               (getCurrentTime)
 import           Database.PostgreSQL.Simple
 import           Database.PostgreSQL.Simple.Types        (Query (..))
 import           GHC.Generics
@@ -25,7 +26,7 @@ import           Text.Blaze.Html5                        as H
 import           Text.Blaze.Html5.Attributes             as A
 import qualified Web.Users.Types                         as WU
 
-import           Api.Admin.Login                         (Username(..))
+import           Api.Admin.Login                         (Username (..))
 import           Html.Home                               (pageSkeleton)
 import           Models.Author                           (Author (..))
 import qualified Models.Post                             as Post
@@ -101,7 +102,7 @@ getUserById userId conn = do
   res <- liftIO $ query conn q (Only userId)
   case res of
     (x:_) -> return x
-    _ -> throwError err404
+    _     -> throwError err404
 
 addUser :: Author -> Connection -> Handler Author
 addUser newUser conn = do
@@ -138,8 +139,22 @@ addPost newPost conn = do
 
 addPost' :: Post.BlogPost -> Connection -> IO [Post.BlogPost]
 addPost' newPost conn = do
-  let q = "insert into post values (?, ?, ?)"
-  query conn q newPost
+  let q = Query $ B.unwords ["insert into post (authorid, title, seriesid, "
+                           , "synopsis, pubdate, body, ordinal, created, modified, "
+                           , "pubdate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"]
+  modified <- case Post.modified newPost of
+    Nothing -> Just <$> getCurrentTime
+    Just tm -> Just <$> pure tm
+  liftIO $ query conn q (Post.authorId newPost
+                        , Post.title newPost
+                        , Post.seriesId newPost
+                        , Post.synopsis newPost
+                        , Post.pubdate newPost
+                        , Post.body newPost
+                        , Post.ordinal newPost
+                        , Post.created newPost
+                        , modified
+                        , Post.pubdate newPost)
 
 updatePost :: Int -> Post.BlogPost -> Connection -> Handler ResultResp
 updatePost postId newPost conn = do
