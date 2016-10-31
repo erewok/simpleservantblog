@@ -26,22 +26,20 @@ data Author = Author {
   , userid    :: !Int
   , firstName :: !T.Text
   , lastName  :: !T.Text
-  , email     :: !T.Text
   } deriving (Eq, Show, Generic)
 
 instance ElmType Author
 instance FromJSON Author
 instance ToJSON Author
 instance FromRow Author where
-  fromRow = Author <$> field <*> field <*> field <*> field <*> field
+  fromRow = Author <$> field <*> field <*> field <*> field
 
 
 instance ToRow Author where
   toRow p =  [ toField $ aid p
              , toField $ userid p
              , fieldA firstName
-             , fieldA lastName
-             , fieldA email]
+             , fieldA lastName]
     where
       fieldA = toField . ($ p)
 

@@ -7,10 +7,12 @@ import           Crypto.Cipher.Types
 import           Crypto.Hash.Algorithms                  (SHA256)
 import           Crypto.Random                           (drgNew)
 import           Data.Default
+import           Data.Pool                               (withResource)
 import           Data.Proxy
 import           Network.Wai.Handler.Warp                as Warp
 import           Servant.Server.Experimental.Auth.Cookie
 import           System.Environment                      (lookupEnv)
+import           Web.Users.Types                         (UserStorageBackend (..))
 
 
 import qualified Api                                     as A
@@ -52,5 +54,6 @@ main = do
     C.Local -> pure localCookieSettings
     _       -> def  -- From Default Library, uses Default instance
 
+  withResource pool housekeepBackend -- Housekeeping: eliminate old sessions
   let app = if environment == C.Local then A.withAssetsApp else A.withoutAssetsApp
   app pool cookieSettings rs sk >>= Warp.run port <$> logger

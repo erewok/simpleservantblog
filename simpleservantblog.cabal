@@ -63,7 +63,22 @@ executable simpleservantblog-exe
                      , data-default
                      , resource-pool
                      , servant-auth-cookie
+                     , users
                      , warp
+  default-language:    Haskell2010
+
+executable simpleservantblog-plumbing
+  hs-source-dirs:      app
+  main-is:             Plumbing.hs
+  ghc-options:         -Wall -O2 -threaded -rtsopts -with-rtsopts=-N
+  build-depends:       base
+                     , simpleservantblog
+                     , data-default
+                     , optparse-applicative
+                     , postgresql-simple
+                     , resource-pool
+                     , text
+                     , users
   default-language:    Haskell2010
 
 test-suite simpleservantblog-test

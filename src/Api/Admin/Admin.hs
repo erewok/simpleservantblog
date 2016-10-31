@@ -20,14 +20,11 @@ import           GHC.Generics
 import           Servant
 import           Servant.Elm
 import           Servant.HTML.Blaze
-import           Servant.Server.Experimental.Auth        (AuthHandler)
 import           Servant.Server.Experimental.Auth.Cookie
 import           Text.Blaze.Html5                        as H
 import           Text.Blaze.Html5.Attributes             as A
-import qualified Web.Users.Types                         as WU
 
 import           Api.Admin.Login                         (Username (..))
-import           Html.Home                               (pageSkeleton)
 import           Models.Author                           (Author (..))
 import qualified Models.Post                             as Post
 
@@ -107,16 +104,15 @@ getUserById userId conn = do
 addUser :: Author -> Connection -> Handler Author
 addUser newUser conn = do
   let q = "insert into author values (?, ?, ?)"
-  res <- liftIO $ query conn q newUser
+  res <- liftIO $ query conn q newUser -- should be execute
   if null res then throwError err400 else return $ Prelude.head res
 
 updateUser :: Int -> Author -> Connection -> Handler ResultResp
 updateUser userId newUser conn = do
-  let q = Query $ B.unwords ["update author set firstname = ?, lastname = ?, email = ? "
+  let q = Query $ B.unwords ["update author set firstname = ?, lastname = ? "
                            , "where id = ?"]
   result <- liftIO $ execute conn q (firstName newUser
                                    , lastName newUser
-                                   , email newUser
                                    , userId)
   case result of
     0 -> throwError err400

@@ -10,11 +10,8 @@ module Api.User
     ) where
 
 
-import           Control.Monad.Except
 import           Control.Monad.IO.Class     (liftIO)
-import           Data.Maybe
 import           Data.Pool                  (withResource)
-import           Data.Proxy
 import           Data.Text
 
 import           Database.PostgreSQL.Simple
@@ -25,9 +22,6 @@ import           Models.Author              (Author)
 
 data SearchType = FirstName Text
                   | LastName Text
-                  | BlogTitle Text
-                  | RowId Int
-
 
 type UserApi = "user" :> Capture "firstName" Text  :> Get  '[JSON] [Author]
   :<|> "user" :> Capture "lastName" Text  :> Get  '[JSON] [Author]

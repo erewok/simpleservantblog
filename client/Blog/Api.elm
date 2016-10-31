@@ -191,7 +191,6 @@ type alias Author =
   , userid : Int
   , firstName : String
   , lastName : String
-  , email : String
   }
 
 decodeAuthor : Json.Decode.Decoder Author
@@ -201,7 +200,6 @@ decodeAuthor =
     |: ("userid" := Json.Decode.int)
     |: ("firstName" := Json.Decode.string)
     |: ("lastName" := Json.Decode.string)
-    |: ("email" := Json.Decode.string)
 
 getUserByFirstName : String -> Task.Task Http.Error (List (Author))
 getUserByFirstName firstName =
