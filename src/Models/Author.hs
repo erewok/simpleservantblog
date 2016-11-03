@@ -51,8 +51,6 @@ createAuthorTable =
         userid     integer NOT NULL,
         firstname  character varying(40) NOT NULL,
         lastName   character varying(50),
-        email      character varying NOT NULL,
-        CONSTRAINT unique_email_key UNIQUE (email),
         CONSTRAINT one_to_one_author_userid (userid),
         CONSTRAINT user_id_author_fk FOREIGN KEY (userid)
             REFERENCES public.login (lid) MATCH SIMPLE

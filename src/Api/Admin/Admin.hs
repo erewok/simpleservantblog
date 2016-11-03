@@ -102,26 +102,27 @@ getUserById userId conn = do
     _     -> throwError err404
 
 addUser :: Author -> Connection -> Handler Author
-addUser newUser conn = do
+addUser newAuthor conn = do
   let q = "insert into author values (?, ?, ?)"
-  res <- liftIO $ query conn q newUser -- should be execute
-  if null res then throwError err400 else return $ Prelude.head res
+  res <- liftIO $ execute conn q newAuthor
+  author <- liftIO $ query conn "select * from author where id = ?" (Only res)
+  if null author then throwError err400 else return $ Prelude.head author
 
 updateUser :: Int -> Author -> Connection -> Handler ResultResp
-updateUser userId newUser conn = do
+updateUser userId author conn = do
   let q = Query $ B.unwords ["update author set firstname = ?, lastname = ? "
                            , "where id = ?"]
-  result <- liftIO $ execute conn q (firstName newUser
-                                   , lastName newUser
-                                   , userId)
+  result <- liftIO $ execute conn q (firstName author
+                                   , lastName author
+                                   , aid author)
   case result of
     0 -> throwError err400
     _ -> return $ ResultResp "success" "user updated"
 
 deleteUser :: Int -> Connection -> Handler ResultResp
-deleteUser userId conn = do
+deleteUser authorId conn = do
   let q = "delete from author where id = ?"
-  result <- liftIO $ execute conn q (Only userId)
+  result <- liftIO $ execute conn q (Only authorId)
   case result of
     0 -> throwError err400
     _ -> return $ ResultResp "success" "user deleted"

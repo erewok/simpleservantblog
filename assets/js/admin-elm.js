@@ -10889,17 +10889,12 @@ var _pellagic_puffbomb$simpleservantblog$Admin_AdminApi$encodeAuthor = function 
 				ctor: '_Tuple2',
 				_0: 'lastName',
 				_1: _elm_lang$core$Json_Encode$string(x.lastName)
-			},
-				{
-				ctor: '_Tuple2',
-				_0: 'email',
-				_1: _elm_lang$core$Json_Encode$string(x.email)
 			}
 			]));
 };
-var _pellagic_puffbomb$simpleservantblog$Admin_AdminApi$Author = F5(
-	function (a, b, c, d, e) {
-		return {aid: a, userid: b, firstName: c, lastName: d, email: e};
+var _pellagic_puffbomb$simpleservantblog$Admin_AdminApi$Author = F4(
+	function (a, b, c, d) {
+		return {aid: a, userid: b, firstName: c, lastName: d};
 	});
 var _pellagic_puffbomb$simpleservantblog$Admin_AdminApi$decodeAuthor = A2(
 	_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
@@ -10909,14 +10904,11 @@ var _pellagic_puffbomb$simpleservantblog$Admin_AdminApi$decodeAuthor = A2(
 			_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
 			A2(
 				_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
-				A2(
-					_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
-					_elm_lang$core$Json_Decode$succeed(_pellagic_puffbomb$simpleservantblog$Admin_AdminApi$Author),
-					A2(_elm_lang$core$Json_Decode_ops[':='], 'aid', _elm_lang$core$Json_Decode$int)),
-				A2(_elm_lang$core$Json_Decode_ops[':='], 'userid', _elm_lang$core$Json_Decode$int)),
-			A2(_elm_lang$core$Json_Decode_ops[':='], 'firstName', _elm_lang$core$Json_Decode$string)),
-		A2(_elm_lang$core$Json_Decode_ops[':='], 'lastName', _elm_lang$core$Json_Decode$string)),
-	A2(_elm_lang$core$Json_Decode_ops[':='], 'email', _elm_lang$core$Json_Decode$string));
+				_elm_lang$core$Json_Decode$succeed(_pellagic_puffbomb$simpleservantblog$Admin_AdminApi$Author),
+				A2(_elm_lang$core$Json_Decode_ops[':='], 'aid', _elm_lang$core$Json_Decode$int)),
+			A2(_elm_lang$core$Json_Decode_ops[':='], 'userid', _elm_lang$core$Json_Decode$int)),
+		A2(_elm_lang$core$Json_Decode_ops[':='], 'firstName', _elm_lang$core$Json_Decode$string)),
+	A2(_elm_lang$core$Json_Decode_ops[':='], 'lastName', _elm_lang$core$Json_Decode$string));
 var _pellagic_puffbomb$simpleservantblog$Admin_AdminApi$getAdminUser = function () {
 	var request = {
 		verb: 'GET',
@@ -11618,9 +11610,9 @@ var _pellagic_puffbomb$simpleservantblog$Blog_Api$getSeriesById = function (id) 
 		_pellagic_puffbomb$simpleservantblog$Blog_Api$decodeBlogSeries,
 		A2(_evancz$elm_http$Http$send, _evancz$elm_http$Http$defaultSettings, request));
 };
-var _pellagic_puffbomb$simpleservantblog$Blog_Api$Author = F5(
-	function (a, b, c, d, e) {
-		return {aid: a, userid: b, firstName: c, lastName: d, email: e};
+var _pellagic_puffbomb$simpleservantblog$Blog_Api$Author = F4(
+	function (a, b, c, d) {
+		return {aid: a, userid: b, firstName: c, lastName: d};
 	});
 var _pellagic_puffbomb$simpleservantblog$Blog_Api$decodeAuthor = A2(
 	_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
@@ -11630,14 +11622,11 @@ var _pellagic_puffbomb$simpleservantblog$Blog_Api$decodeAuthor = A2(
 			_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
 			A2(
 				_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
-				A2(
-					_elm_community$elm_json_extra$Json_Decode_Extra_ops['|:'],
-					_elm_lang$core$Json_Decode$succeed(_pellagic_puffbomb$simpleservantblog$Blog_Api$Author),
-					A2(_elm_lang$core$Json_Decode_ops[':='], 'aid', _elm_lang$core$Json_Decode$int)),
-				A2(_elm_lang$core$Json_Decode_ops[':='], 'userid', _elm_lang$core$Json_Decode$int)),
-			A2(_elm_lang$core$Json_Decode_ops[':='], 'firstName', _elm_lang$core$Json_Decode$string)),
-		A2(_elm_lang$core$Json_Decode_ops[':='], 'lastName', _elm_lang$core$Json_Decode$string)),
-	A2(_elm_lang$core$Json_Decode_ops[':='], 'email', _elm_lang$core$Json_Decode$string));
+				_elm_lang$core$Json_Decode$succeed(_pellagic_puffbomb$simpleservantblog$Blog_Api$Author),
+				A2(_elm_lang$core$Json_Decode_ops[':='], 'aid', _elm_lang$core$Json_Decode$int)),
+			A2(_elm_lang$core$Json_Decode_ops[':='], 'userid', _elm_lang$core$Json_Decode$int)),
+		A2(_elm_lang$core$Json_Decode_ops[':='], 'firstName', _elm_lang$core$Json_Decode$string)),
+	A2(_elm_lang$core$Json_Decode_ops[':='], 'lastName', _elm_lang$core$Json_Decode$string));
 var _pellagic_puffbomb$simpleservantblog$Blog_Api$getUserByFirstName = function (firstName) {
 	var request = {
 		verb: 'GET',
@@ -12618,14 +12607,6 @@ var _pellagic_puffbomb$simpleservantblog$Admin_Views$viewAuthorInTable = functio
 				_elm_lang$core$Native_List.fromArray(
 					[
 						_elm_lang$html$Html$text(author.lastName)
-					])),
-				A2(
-				_elm_lang$html$Html$th,
-				_elm_lang$core$Native_List.fromArray(
-					[]),
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$html$Html$text(author.email)
 					]))
 			]));
 };
@@ -12671,14 +12652,6 @@ var _pellagic_puffbomb$simpleservantblog$Admin_Views$adminAuthorTable = function
 								_elm_lang$core$Native_List.fromArray(
 									[
 										_elm_lang$html$Html$text('Last Name')
-									])),
-								A2(
-								_elm_lang$html$Html$th,
-								_elm_lang$core$Native_List.fromArray(
-									[]),
-								_elm_lang$core$Native_List.fromArray(
-									[
-										_elm_lang$html$Html$text('Email')
 									]))
 							]))
 					])),

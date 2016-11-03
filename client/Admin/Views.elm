@@ -139,7 +139,6 @@ adminAuthorTable authors =
         th [] [ text "Id" ]
         , th [] [ text "First Name" ]
         , th [] [ text "Last Name" ]
-        , th [] [ text "Email" ]
       ]
     ]
     , tbody [] <| List.map viewAuthorInTable authors
@@ -153,7 +152,6 @@ viewAuthorInTable author =
       th [] [ text (toString author.aid) ]
     , th [] [ text author.firstName ]
     , th [] [ text author.lastName ]
-    , th [] [ text author.email ]
   ]
 
 adminPostEdit : Api.BlogPost -> Html Msg
