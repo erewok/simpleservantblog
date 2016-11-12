@@ -58,9 +58,15 @@ type Route
     | AdminSeriesDetailR SeriesId
 
 type Editable
-  = Inline
-  | SeparatePage
+  = EditField Field
+  | StoreField Field
+  | SaveAll
+
+type Field
+  = DateField
+  | TextField
 
 type alias PostId = Int
 type alias SeriesId = Int
 type alias UserId = Int
+type alias AuthorId = Int

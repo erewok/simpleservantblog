@@ -61,11 +61,11 @@ update message model =
             AdminGetList someList ->
               case someList of
                 ListPosts ->
-                  { model | route = AdminPostListR } ! [ retrievePostList ]
+                  { model | route = AdminPostListR } ! [ retrieveList ListPosts ]
                 ListUsers ->
-                  { model | route = AdminUserListR } ! [ retrieveUserList ]
+                  { model | route = AdminUserListR } ! [ retrieveList ListUsers ]
                 ListSeries ->
-                  { model | route = AdminSeriesListR } ! [ retrieveSeriesList ]
+                  { model | route = AdminSeriesListR } ! [ retrieveList ListSeries ]
             AdminGetDetail someThing ->
               case someThing of
                 DetailPost postId ->
@@ -84,41 +84,18 @@ update message model =
           { model | content = Just <| BackendError error } ! []
 
 
-deleteItem : Item -> Cmd Msg
-deleteItem item = case item of
-  PI post -> deleteBlogPost post
-  AI author -> deleteAuthor author
-  SI series -> deleteSeries series
-
-createItem : Item -> Cmd Msg
-createItem item = case item of
-  PI post -> createBlogPost post
-  AI author -> createAuthor author
-  SI series -> createSeries series
-
-editItem : Item -> Cmd Msg
-editItem item = case item of
-  PI post -> editBlogPost post
-  AI author -> editAuthor author
-  SI series -> editSeries series
-
-retrievePostList : Cmd Msg
-retrievePostList =
-  Api.getPost
+retrieveList : ListThing -> Cmd Msg
+retrieveList listRequested = case listRequested of
+  ListPosts -> Api.getPost
     |> Task.mapError toString
     |> Task.perform Error (\posts -> FromAdminBackend <| AdminPostList posts)
-
-retrieveSeriesList : Cmd Msg
-retrieveSeriesList =
-  Api.getSeries
+  ListSeries -> Api.getSeries
     |> Task.mapError toString
     |> Task.perform Error (\series -> FromAdminBackend <| AdminSeriesList series)
-
-retrieveUserList : Cmd Msg
-retrieveUserList =
-  getAdminUser
+  ListUsers -> getAdminUser
     |> Task.mapError toString
     |> Task.perform Error (\posts -> FromAdminBackend <| AdminUserList posts)
+
 
 retrievePost : BlogTypes.BlogPostId -> Cmd Msg
 retrievePost postId =
@@ -138,23 +115,18 @@ retrieveUser userId =
     |> Task.mapError toString
     |> Task.perform Error (\user -> FromAdminBackend <| AdminUserDetail user)
 
-deleteBlogPost : Api.BlogPost -> Cmd Msg
-deleteBlogPost post =
-  deleteAdminPostById post.bid
-    |> Task.mapError toString
-    |> Task.perform Error (\rr -> FromAdminBackend <| AdminResultResp rr)
 
-deleteAuthor : Api.Author -> Cmd Msg
-deleteAuthor author =
-  deleteAdminUserById author.aid
-    |> Task.mapError toString
-    |> Task.perform Error (\rr -> FromAdminBackend <| AdminResultResp rr)
+genericResponse : Task a ResultResp -> Cmd Msg
+genericResponse task = task
+  |> Task.mapError toString
+  |> Task.perform Error (\rr -> FromAdminBackend <| AdminResultResp rr)
 
-deleteSeries : Api.BlogSeries -> Cmd Msg
-deleteSeries series =
-  deleteAdminSeriesById series.sid
-    |> Task.mapError toString
-    |> Task.perform Error (\rr -> FromAdminBackend <| AdminResultResp rr)
+
+createItem : Item -> Cmd Msg
+createItem item = case item of
+  PI post -> createBlogPost post
+  AI author -> createAuthor author
+  SI series -> createSeries series
 
 createBlogPost : Api.BlogPost -> Cmd Msg
 createBlogPost post =
@@ -174,20 +146,14 @@ createSeries series =
     |> Task.mapError toString
     |> Task.perform Error (\series -> FromAdminBackend <| AdminSeriesDetail series)
 
-editBlogPost : Api.BlogPost -> Cmd Msg
-editBlogPost post =
-  putAdminPostById post.bid post
-    |> Task.mapError toString
-    |> Task.perform Error (\rr -> FromAdminBackend <| AdminResultResp rr)
+deleteItem : Item -> Cmd Msg
+deleteItem item = case item of
+  PI post -> deleteAdminPostById post.bid |> genericResponse
+  AI author -> deleteAdminUserById author.aid |> genericResponse
+  SI series -> deleteAdminSeriesById series.sid |> genericResponse
 
-editAuthor : Author -> Cmd Msg
-editAuthor author =
-  putAdminUserById author.aid author
-    |> Task.mapError toString
-    |> Task.perform Error (\rr -> FromAdminBackend <| AdminResultResp rr)
-
-editSeries : BlogSeries -> Cmd Msg
-editSeries series =
-  putAdminSeriesById series.sid series
-    |> Task.mapError toString
-    |> Task.perform Error (\rr -> FromAdminBackend <| AdminResultResp rr)
+editItem : Item -> Cmd Msg
+editItem item = case item of
+  PI post -> putAdminPostById post.bid post |> genericResponse
+  AI author -> putAdminUserById author.aid author |> genericResponse
+  SI series -> putAdminSeriesById series.sid series |> genericResponse

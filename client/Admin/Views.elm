@@ -40,7 +40,7 @@ view state =
           ]
         , div [ class "two columns", style [("margin-top", "2%")] ] [
             a [ class "button admin-button", href "/"]
-              [ text <| "View Site" ]
+              [ text "View Site" ]
           ]
         ]
       ]
@@ -205,6 +205,8 @@ adminPostEdit post =
       ]
     ]
   ]
+
+
 
 updatePostBody : Api.BlogPost -> String -> Msg
 updatePostBody post body = case body of

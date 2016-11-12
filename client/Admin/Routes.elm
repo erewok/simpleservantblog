@@ -26,13 +26,13 @@ delta2url previous current =
 routeParser : Parser (Route -> a) a
 routeParser =
     oneOf
-        [ format AdminPostListR (s "posts")
-        , format AdminPostDetailR (s "posts"  </> int)
-        , format AdminUserListR (s "users")
-        , format AdminUserDetailR (s "users" </> int)
-        , format AdminSeriesListR (s "series")
-        , format AdminSeriesDetailR (s "series" </> int)
-        , format AdminMainR (s "")
+        [ format AdminPostDetailR (s "" </> s "posts"  </> int)
+        , format AdminPostListR (s "" </> s "posts")
+        , format AdminUserDetailR (s "" </> s "users" </> int)
+        , format AdminUserListR (s "" </> s "users")
+        , format AdminSeriesDetailR (s "" </> s "series" </> int)
+        , format AdminSeriesListR (s "" </> s "series")
+        , format AdminMainR (s "" </> s "")
         ]
 
 fromUrl : Location -> Result String Route
@@ -67,16 +67,16 @@ toUrl : Route -> String
 toUrl route =
     case route of
         AdminMainR ->
-            "#"
+            "#/"
         AdminPostListR ->
-          "#posts"
-        AdminPostDetailR postId ->
-          "#posts/" ++ toString postId
+          "#/posts/"
         AdminUserListR ->
-          "#users"
-        AdminUserDetailR userId ->
-          "#users/" ++ toString userId
+          "#/users/"
         AdminSeriesListR ->
-          "#series"
+          "#/series/"
+        AdminPostDetailR postId ->
+          "#/posts/" ++ toString postId
+        AdminUserDetailR userId ->
+          "#/users/" ++ toString userId
         AdminSeriesDetailR seriesId ->
-          "#series/" ++ toString seriesId
+          "#/series/" ++ toString seriesId
