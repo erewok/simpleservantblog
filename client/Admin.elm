@@ -96,55 +96,20 @@ retrieveList listRequested = case listRequested of
     |> Task.mapError toString
     |> Task.perform Error (\posts -> FromAdminBackend <| AdminUserList posts)
 
-
 retrievePost : BlogTypes.BlogPostId -> Cmd Msg
-retrievePost postId =
-    Api.getPostById postId
-        |> Task.mapError toString
-        |> Task.perform Error (\post -> FromAdminBackend <| AdminPostDetail post)
+retrievePost postId = Api.getPostById postId |> postDetailResponse
 
 retrieveSeries : SeriesId -> Cmd Msg
-retrieveSeries seriesId =
-  Api.getSeriesById seriesId
-    |> Task.mapError toString
-    |> Task.perform Error (\series -> FromAdminBackend <| AdminSeriesDetail series)
+retrieveSeries seriesId = Api.getSeriesById seriesId |> seriesDetailResponse
 
 retrieveUser : UserId -> Cmd Msg
-retrieveUser userId =
-  getAdminUserById userId
-    |> Task.mapError toString
-    |> Task.perform Error (\user -> FromAdminBackend <| AdminUserDetail user)
-
-
-genericResponse : Task a ResultResp -> Cmd Msg
-genericResponse task = task
-  |> Task.mapError toString
-  |> Task.perform Error (\rr -> FromAdminBackend <| AdminResultResp rr)
-
+retrieveUser userId = getAdminUserById userId |> userDetailResponse
 
 createItem : Item -> Cmd Msg
 createItem item = case item of
-  PI post -> createBlogPost post
-  AI author -> createAuthor author
-  SI series -> createSeries series
-
-createBlogPost : Api.BlogPost -> Cmd Msg
-createBlogPost post =
-  postAdminPost post
-    |> Task.mapError toString
-    |> Task.perform Error (\post -> FromAdminBackend <| AdminPostDetail post)
-
-createAuthor : Api.Author -> Cmd Msg
-createAuthor author =
-  postAdminUser author
-    |> Task.mapError toString
-    |> Task.perform Error (\user -> FromAdminBackend <| AdminUserDetail user)
-
-createSeries : Api.BlogSeries -> Cmd Msg
-createSeries series =
-  postAdminSeries series
-    |> Task.mapError toString
-    |> Task.perform Error (\series -> FromAdminBackend <| AdminSeriesDetail series)
+  PI post -> postAdminPost post |> postDetailResponse
+  AI author -> postAdminUser author |> userDetailResponse
+  SI series -> postAdminSeries series |> seriesDetailResponse
 
 deleteItem : Item -> Cmd Msg
 deleteItem item = case item of
@@ -157,3 +122,25 @@ editItem item = case item of
   PI post -> putAdminPostById post.bid post |> genericResponse
   AI author -> putAdminUserById author.aid author |> genericResponse
   SI series -> putAdminSeriesById series.sid series |> genericResponse
+
+
+-- Task Response Boilerplate --
+genericResponse : Task Http.Error ResultResp -> Cmd Msg
+genericResponse task = task
+  |> Task.mapError toString
+  |> Task.perform Error (\rr -> FromAdminBackend <| AdminResultResp rr)
+
+userDetailResponse : Task Http.Error (Author) -> Cmd Msg
+userDetailResponse task = task
+  |> Task.mapError toString
+  |> Task.perform Error (\user -> FromAdminBackend <| AdminUserDetail user)
+
+postDetailResponse : Task Http.Error (BlogPost) -> Cmd Msg
+postDetailResponse task = task
+  |> Task.mapError toString
+  |> Task.perform Error (\post -> FromAdminBackend <| AdminPostDetail post)
+
+seriesDetailResponse : Task Http.Error (BlogSeries) -> Cmd Msg
+seriesDetailResponse task = task
+  |> Task.mapError toString
+  |> Task.perform Error (\series -> FromAdminBackend <| AdminSeriesDetail series)

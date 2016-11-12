@@ -13186,7 +13186,7 @@ var _pellagic_puffbomb$simpleservantblog$Admin_Views$view = function (state) {
 			]));
 };
 
-var _pellagic_puffbomb$simpleservantblog$Admin$createSeries = function (series) {
+var _pellagic_puffbomb$simpleservantblog$Admin$seriesDetailResponse = function (task) {
 	return A3(
 		_elm_lang$core$Task$perform,
 		_pellagic_puffbomb$simpleservantblog$Admin_Types$Error,
@@ -13194,25 +13194,9 @@ var _pellagic_puffbomb$simpleservantblog$Admin$createSeries = function (series) 
 			return _pellagic_puffbomb$simpleservantblog$Admin_Types$FromAdminBackend(
 				_pellagic_puffbomb$simpleservantblog$Admin_Types$AdminSeriesDetail(series));
 		},
-		A2(
-			_elm_lang$core$Task$mapError,
-			_elm_lang$core$Basics$toString,
-			_pellagic_puffbomb$simpleservantblog$Admin_AdminApi$postAdminSeries(series)));
+		A2(_elm_lang$core$Task$mapError, _elm_lang$core$Basics$toString, task));
 };
-var _pellagic_puffbomb$simpleservantblog$Admin$createAuthor = function (author) {
-	return A3(
-		_elm_lang$core$Task$perform,
-		_pellagic_puffbomb$simpleservantblog$Admin_Types$Error,
-		function (user) {
-			return _pellagic_puffbomb$simpleservantblog$Admin_Types$FromAdminBackend(
-				_pellagic_puffbomb$simpleservantblog$Admin_Types$AdminUserDetail(user));
-		},
-		A2(
-			_elm_lang$core$Task$mapError,
-			_elm_lang$core$Basics$toString,
-			_pellagic_puffbomb$simpleservantblog$Admin_AdminApi$postAdminUser(author)));
-};
-var _pellagic_puffbomb$simpleservantblog$Admin$createBlogPost = function (post) {
+var _pellagic_puffbomb$simpleservantblog$Admin$postDetailResponse = function (task) {
 	return A3(
 		_elm_lang$core$Task$perform,
 		_pellagic_puffbomb$simpleservantblog$Admin_Types$Error,
@@ -13220,21 +13204,17 @@ var _pellagic_puffbomb$simpleservantblog$Admin$createBlogPost = function (post) 
 			return _pellagic_puffbomb$simpleservantblog$Admin_Types$FromAdminBackend(
 				_pellagic_puffbomb$simpleservantblog$Admin_Types$AdminPostDetail(post));
 		},
-		A2(
-			_elm_lang$core$Task$mapError,
-			_elm_lang$core$Basics$toString,
-			_pellagic_puffbomb$simpleservantblog$Admin_AdminApi$postAdminPost(post)));
+		A2(_elm_lang$core$Task$mapError, _elm_lang$core$Basics$toString, task));
 };
-var _pellagic_puffbomb$simpleservantblog$Admin$createItem = function (item) {
-	var _p0 = item;
-	switch (_p0.ctor) {
-		case 'PI':
-			return _pellagic_puffbomb$simpleservantblog$Admin$createBlogPost(_p0._0);
-		case 'AI':
-			return _pellagic_puffbomb$simpleservantblog$Admin$createAuthor(_p0._0);
-		default:
-			return _pellagic_puffbomb$simpleservantblog$Admin$createSeries(_p0._0);
-	}
+var _pellagic_puffbomb$simpleservantblog$Admin$userDetailResponse = function (task) {
+	return A3(
+		_elm_lang$core$Task$perform,
+		_pellagic_puffbomb$simpleservantblog$Admin_Types$Error,
+		function (user) {
+			return _pellagic_puffbomb$simpleservantblog$Admin_Types$FromAdminBackend(
+				_pellagic_puffbomb$simpleservantblog$Admin_Types$AdminUserDetail(user));
+		},
+		A2(_elm_lang$core$Task$mapError, _elm_lang$core$Basics$toString, task));
 };
 var _pellagic_puffbomb$simpleservantblog$Admin$genericResponse = function (task) {
 	return A3(
@@ -13246,75 +13226,62 @@ var _pellagic_puffbomb$simpleservantblog$Admin$genericResponse = function (task)
 		},
 		A2(_elm_lang$core$Task$mapError, _elm_lang$core$Basics$toString, task));
 };
-var _pellagic_puffbomb$simpleservantblog$Admin$deleteItem = function (item) {
-	var _p1 = item;
-	switch (_p1.ctor) {
+var _pellagic_puffbomb$simpleservantblog$Admin$editItem = function (item) {
+	var _p0 = item;
+	switch (_p0.ctor) {
 		case 'PI':
+			var _p1 = _p0._0;
 			return _pellagic_puffbomb$simpleservantblog$Admin$genericResponse(
-				_pellagic_puffbomb$simpleservantblog$Admin_AdminApi$deleteAdminPostById(_p1._0.bid));
+				A2(_pellagic_puffbomb$simpleservantblog$Admin_AdminApi$putAdminPostById, _p1.bid, _p1));
 		case 'AI':
+			var _p2 = _p0._0;
 			return _pellagic_puffbomb$simpleservantblog$Admin$genericResponse(
-				_pellagic_puffbomb$simpleservantblog$Admin_AdminApi$deleteAdminUserById(_p1._0.aid));
+				A2(_pellagic_puffbomb$simpleservantblog$Admin_AdminApi$putAdminUserById, _p2.aid, _p2));
 		default:
+			var _p3 = _p0._0;
 			return _pellagic_puffbomb$simpleservantblog$Admin$genericResponse(
-				_pellagic_puffbomb$simpleservantblog$Admin_AdminApi$deleteAdminSeriesById(_p1._0.sid));
+				A2(_pellagic_puffbomb$simpleservantblog$Admin_AdminApi$putAdminSeriesById, _p3.sid, _p3));
 	}
 };
-var _pellagic_puffbomb$simpleservantblog$Admin$editItem = function (item) {
-	var _p2 = item;
-	switch (_p2.ctor) {
+var _pellagic_puffbomb$simpleservantblog$Admin$deleteItem = function (item) {
+	var _p4 = item;
+	switch (_p4.ctor) {
 		case 'PI':
-			var _p3 = _p2._0;
 			return _pellagic_puffbomb$simpleservantblog$Admin$genericResponse(
-				A2(_pellagic_puffbomb$simpleservantblog$Admin_AdminApi$putAdminPostById, _p3.bid, _p3));
+				_pellagic_puffbomb$simpleservantblog$Admin_AdminApi$deleteAdminPostById(_p4._0.bid));
 		case 'AI':
-			var _p4 = _p2._0;
 			return _pellagic_puffbomb$simpleservantblog$Admin$genericResponse(
-				A2(_pellagic_puffbomb$simpleservantblog$Admin_AdminApi$putAdminUserById, _p4.aid, _p4));
+				_pellagic_puffbomb$simpleservantblog$Admin_AdminApi$deleteAdminUserById(_p4._0.aid));
 		default:
-			var _p5 = _p2._0;
 			return _pellagic_puffbomb$simpleservantblog$Admin$genericResponse(
-				A2(_pellagic_puffbomb$simpleservantblog$Admin_AdminApi$putAdminSeriesById, _p5.sid, _p5));
+				_pellagic_puffbomb$simpleservantblog$Admin_AdminApi$deleteAdminSeriesById(_p4._0.sid));
+	}
+};
+var _pellagic_puffbomb$simpleservantblog$Admin$createItem = function (item) {
+	var _p5 = item;
+	switch (_p5.ctor) {
+		case 'PI':
+			return _pellagic_puffbomb$simpleservantblog$Admin$postDetailResponse(
+				_pellagic_puffbomb$simpleservantblog$Admin_AdminApi$postAdminPost(_p5._0));
+		case 'AI':
+			return _pellagic_puffbomb$simpleservantblog$Admin$userDetailResponse(
+				_pellagic_puffbomb$simpleservantblog$Admin_AdminApi$postAdminUser(_p5._0));
+		default:
+			return _pellagic_puffbomb$simpleservantblog$Admin$seriesDetailResponse(
+				_pellagic_puffbomb$simpleservantblog$Admin_AdminApi$postAdminSeries(_p5._0));
 	}
 };
 var _pellagic_puffbomb$simpleservantblog$Admin$retrieveUser = function (userId) {
-	return A3(
-		_elm_lang$core$Task$perform,
-		_pellagic_puffbomb$simpleservantblog$Admin_Types$Error,
-		function (user) {
-			return _pellagic_puffbomb$simpleservantblog$Admin_Types$FromAdminBackend(
-				_pellagic_puffbomb$simpleservantblog$Admin_Types$AdminUserDetail(user));
-		},
-		A2(
-			_elm_lang$core$Task$mapError,
-			_elm_lang$core$Basics$toString,
-			_pellagic_puffbomb$simpleservantblog$Admin_AdminApi$getAdminUserById(userId)));
+	return _pellagic_puffbomb$simpleservantblog$Admin$userDetailResponse(
+		_pellagic_puffbomb$simpleservantblog$Admin_AdminApi$getAdminUserById(userId));
 };
 var _pellagic_puffbomb$simpleservantblog$Admin$retrieveSeries = function (seriesId) {
-	return A3(
-		_elm_lang$core$Task$perform,
-		_pellagic_puffbomb$simpleservantblog$Admin_Types$Error,
-		function (series) {
-			return _pellagic_puffbomb$simpleservantblog$Admin_Types$FromAdminBackend(
-				_pellagic_puffbomb$simpleservantblog$Admin_Types$AdminSeriesDetail(series));
-		},
-		A2(
-			_elm_lang$core$Task$mapError,
-			_elm_lang$core$Basics$toString,
-			_pellagic_puffbomb$simpleservantblog$Blog_Api$getSeriesById(seriesId)));
+	return _pellagic_puffbomb$simpleservantblog$Admin$seriesDetailResponse(
+		_pellagic_puffbomb$simpleservantblog$Blog_Api$getSeriesById(seriesId));
 };
 var _pellagic_puffbomb$simpleservantblog$Admin$retrievePost = function (postId) {
-	return A3(
-		_elm_lang$core$Task$perform,
-		_pellagic_puffbomb$simpleservantblog$Admin_Types$Error,
-		function (post) {
-			return _pellagic_puffbomb$simpleservantblog$Admin_Types$FromAdminBackend(
-				_pellagic_puffbomb$simpleservantblog$Admin_Types$AdminPostDetail(post));
-		},
-		A2(
-			_elm_lang$core$Task$mapError,
-			_elm_lang$core$Basics$toString,
-			_pellagic_puffbomb$simpleservantblog$Blog_Api$getPostById(postId)));
+	return _pellagic_puffbomb$simpleservantblog$Admin$postDetailResponse(
+		_pellagic_puffbomb$simpleservantblog$Blog_Api$getPostById(postId));
 };
 var _pellagic_puffbomb$simpleservantblog$Admin$retrieveList = function (listRequested) {
 	var _p6 = listRequested;
