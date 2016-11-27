@@ -1,5 +1,7 @@
 module Admin.Types exposing (..)
 
+import Date exposing (Date)
+
 import Admin.AdminApi exposing (..)
 import Blog.Api as Api
 
@@ -56,15 +58,6 @@ type Route
     | AdminPostDetailR PostId
     | AdminUserDetailR UserId
     | AdminSeriesDetailR SeriesId
-
-type Editable
-  = EditField Field
-  | StoreField Field
-  | SaveAll
-
-type Field
-  = DateField
-  | TextField
 
 type alias PostId = Int
 type alias SeriesId = Int

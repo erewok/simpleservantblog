@@ -33,6 +33,7 @@ routeParser =
         , format AdminSeriesDetailR (s "" </> s "series" </> int)
         , format AdminSeriesListR (s "" </> s "series")
         , format AdminMainR (s "" </> s "")
+        , format AdminMainR (s "")
         ]
 
 fromUrl : Location -> Result String Route

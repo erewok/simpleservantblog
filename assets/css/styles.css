@@ -5,10 +5,13 @@ a {
 a:hover {
  cursor:pointer;
 }
-body p {
+body {
     background: #DFDFCF;
-    font-size: 20px;
 }
+p {
+  font-size: 19px;
+}
+
 #page-header {
   text-align: center;
 }
@@ -89,4 +92,7 @@ tr.admin-editable:hover {
 
 input#title {
   width: 90%;
+}
+.add-new {
+  font-size: 40px;
 }

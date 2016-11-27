@@ -9,7 +9,6 @@ import Html.Events exposing (..)
 import Http
 import List exposing (..)
 import String exposing (..)
-import Task exposing (Task, perform, succeed)
 import Navigation
 import RouteUrl
 
@@ -82,65 +81,3 @@ update message model =
               model ! [ editItem item ]
         Error error ->
           { model | content = Just <| BackendError error } ! []
-
-
-retrieveList : ListThing -> Cmd Msg
-retrieveList listRequested = case listRequested of
-  ListPosts -> Api.getPost
-    |> Task.mapError toString
-    |> Task.perform Error (\posts -> FromAdminBackend <| AdminPostList posts)
-  ListSeries -> Api.getSeries
-    |> Task.mapError toString
-    |> Task.perform Error (\series -> FromAdminBackend <| AdminSeriesList series)
-  ListUsers -> getAdminUser
-    |> Task.mapError toString
-    |> Task.perform Error (\posts -> FromAdminBackend <| AdminUserList posts)
-
-retrievePost : BlogTypes.BlogPostId -> Cmd Msg
-retrievePost postId = Api.getPostById postId |> postDetailResponse
-
-retrieveSeries : SeriesId -> Cmd Msg
-retrieveSeries seriesId = Api.getSeriesById seriesId |> seriesDetailResponse
-
-retrieveUser : UserId -> Cmd Msg
-retrieveUser userId = getAdminUserById userId |> userDetailResponse
-
-createItem : Item -> Cmd Msg
-createItem item = case item of
-  PI post -> postAdminPost post |> postDetailResponse
-  AI author -> postAdminUser author |> userDetailResponse
-  SI series -> postAdminSeries series |> seriesDetailResponse
-
-deleteItem : Item -> Cmd Msg
-deleteItem item = case item of
-  PI post -> deleteAdminPostById post.bid |> genericResponse
-  AI author -> deleteAdminUserById author.aid |> genericResponse
-  SI series -> deleteAdminSeriesById series.sid |> genericResponse
-
-editItem : Item -> Cmd Msg
-editItem item = case item of
-  PI post -> putAdminPostById post.bid post |> genericResponse
-  AI author -> putAdminUserById author.aid author |> genericResponse
-  SI series -> putAdminSeriesById series.sid series |> genericResponse
-
-
--- Task Response Boilerplate --
-genericResponse : Task Http.Error ResultResp -> Cmd Msg
-genericResponse task = task
-  |> Task.mapError toString
-  |> Task.perform Error (\rr -> FromAdminBackend <| AdminResultResp rr)
-
-userDetailResponse : Task Http.Error (Author) -> Cmd Msg
-userDetailResponse task = task
-  |> Task.mapError toString
-  |> Task.perform Error (\user -> FromAdminBackend <| AdminUserDetail user)
-
-postDetailResponse : Task Http.Error (BlogPost) -> Cmd Msg
-postDetailResponse task = task
-  |> Task.mapError toString
-  |> Task.perform Error (\post -> FromAdminBackend <| AdminPostDetail post)
-
-seriesDetailResponse : Task Http.Error (BlogSeries) -> Cmd Msg
-seriesDetailResponse task = task
-  |> Task.mapError toString
-  |> Task.perform Error (\series -> FromAdminBackend <| AdminSeriesDetail series)
