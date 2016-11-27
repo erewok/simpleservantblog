@@ -103,8 +103,9 @@ getUserById userId conn = do
 
 addUser :: Author -> Connection -> Handler Author
 addUser newAuthor conn = do
-  let q = "insert into author values (?, ?, ?)"
-  res <- liftIO $ execute conn q newAuthor
+  let q = "insert into author values (?, ?)"
+  res <- liftIO $ execute conn q (firstName newAuthor
+                                , lastName newAuthor)
   author <- liftIO $ query conn "select * from author where id = ?" (Only res)
   if null author then throwError err400 else return $ Prelude.head author
 
@@ -129,19 +130,32 @@ deleteUser authorId conn = do
 
 addPost :: Post.BlogPost -> Connection -> Handler Post.BlogPost
 addPost newPost conn = do
-  result <- liftIO $ addPost' newPost conn
+  result <- lift $ addPost' newPost conn
   case result of
-    (x:_) -> return x
     []    -> throwError err404
+    (x:_) -> do
+      retrieveResult <- lift $ getPost (fst x) conn
+      case retrieveResult of
+        Just post -> return post
+        Nothing -> throwError err400
 
-addPost' :: Post.BlogPost -> Connection -> IO [Post.BlogPost]
+getPost :: Int -> Connection -> IO (Maybe Post.BlogPost)
+getPost postId conn = do
+  let q = "select * from post where id = ?"
+  result <- liftIO $ query conn q (Only postId)
+  case result of
+    (x:_)-> return $ Just x
+    _ -> return Nothing
+
+addPost' :: Post.BlogPost -> Connection -> IO [(Int, T.Text)]
 addPost' newPost conn = do
   let q = Query $ B.unwords ["insert into post (authorid, title, seriesid, "
-                           , "synopsis, pubdate, body, ordinal, created, modified, "
-                           , "pubdate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"]
+                           , "synopsis, pubdate, body, ordinal, created, modified) "
+                           , "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) returning id, title"]
   modified <- case Post.modified newPost of
     Nothing -> Just <$> getCurrentTime
     Just tm -> Just <$> pure tm
+  created <- getCurrentTime
   liftIO $ query conn q (Post.authorId newPost
                         , Post.title newPost
                         , Post.seriesId newPost
@@ -149,9 +163,8 @@ addPost' newPost conn = do
                         , Post.pubdate newPost
                         , Post.body newPost
                         , Post.ordinal newPost
-                        , Post.created newPost
-                        , modified
-                        , Post.pubdate newPost)
+                        , created
+                        , modified) :: IO [(Int, T.Text)]
 
 updatePost :: Int -> Post.BlogPost -> Connection -> Handler ResultResp
 updatePost postId newPost conn = do
@@ -182,7 +195,9 @@ deletePost postId conn = do
 addSeries :: Post.BlogSeries -> Connection -> Handler Post.BlogSeries
 addSeries newSeries conn = do
   let q = "insert into series values (?, ?, ?)"
-  result <- liftIO $ query conn q newSeries
+  result <- liftIO $ query conn q (Post.name newSeries
+                                  , Post.description newSeries
+                                  , Post.parentid newSeries)
   case result of
     (x:_) -> return x
     []    -> throwError err404

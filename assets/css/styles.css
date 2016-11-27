@@ -5,8 +5,9 @@ a {
 a:hover {
  cursor:pointer;
 }
-body {
+body p {
     background: #DFDFCF;
+    font-size: 20px;
 }
 #page-header {
   text-align: center;
@@ -84,4 +85,8 @@ tr.admin-editable:hover {
 }
 .post-synopsis-input {
   height: 300px;
+}
+
+input#title {
+  width: 90%;
 }
