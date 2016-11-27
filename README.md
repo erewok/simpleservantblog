@@ -13,6 +13,7 @@ personal interest, so it may never be finished, but it's pretty fun to work on.
 - Build User-add, User-edit admin stuff
 - Make admin Get all posts. Not just published ones.
 - Fix date-inputter which formats and frustrates editing attempts.
+- Make it possible to add/edit series/author for posts.
 - ~~Make elm-admin bundle~~
 - ~~Make Posts FK to User table, not author, Or use author as one-to-one with User~~
 - ~~Write create-tables script and add to cabal for output~~
@@ -27,14 +28,3 @@ personal interest, so it may never be finished, but it's pretty fun to work on.
 - Nginx + Postgresql in docker-compose with shared volume for assets.
 - TLS Cert Auto-Renewal
 - Add GA to website
-
-
-## Intended Series on building this thing
-1. Getting Started: Postgresql, Haskell, Stack, Elm, and project source
-2. Backend Setup: Tables and Models
-3. Creating an API using Servant
-4. Serving raw assets and HTML with Servant
-5. Frontend with Elm
-6. Docker, Nginx, and Deploying your Haskell Application
-7. Authentication, Authorization, and Session-less Sessions
-8. Moving Toward a more full-fledged CMS
