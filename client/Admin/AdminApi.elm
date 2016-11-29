@@ -246,6 +246,45 @@ deleteAdminPostById id =
       decodeResultResp
       (Http.send Http.defaultSettings request)
 
+getAdminPost : Task.Task Http.Error (List (BlogPost))
+getAdminPost =
+  let
+    request =
+      { verb =
+          "GET"
+      , headers =
+          [("Content-Type", "application/json")]
+      , url =
+          "/" ++ "admin"
+          ++ "/" ++ "post"
+      , body =
+          Http.empty
+      }
+  in
+    Http.fromJson
+      (Json.Decode.list decodeBlogPost)
+      (Http.send Http.defaultSettings request)
+
+getAdminPostById : Int -> Task.Task Http.Error (BlogPost)
+getAdminPostById id =
+  let
+    request =
+      { verb =
+          "GET"
+      , headers =
+          [("Content-Type", "application/json")]
+      , url =
+          "/" ++ "admin"
+          ++ "/" ++ "post"
+          ++ "/" ++ (id |> toString |> Http.uriEncode)
+      , body =
+          Http.empty
+      }
+  in
+    Http.fromJson
+      decodeBlogPost
+      (Http.send Http.defaultSettings request)
+
 type alias BlogSeries =
   { sid : Int
   , name : String

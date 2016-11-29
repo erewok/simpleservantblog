@@ -43,6 +43,9 @@ type AdminBackend =
   "admin" :> AuthProtect "cookie-auth" :> Get '[HTML] Html
   :<|> AdminApi
 
+adminBackendHandlers :: Pool Connection -> Server AdminBackend
+adminBackendHandlers conn = adminPage
+                  :<|> adminHandlers conn
 
 type AdminApi = "admin" :> "user" :> AuthProtect "cookie-auth" :> Get '[JSON] [Author]
   :<|> "admin" :> "user" :> Capture "id" Int  :> AuthProtect "cookie-auth" :> Get '[JSON] Author
@@ -52,13 +55,11 @@ type AdminApi = "admin" :> "user" :> AuthProtect "cookie-auth" :> Get '[JSON] [A
   :<|> "admin" :> "post" :> ReqBody '[JSON] Post.BlogPost :> AuthProtect "cookie-auth" :> Post '[JSON] Post.BlogPost
   :<|> "admin" :> "post" :> Capture "id" Int :> ReqBody '[JSON] Post.BlogPost :> AuthProtect "cookie-auth" :> Put '[JSON] ResultResp
   :<|> "admin" :> "post" :> Capture "id" Int :> AuthProtect "cookie-auth" :> Delete '[JSON] ResultResp
+  :<|> "admin" :> "post" :> AuthProtect "cookie-auth" :> Get '[JSON] [Post.BlogPost]
+  :<|> "admin" :> "post" :> Capture "id" Int :> AuthProtect "cookie-auth" :> Get '[JSON] Post.BlogPost
   :<|> "admin" :> "series" :> ReqBody '[JSON] Post.BlogSeries :> AuthProtect "cookie-auth" :> Post '[JSON] Post.BlogSeries
   :<|> "admin" :> "series" :> Capture "id" Int :> ReqBody '[JSON] Post.BlogSeries :> AuthProtect "cookie-auth" :> Put '[JSON] ResultResp
   :<|> "admin" :> "series" :> Capture "id" Int :> AuthProtect "cookie-auth" :> Delete '[JSON] ResultResp
-
-adminBackendHandlers :: Pool Connection -> Server AdminBackend
-adminBackendHandlers conn = adminPage
-                  :<|> adminHandlers conn
 
 adminHandlers :: Pool Connection -> Server AdminApi
 adminHandlers conn = getUsersH
@@ -69,6 +70,8 @@ adminHandlers conn = getUsersH
                 :<|> blogPostAddH
                 :<|> blogPostUpdateH
                 :<|> blogPostDeleteH
+                :<|> blogPostGetAllH
+                :<|> blogPostGetByIdH
                 :<|> blogSeriesAddH
                 :<|> blogSeriesUpdateH
                 :<|> blogSeriesDeleteH
@@ -80,6 +83,8 @@ adminHandlers conn = getUsersH
         blogPostAddH newPost _ = go $ addPost newPost
         blogPostUpdateH postId post _ = go $ updatePost postId post
         blogPostDeleteH postId _ = go $ deletePost postId
+        blogPostGetAllH _ = go getAllPosts
+        blogPostGetByIdH postId _ = go $ getPostById postId
         blogSeriesAddH newSeries _ = go $ addSeries newSeries
         blogSeriesUpdateH seriesId series _ = go $ updateSeries seriesId series
         blogSeriesDeleteH seriesId _ = go $ deleteSeries seriesId
@@ -103,7 +108,7 @@ getUserById userId conn = do
 
 addUser :: Author -> Connection -> Handler Author
 addUser newAuthor conn = do
-  let q = "insert into author values (?, ?)"
+  let q = "insert into author (firstname, lastname) values (?, ?)"
   res <- liftIO $ execute conn q (firstName newAuthor
                                 , lastName newAuthor)
   author <- liftIO $ query conn "select * from author where id = ?" (Only res)
@@ -128,6 +133,9 @@ deleteUser authorId conn = do
     0 -> throwError err400
     _ -> return $ ResultResp "success" "user deleted"
 
+getAllPosts :: Connection -> Handler [Post.BlogPost]
+getAllPosts conn = liftIO $ query_ conn "select * from post"
+
 addPost :: Post.BlogPost -> Connection -> Handler Post.BlogPost
 addPost newPost conn = do
   result <- lift $ addPost' newPost conn
@@ -138,6 +146,13 @@ addPost newPost conn = do
       case retrieveResult of
         Just post -> return post
         Nothing -> throwError err400
+
+getPostById :: Int -> Connection -> Handler Post.BlogPost
+getPostById postId conn = do
+  result <- liftIO $ getPost postId conn
+  case result of
+    Nothing -> throwError err404
+    Just post -> return post
 
 getPost :: Int -> Connection -> IO (Maybe Post.BlogPost)
 getPost postId conn = do
@@ -194,7 +209,7 @@ deletePost postId conn = do
 
 addSeries :: Post.BlogSeries -> Connection -> Handler Post.BlogSeries
 addSeries newSeries conn = do
-  let q = "insert into series values (?, ?, ?)"
+  let q = "insert into series (name, description, parentid) values (?, ?, ?)"
   result <- liftIO $ query conn q (Post.name newSeries
                                   , Post.description newSeries
                                   , Post.parentid newSeries)

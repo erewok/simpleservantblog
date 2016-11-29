@@ -19,7 +19,7 @@ type Msg
     | Error String
 
 type AdminBackend
-    = AdminPostList (List Api.PostOverview)
+    = AdminPostList (List BlogPost)
     | AdminPostDetail BlogPost
     | AdminSeriesList (List Api.BlogSeries)
     | AdminSeriesDetail Api.BlogSeries

@@ -77,7 +77,7 @@ viewState content =
         p [] [ text " Welcome to admin"]
       ]
 
-adminPostsTable : List (Api.PostOverview) -> Html Msg
+adminPostsTable : List (BlogPost) -> Html Msg
 adminPostsTable posts =
   div [ class "admin-post-table" ] [
     addNew <| PI newBlankPost
@@ -96,18 +96,17 @@ adminPostsTable posts =
     ]
   ]
 
-viewPostInTable : Api.PostOverview -> Html Msg
+viewPostInTable : BlogPost -> Html Msg
 viewPostInTable post =
   tr [ class "admin-editable"
       , onClick (FromAdminFrontend
                   <| AdminGetDetail
-                  <| DetailPost post.pid) ] [
-    th [] [ text (toString post.pid) ]
-    , th [] [ text post.ptitle ]
-    , th [] [ text (BlogViews.fromJustDate post.ppubdate) ]
-    , th [] [ text (toString post.pordinal) ]
-    , th [] [ text (toString post.pseriesid) ]
-    , th [] [ text (BlogViews.fromJustStr post.pseriesname) ]
+                  <| DetailPost post.bid) ] [
+    th [] [ text (toString post.bid) ]
+    , th [] [ text post.title ]
+    , th [] [ text (BlogViews.fromJustDate post.pubdate) ]
+    , th [] [ text (toString post.ordinal) ]
+    , th [] [ text (toString post.seriesId) ]
   ]
 
 adminSeriesTable : List (Api.BlogSeries) -> Html Msg
@@ -143,8 +142,7 @@ viewSeriesInTable series =
 adminAuthorTable : List (Api.Author) -> Html Msg
 adminAuthorTable authors =
   div [ class "admin-post-table" ] [
-    addNew <| AI newBlankAuthor
-    , table [] [
+    table [] [
       thead [] [
         tr [] [
           th [] [ text "Id" ]
@@ -247,7 +245,7 @@ adminAuthorEdit author =
 
 retrieveList : ListThing -> Cmd Msg
 retrieveList listRequested = case listRequested of
-  ListPosts -> Api.getPost
+  ListPosts -> getAdminPost
     |> Task.mapError toString
     |> Task.perform Error (\posts -> FromAdminBackend <| AdminPostList posts)
   ListSeries -> Api.getSeries
@@ -264,7 +262,7 @@ createItem item = case item of
   SI series -> postAdminSeries series |> seriesDetailResponse
 
 retrievePost : BlogTypes.BlogPostId -> Cmd Msg
-retrievePost postId = Api.getPostById postId |> postDetailResponse
+retrievePost postId = getAdminPostById postId |> postDetailResponse
 
 retrieveSeries : SeriesId -> Cmd Msg
 retrieveSeries seriesId = Api.getSeriesById seriesId |> seriesDetailResponse
