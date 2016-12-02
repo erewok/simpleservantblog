@@ -12919,8 +12919,6 @@ var _pellagic_puffbomb$simpleservantblog$Admin_Views$adminAuthorTable = function
 			]),
 		_elm_lang$core$Native_List.fromArray(
 			[
-				_pellagic_puffbomb$simpleservantblog$Admin_Views$addNew(
-				_pellagic_puffbomb$simpleservantblog$Admin_Types$AI(_pellagic_puffbomb$simpleservantblog$Admin_Views$newBlankAuthor)),
 				A2(
 				_elm_lang$html$Html$table,
 				_elm_lang$core$Native_List.fromArray(

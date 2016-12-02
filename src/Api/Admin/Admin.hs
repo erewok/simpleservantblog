@@ -108,11 +108,14 @@ getUserById userId conn = do
 
 addUser :: Author -> Connection -> Handler Author
 addUser newAuthor conn = do
-  let q = "insert into author (firstname, lastname) values (?, ?)"
-  res <- liftIO $ execute conn q (firstName newAuthor
-                                , lastName newAuthor)
-  author <- liftIO $ query conn "select * from author where id = ?" (Only res)
-  if null author then throwError err400 else return $ Prelude.head author
+  let q = "insert into author (firstname, lastname) values (?, ?) returning id"
+  res <- liftIO $ query conn q (firstName newAuthor
+                              , lastName newAuthor) :: Handler [Only Int]
+  case res of
+    [] -> throwError err400
+    (uid:_) -> do
+      author <- liftIO $ query conn "select * from author where id = ?" uid
+      if null author then throwError err400 else return $ Prelude.head author
 
 updateUser :: Int -> Author -> Connection -> Handler ResultResp
 updateUser userId author conn = do
@@ -209,14 +212,15 @@ deletePost postId conn = do
 
 addSeries :: Post.BlogSeries -> Connection -> Handler Post.BlogSeries
 addSeries newSeries conn = do
-  let q = "insert into series (name, description, parentid) values (?, ?, ?)"
+  let q = "insert into series (name, description, parentid) values (?, ?, ?)  returning id"
   result <- liftIO $ query conn q (Post.name newSeries
                                   , Post.description newSeries
-                                  , Post.parentid newSeries)
+                                  , Post.parentid newSeries) :: Handler [Only Int]
   case result of
-    (x:_) -> return x
     []    -> throwError err404
-
+    (sid:_) -> do
+      series <- liftIO $ query conn "select * from series where id = ?" sid
+      if null series then throwError err404 else return $ Prelude.head series
 
 updateSeries :: Int -> Post.BlogSeries -> Connection -> Handler ResultResp
 updateSeries seriesId newSeries conn = do
