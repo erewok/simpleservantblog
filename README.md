@@ -7,9 +7,10 @@ personal interest, so it may never be finished, but it's pretty fun to work on.
 
 ## ToDo
 
+- Build ReaderT stack for app access to database connection, other configuration stuff
 - Build User-add, User-edit admin stuff
 - Fix date-inputter which formats and frustrates editing attempts.
-- Make it possible to add/edit series/author for posts.
+- Make it possible to edit series/author for posts.
 - Add "prev/next" links for regular posts.
 - Implement media associated with posts.
 - Write tests for Backend

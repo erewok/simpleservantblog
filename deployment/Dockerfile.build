@@ -1,0 +1,24 @@
+FROM fpco/stack-build:lts-7.1
+MAINTAINER Erik Aker
+
+RUN ["apt-get", "-y", "update"]
+RUN ["apt-get", "-y", "install", "libpq-dev"]
+
+RUN mkdir -p /opt/build
+
+COPY ./stack.yaml /opt/build/stack.yaml
+COPY ./simpleservantblog.cabal /opt/build/simpleservantblog.cabal
+COPY ./Setup.hs /opt/build/Setup.hs
+COPY ./LICENSE /opt/build/LICENSE
+
+WORKDIR /opt/build
+RUN stack install --only-dependencies
+
+ADD ./app /opt/build/app
+ADD ./src /opt/build/src
+ADD ./test /opt/build/test
+
+# Ideally, we'd run the tests before building, but we have no tests `\_/O\_/`...
+RUN mkdir -p /opt/build/dist
+
+CMD ["stack", "install", "--local-bin-path", "/opt/build/dist"]
