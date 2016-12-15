@@ -2,7 +2,7 @@ FROM ubuntu:16.04
 MAINTAINER Erik Aker
 
 RUN ["apt-get", "-y", "update"]
-RUN ["apt-get", "-y", "install", "libpq-dev"]
+RUN ["apt-get", "-y", "install", "libpq-dev", "netcat-traditional"]
 
 RUN mkdir -p /opt/server
 
@@ -10,6 +10,15 @@ COPY ./assets /opt/server/assets/
 COPY ./client /opt/server/client/
 COPY ./build/simpleservantblog-exe /opt/server/simpleservantblog-exe
 
-EXPOSE 3000
+WORKDIR /opt/server
 
-ENTRYPOINT ["/opt/server/simpleservantblog-exe"]
+# We have to throw in this hack to make sure underlying services are ready
+# before we try to start this thing. Docker-compose may fix this someday?
+RUN echo "#!/bin/bash" > runner.sh \
+  && echo "while ! nc -w 5 -z database 5432; do sleep 0.1; done" >> runner.sh \
+  && echo "/opt/server/simpleservantblog-exe" >> runner.sh \
+  && chmod +x runner.sh
+
+
+EXPOSE 3000
+ENTRYPOINT ["./runner.sh"]
