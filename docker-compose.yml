@@ -6,17 +6,8 @@ services:
     environment:
       - DEBUG=false
       - DB_USER
-      - DB_PASS=DB_PASSWD
+      - DB_PASS
       - DB_NAME
-      - DB_TEMPLATE
-      - DB_EXTENSION
-      - POSTGRES_USER=DB_USER
-      - POSTGRES_PASSWORD=DB_PASSWD
-      - POSTGRES_DB=DB_NAME
-      - REPLICATION_MODE
-      - REPLICATION_USER
-      - REPLICATION_PASS
-      - REPLICATION_SSLMODE
     volumes:
       - ./postgresql:/var/lib/postgresql
   website:
