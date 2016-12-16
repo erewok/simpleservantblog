@@ -1,6 +1,6 @@
 FROM nginx:alpine
 RUN mkdir -p /etc/nginx \
-  && apk update
+  && apk update \
   && apk add netcat-openbsd
 
 
