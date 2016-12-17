@@ -8,6 +8,7 @@ services:
       - DB_USER
       - DB_PASS
       - DB_NAME
+      - PG_PASSWORD
     volumes:
       - ./postgresql:/var/lib/postgresql
   website:
@@ -16,17 +17,15 @@ services:
       dockerfile: ./deployment/Dockerfile.web
     environment:
       - SERVER_PORT=3000
-      - DB_USER
-      - DB_PASSWD
-      - DB_NAME
-      - DB_HOST
       - DB_PORT=5432
+      - DB_HOST=database
+      - DB_USER
+      - DB_PASS
+      - DB_NAME
+      - DB_PASSWD=${DB_PASS}
       - ENVIRONMENT
     links:
       - database
-    depends_on:
-      - database
-    tty: false
     ports:
       - "3000:3000"
     working_dir: /opt/server
@@ -38,6 +37,4 @@ services:
       - "80:80"
       - "443:443"
     links:
-      - website
-    depends_on:
       - website
