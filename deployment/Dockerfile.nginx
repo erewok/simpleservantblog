@@ -20,9 +20,9 @@ WORKDIR /opt/server
 
 # We have to throw in this hack to make sure underlying services are ready
 # before we try to start this thing. Docker-compose may fix this someday?
-RUN echo "#!/bin/bash" > runner.sh \
+RUN echo "#!/bin/sh" > runner.sh \
   && echo "while ! nc -w 10 -z website 3000; do sleep 0.1; done" >> runner.sh \
-  && echo "nginx -g daemon off;" >> runner.sh \
+  && echo "nginx -g 'daemon off;'" >> runner.sh \
   && chmod +x runner.sh
 
 EXPOSE 80
