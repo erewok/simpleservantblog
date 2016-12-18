@@ -10,7 +10,7 @@ services:
       - DB_NAME
       - PG_PASSWORD
     volumes:
-      - postgresql:/var/lib/postgresql
+      - ./postgresql:/var/lib/postgresql
   website:
     build:
       context: .
@@ -38,10 +38,3 @@ services:
       - "443:443"
     links:
       - website
-volumes:
-  postgresql:
-    external: true
-    driver_opts:
-      type: none
-      device: ./postgresql
-      o: bind
