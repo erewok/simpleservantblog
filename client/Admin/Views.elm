@@ -246,7 +246,27 @@ adminPostEdit post =
 
 adminSeriesEdit : Api.BlogSeries -> Html Msg
 adminSeriesEdit series =
-  div [ class "edit-main" ] [ text "edit series" ]
+  div [ class "edit-main" ] [
+    div [ class "row" ] [
+      div [ class "eight columns" ] [
+        p [] [ b [] [ text "Id: " ], text (toString series.sid) ]
+        , label [ for "name" ] [ text "name" ]
+        , input [ id "name"
+                , style [("width", "100%")]
+                , type' "text"
+                , placeholder "name"
+                , onInput (updateSeriesName series)
+                , value series.name ] []
+       , label [ for "description" ] [ text "description" ]
+       , input [ id "description"
+               , style [("width", "100%")]
+               , type' "text"
+               , placeholder "description"
+               , onInput (updateSeriesDescription series)
+               , value series.description ] []
+      ]
+    ]
+  ]
 
 adminAuthorEdit : Api.Author -> Html Msg
 adminAuthorEdit author =
@@ -380,3 +400,9 @@ updateOrdering post order = case order of
   someOrder -> case toInt someOrder of
     Err _ -> NoOp
     Ok ordering -> FromAdminBackend (AdminPostDetail { post | ordinal = Just ordering })
+
+updateSeriesName : Api.BlogSeries -> String -> Msg
+updateSeriesName series name = FromAdminBackend (AdminSeriesDetail { series | name = name })
+
+updateSeriesDescription : Api.BlogSeries -> String -> Msg
+updateSeriesDescription series description = FromAdminBackend (AdminSeriesDetail { series | description = description })

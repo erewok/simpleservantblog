@@ -12345,6 +12345,22 @@ var _pellagic_puffbomb$simpleservantblog$Blog_Post$viewPost = function (post) {
 		_pellagic_puffbomb$simpleservantblog$Blog_Post$postBody(post));
 };
 
+var _pellagic_puffbomb$simpleservantblog$Admin_Views$updateSeriesDescription = F2(
+	function (series, description) {
+		return _pellagic_puffbomb$simpleservantblog$Admin_Types$FromAdminBackend(
+			_pellagic_puffbomb$simpleservantblog$Admin_Types$AdminSeriesDetail(
+				_elm_lang$core$Native_Utils.update(
+					series,
+					{description: description})));
+	});
+var _pellagic_puffbomb$simpleservantblog$Admin_Views$updateSeriesName = F2(
+	function (series, name) {
+		return _pellagic_puffbomb$simpleservantblog$Admin_Types$FromAdminBackend(
+			_pellagic_puffbomb$simpleservantblog$Admin_Types$AdminSeriesDetail(
+				_elm_lang$core$Native_Utils.update(
+					series,
+					{name: name})));
+	});
 var _pellagic_puffbomb$simpleservantblog$Admin_Views$updateOrdering = F2(
 	function (post, order) {
 		var _p0 = order;
@@ -12627,7 +12643,97 @@ var _pellagic_puffbomb$simpleservantblog$Admin_Views$adminSeriesEdit = function 
 			]),
 		_elm_lang$core$Native_List.fromArray(
 			[
-				_elm_lang$html$Html$text('edit series')
+				A2(
+				_elm_lang$html$Html$div,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Attributes$class('row')
+					]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						A2(
+						_elm_lang$html$Html$div,
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$html$Html_Attributes$class('eight columns')
+							]),
+						_elm_lang$core$Native_List.fromArray(
+							[
+								A2(
+								_elm_lang$html$Html$p,
+								_elm_lang$core$Native_List.fromArray(
+									[]),
+								_elm_lang$core$Native_List.fromArray(
+									[
+										A2(
+										_elm_lang$html$Html$b,
+										_elm_lang$core$Native_List.fromArray(
+											[]),
+										_elm_lang$core$Native_List.fromArray(
+											[
+												_elm_lang$html$Html$text('Id: ')
+											])),
+										_elm_lang$html$Html$text(
+										_elm_lang$core$Basics$toString(series.sid))
+									])),
+								A2(
+								_elm_lang$html$Html$label,
+								_elm_lang$core$Native_List.fromArray(
+									[
+										_elm_lang$html$Html_Attributes$for('name')
+									]),
+								_elm_lang$core$Native_List.fromArray(
+									[
+										_elm_lang$html$Html$text('name')
+									])),
+								A2(
+								_elm_lang$html$Html$input,
+								_elm_lang$core$Native_List.fromArray(
+									[
+										_elm_lang$html$Html_Attributes$id('name'),
+										_elm_lang$html$Html_Attributes$style(
+										_elm_lang$core$Native_List.fromArray(
+											[
+												{ctor: '_Tuple2', _0: 'width', _1: '100%'}
+											])),
+										_elm_lang$html$Html_Attributes$type$('text'),
+										_elm_lang$html$Html_Attributes$placeholder('name'),
+										_elm_lang$html$Html_Events$onInput(
+										_pellagic_puffbomb$simpleservantblog$Admin_Views$updateSeriesName(series)),
+										_elm_lang$html$Html_Attributes$value(series.name)
+									]),
+								_elm_lang$core$Native_List.fromArray(
+									[])),
+								A2(
+								_elm_lang$html$Html$label,
+								_elm_lang$core$Native_List.fromArray(
+									[
+										_elm_lang$html$Html_Attributes$for('description')
+									]),
+								_elm_lang$core$Native_List.fromArray(
+									[
+										_elm_lang$html$Html$text('description')
+									])),
+								A2(
+								_elm_lang$html$Html$input,
+								_elm_lang$core$Native_List.fromArray(
+									[
+										_elm_lang$html$Html_Attributes$id('description'),
+										_elm_lang$html$Html_Attributes$style(
+										_elm_lang$core$Native_List.fromArray(
+											[
+												{ctor: '_Tuple2', _0: 'width', _1: '100%'}
+											])),
+										_elm_lang$html$Html_Attributes$type$('text'),
+										_elm_lang$html$Html_Attributes$placeholder('description'),
+										_elm_lang$html$Html_Events$onInput(
+										_pellagic_puffbomb$simpleservantblog$Admin_Views$updateSeriesDescription(series)),
+										_elm_lang$html$Html_Attributes$value(series.description)
+									]),
+								_elm_lang$core$Native_List.fromArray(
+									[]))
+							]))
+					]))
 			]));
 };
 var _pellagic_puffbomb$simpleservantblog$Admin_Views$adminPostEdit = function (post) {
