@@ -12732,6 +12732,29 @@ var _pellagic_puffbomb$simpleservantblog$Admin_Views$adminSeriesEdit = function 
 									]),
 								_elm_lang$core$Native_List.fromArray(
 									[]))
+							])),
+						A2(
+						_elm_lang$html$Html$div,
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$html$Html_Attributes$class('four columns')
+							]),
+						_elm_lang$core$Native_List.fromArray(
+							[
+								A2(
+								_elm_lang$html$Html$a,
+								_elm_lang$core$Native_List.fromArray(
+									[
+										_elm_lang$html$Html_Attributes$class('button button-primary'),
+										_elm_lang$html$Html_Events$onClick(
+										_pellagic_puffbomb$simpleservantblog$Admin_Types$FromAdminFrontend(
+											_pellagic_puffbomb$simpleservantblog$Admin_Types$AdminEdit(
+												_pellagic_puffbomb$simpleservantblog$Admin_Types$SI(series))))
+									]),
+								_elm_lang$core$Native_List.fromArray(
+									[
+										_elm_lang$html$Html$text('Save')
+									]))
 							]))
 					]))
 			]));

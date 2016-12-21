@@ -265,8 +265,13 @@ adminSeriesEdit series =
                , onInput (updateSeriesDescription series)
                , value series.description ] []
       ]
+      , div [ class "four columns" ] [
+        a [ class "button button-primary"
+            , onClick <| FromAdminFrontend <| AdminEdit <| SI series
+          ] [ text "Save" ]
+        ]
+      ]
     ]
-  ]
 
 adminAuthorEdit : Api.Author -> Html Msg
 adminAuthorEdit author =
