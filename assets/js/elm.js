@@ -12485,8 +12485,22 @@ var _pellagic_puffbomb$simpleservantblog$Blog_Post$dateToString = function (date
 				A2(
 					_elm_lang$core$Basics_ops['++'],
 					' ',
-					_elm_lang$core$Basics$toString(
-						_elm_lang$core$Date$year(date))))));
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						_elm_lang$core$Basics$toString(
+							_elm_lang$core$Date$year(date)),
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							' ',
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								_elm_lang$core$Basics$toString(
+									_elm_lang$core$Date$hour(date)),
+								A2(
+									_elm_lang$core$Basics_ops['++'],
+									':',
+									_elm_lang$core$Basics$toString(
+										_elm_lang$core$Date$minute(date))))))))));
 };
 var _pellagic_puffbomb$simpleservantblog$Blog_Post$fromJustDate = function (somedate) {
 	var _p0 = somedate;
@@ -12584,12 +12598,20 @@ var _pellagic_puffbomb$simpleservantblog$Blog_Post$postTitle = function (po) {
 				]));
 	}
 };
-var _pellagic_puffbomb$simpleservantblog$Blog_Post$fromJustStr = function (someval) {
-	var _p2 = someval;
+var _pellagic_puffbomb$simpleservantblog$Blog_Post$fromJustIntStr = function (someInt) {
+	var _p2 = someInt;
 	if (_p2.ctor === 'Nothing') {
 		return '';
 	} else {
-		return _p2._0;
+		return _elm_lang$core$Basics$toString(_p2._0);
+	}
+};
+var _pellagic_puffbomb$simpleservantblog$Blog_Post$fromJustStr = function (someval) {
+	var _p3 = someval;
+	if (_p3.ctor === 'Nothing') {
+		return '';
+	} else {
+		return _p3._0;
 	}
 };
 var _pellagic_puffbomb$simpleservantblog$Blog_Post$postTitleAndSynopsis = function (po) {

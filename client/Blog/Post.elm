@@ -20,7 +20,11 @@ fromJustStr someval =
 
         Just t ->
             t
-
+fromJustIntStr : Maybe Int -> String
+fromJustIntStr someInt =
+  case someInt of
+      Nothing -> ""
+      Just n -> toString n
 
 dateToString : Date -> String
 dateToString date =
@@ -29,6 +33,10 @@ dateToString date =
       ++ toString (month date)
       ++ " "
       ++ toString (year date)
+      ++ " "
+      ++ toString (hour date)
+      ++ ":"
+      ++ toString (minute date)
 
 fromJustDate : Maybe Date -> String
 fromJustDate somedate =

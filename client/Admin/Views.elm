@@ -182,6 +182,7 @@ adminPostEdit post =
     div [ class "row" ] [
       div [ class "eight columns" ] [
           p [] [ b [] [ text "Id: " ], text (toString post.bid) ]
+          , p [] [ text ("Created: " ++ (BlogViews.dateToString post.created)) ]
           , label [ for "title" ] [ text "title" ]
           , input [ id "title"
                   , type' "text"
@@ -194,10 +195,18 @@ adminPostEdit post =
                   , placeholder "pubdate"
                   , onInput (updatePostPublished post)
                   , value (BlogViews.fromJustDate post.pubdate) ] []
-          , p [] [ text "Created" ]
-          , p [] [ text (BlogViews.dateToString post.created) ]
-          , p [] [ text "Order" ]
-          , p [] [ text (toString post.ordinal) ]
+          , label [ for "seriesId" ] [ text "Series Id" ]
+          , input [ id "seriesId"
+                  , type' "text"
+                  , placeholder "series id"
+                  , onInput (updateSeriesId post)
+                  , value (BlogViews.fromJustIntStr post.seriesId) ] []
+          , label [ for "ordinal" ] [ text "Ordering" ]
+          , input [ id "ordinal"
+                  , type' "text"
+                  , placeholder "ordering"
+                  , onInput (updateOrdering post)
+                  , value (BlogViews.fromJustIntStr post.ordinal) ] []
           ]
     , div [ class "four columns" ] [
       a [ class "button button-primary"
@@ -357,3 +366,17 @@ updatePostSynopsis : Api.BlogPost -> String -> Msg
 updatePostSynopsis post synopsis = case synopsis of
   "" -> FromAdminBackend (AdminPostDetail { post | synopsis = Nothing })
   _ -> FromAdminBackend (AdminPostDetail { post | synopsis = Just synopsis })
+
+updateSeriesId : Api.BlogPost -> String -> Msg
+updateSeriesId post sid = case sid of
+  "" -> FromAdminBackend (AdminPostDetail { post | seriesId = Nothing })
+  someStr -> case toInt someStr of
+    Err _ -> NoOp
+    Ok seriesId -> FromAdminBackend (AdminPostDetail { post | seriesId = Just seriesId })
+
+updateOrdering : Api.BlogPost -> String -> Msg
+updateOrdering post order = case order of
+  "" -> FromAdminBackend (AdminPostDetail { post | seriesId = Nothing })
+  someOrder -> case toInt someOrder of
+    Err _ -> NoOp
+    Ok ordering -> FromAdminBackend (AdminPostDetail { post | ordinal = Just ordering })
