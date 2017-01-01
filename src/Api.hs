@@ -35,6 +35,7 @@ import           Html.Home
 import           Models.Author                           (createAuthorTable)
 import           Models.Post                             (createPostTable,
                                                           createSeriesTable)
+import           Models.Media                            (createPostMediaTable)
 
 
 -- This one is separate so elm can generate for it
@@ -85,7 +86,8 @@ createAllTables conn = initUserBackend conn >>
     execute_ conn createAuthorTable >>
       execute_ conn createSeriesTable >>
         execute_ conn createPostTable >>
-          return ()
+          execute_ conn createPostMediaTable >>
+            return ()
 
 blogApi :: Proxy BlogApi
 blogApi = Proxy
