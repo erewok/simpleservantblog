@@ -26,7 +26,7 @@ import           Text.Blaze.Html5.Attributes             as A
 import qualified Web.Users.Postgresql                    as WUP
 import qualified Web.Users.Types                         as WU
 
-import           Html.Home                               (pageSkeleton)
+import           Html.Home                               (pageSkeleton, PageType(..))
 import           Models.Author                           (Author (..))
 
 
@@ -89,8 +89,8 @@ instance FromFormUrlEncoded LoginForm where
      { lfUsername = username
      , lfPassword = password }
 
-loginPage :: Bool -> Html
-loginPage firstTime = docTypeHtml $ pageSkeleton $
+loginPage :: Bool -> H.Html
+loginPage firstTime = docTypeHtml $ pageSkeleton $ NoJS $
       H.div ! A.class_ "row main" $
         H.div ! A.id "login-page" $
           H.div ! A.class_ "login-page-box" $ do
@@ -99,7 +99,7 @@ loginPage firstTime = docTypeHtml $ pageSkeleton $
             let formOrError = if firstTime then loginForm else H.p "Incorrect username/password"
             formOrError
 
-loginForm :: Html
+loginForm :: H.Html
 loginForm = H.form ! A.method "post" ! A.action "/login" $ do
   H.div ! A.class_ "five columns" $ do
     H.label ! A.for "usernameField" $ "username"
@@ -109,8 +109,8 @@ loginForm = H.form ! A.method "post" ! A.action "/login" $ do
     H.input ! A.type_ "password" ! A.name "password"  ! A.id "passwdField"
   H.input ! A.class_ "button-primary" ! A.type_ "submit" ! A.value "submit"
 
-redirectPage :: String -> Html
-redirectPage uri = H.docTypeHtml $ do
+redirectPage :: String -> H.Html
+redirectPage uri = pageSkeleton $ NoJS $ do
   H.head $ do
     H.title "redirecting..."
     H.meta ! A.httpEquiv "refresh" ! A.content (H.toValue $ "1; url=" ++ uri)

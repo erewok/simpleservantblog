@@ -33,8 +33,10 @@ library
                      , cereal
                      , cryptonite
                      , elm-export
+                     , lens
                      , monad-logger
                      , mtl
+                     , opaleye
                      , postgresql-simple
                      , resource-pool
                      , servant
@@ -45,6 +47,7 @@ library
                      , servant-auth-cookie
                      , text
                      , time
+                     , tisch
                      , transformers
                      , users
                      , users-postgresql-simple

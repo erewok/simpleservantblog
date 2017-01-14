@@ -15,6 +15,10 @@ packages:
     git: https://www.github.com/mattjbray/servant-elm
     commit: d303d2699c28bf39b0dde33627409e558ccb98ce
   extra-dep: True
+- location:
+    git: https://github.com/k0001/tisch.git
+    commit: ac5b7da260ed834310a334459628343b9de7553f
+  extra-dep: True
 # Packages to be pulled from upstream that are not in the resolver (e.g., acme-missiles-0.3)
 extra-deps:
   - wai-make-assets-0.1.1

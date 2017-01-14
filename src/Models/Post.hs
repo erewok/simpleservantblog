@@ -1,8 +1,14 @@
+{-# LANGUAGE Arrows #-}
+{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE DeriveGeneric         #-}
 {-# LANGUAGE DuplicateRecordFields #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE NoImplicitPrelude     #-}
 {-# LANGUAGE OverloadedStrings     #-}
 {-# LANGUAGE QuasiQuotes           #-}
+{-# LANGUAGE TypeApplications #-}
+{-# LANGUAGE TypeFamilies #-}
 
 module Models.Post (
   BlogSeries(..)
@@ -16,9 +22,12 @@ module Models.Post (
   ) where
 
 import           Control.Applicative                ((<$>), (<*>))
-import           Data.Aeson
+import Control.Lens
+import           Data.Aeson hiding (Series)
 import qualified Data.ByteString.Char8              as B
+import Data.Int
 import           Data.Maybe
+import Data.Proxy
 import qualified Data.Text                          as T
 import           Data.Time                          (UTCTime)
 import           Database.PostgreSQL.Simple.FromRow (FromRow, field, fromRow)
@@ -28,6 +37,7 @@ import           Database.PostgreSQL.Simple.ToRow   (ToRow, toRow)
 import           Database.PostgreSQL.Simple.Types   (Query(..))
 import           GHC.Generics
 import           Prelude                            (Eq, Int, Show, ($), (.))
+import qualified Tisch as T
 import           Servant.Elm
 
 --
@@ -82,24 +92,6 @@ instance ToJSON PostSeries
 -- Table Definitions --
 --
 -- Table Definition Series
-data BlogSeries = BlogSeries {
-  sid           :: !Int
-  , name        :: !T.Text
-  , description :: !T.Text
-  , parentid    :: Maybe Int
-} deriving (Eq, Show, Generic)
-
-instance ElmType BlogSeries
-instance FromJSON BlogSeries
-instance ToJSON BlogSeries
-instance FromRow BlogSeries where
-  fromRow = BlogSeries <$> field <*> field <*> field <*> field
-
-instance ToRow BlogSeries where
-  toRow s =  [toField $ sid s
-             , toField $ name s
-             , toField $ description s
-             , toField $ parentid s]
 
 -- Post
 data BlogPost = BlogPost {
@@ -162,6 +154,58 @@ createPostTable =
          );
    |]
 
+data Fishing -- db name
+
+newtype SeriesId = SeriesId { unSeriesId :: Int32 }
+  deriving (Eq, Show)
+
+instance Wrapped SeriesId where
+  type Unwrapped SeriesId = Int32
+  _Wrapped' = iso unSeriesId SeriesId
+instance T.PgTyped SeriesId where
+  type PgType SeriesId = T.PGInt4
+instance T.ToKol SeriesId SeriesId
+instance T.QueryRunnerColumnDefault T.PGInt4 SeriesId where
+  queryRunnerColumnDefault = T.qrcWrapped
+
+data Series
+data instance T.Table Series = Series
+type instance T.Database Series = Fishing
+type instance T.SchemaName Series = "public"
+type instance T.TableName Series = "series"
+type instance T.Columns Series =
+    [ 'T.Column "id" 'T.WD 'T.R SeriesId SeriesId
+    , 'T.Column "name" 'T.W 'T.R T.PGText T.Text
+    , 'T.Column "description" 'T.W 'T.R T.PGText T.Text
+    , 'T.Column "parentid" 'T.W 'T.RN SeriesId SeriesId
+    ]
+
+-- toBlogSeries :: T.HsR Series -> BlogSeries
+-- toBlogSeries s = BlogSeries
+--   (view (T.col (Proxy :: Proxy "id")) s)
+--   (view (T.col (Proxy :: Proxy "name")) s)
+--   (view (T.col (Proxy :: Proxy "description")) s)
+--   (view (T.col (Proxy :: Proxy "parentid")) s)
+
+
+data BlogSeries = BlogSeries {
+  sid           :: !Int
+  , name        :: !T.Text
+  , description :: !T.Text
+  , parentid    :: Maybe Int
+} deriving (Eq, Show, Generic)
+
+instance ElmType BlogSeries
+instance FromJSON BlogSeries
+instance ToJSON BlogSeries
+instance FromRow BlogSeries where
+  fromRow = BlogSeries <$> field <*> field <*> field <*> field
+
+instance ToRow BlogSeries where
+  toRow s =  [toField $ sid s
+             , toField $ name s
+             , toField $ description s
+             , toField $ parentid s]
 
 createSeriesTable :: Query
 createSeriesTable =
