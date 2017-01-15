@@ -11,13 +11,22 @@ import           Text.Blaze.Html5.Attributes as A
 import           Servant
 import           Servant.HTML.Blaze
 
+
 type HomePage = Get '[HTML] Html
+type BlogMain = Get '[HTML] Html
+type ContactPage = Get '[HTML] Html
 
 data PageType a = NoJS a
               | HighlightElm a
 
 homePage :: Handler Html
-homePage = pure $ pageSkeleton $ HighlightElm elmApp
+homePage = pure $ pageSkeleton $ NoJS $ H.text "Coming Soon"
+
+blogMain :: Handler Html
+blogMain = pure $ pageSkeleton $ HighlightElm elmApp
+
+contactPage :: Handler Html
+contactPage = pure $ pageSkeleton $ NoJS $ H.text "Coming Soon"
 
 pageSkeleton :: PageType H.Html -> H.Html
 pageSkeleton pageType@(NoJS content) = docTypeHtml $ do
@@ -40,8 +49,8 @@ pageHead pageType = H.head $ do
   H.title "Ekadanta.co / erik aker"
   H.meta ! A.name "viewport" ! A.content "width=device-width, initial-scale=1"
   H.link ! A.href "//fonts.googleapis.com/css?family=Raleway:400,300,600" ! A.rel "stylesheet" ! A.type_ "text/css"
-  H.link ! A.href "assets/css/styles.min.css" ! A.rel "stylesheet" ! A.type_ "text/css"
   H.link ! A.href "/assets/images/favicon.ico" ! A.rel "icon"
+  H.link ! A.href "/assets/css/styles.min.css" ! A.rel "stylesheet" ! A.type_ "text/css"
   headScripts pageType
 
 headScripts :: PageType H.Html -> H.Html
@@ -52,19 +61,23 @@ headScripts (HighlightElm _) = do
   H.script ! A.type_ "text/javascript" ! A.src "assets/js/elm.min.js" $ ""
 
 topNav :: H.Html
-topNav = H.header ! A.id "page-header" ! A.class_ "top-nav" $
-    H.div ! A.class_ "row" $ do
-      H.div ! A.class_ "four columns" ! A.style "margin-top: 2%" $
-        H.a ! A.class_ "button" ! A.style "border: none;" ! href "/" $
-          H.h5 "EKADANTA"
-      H.div ! A.class_ "two columns" ! A.style "margin-top: 2%" $ ""
-      H.div ! A.class_ "two columns" ! A.style "margin-top: 2%" $
-        H.a ! A.class_ "button" ! A.style "border: none;" ! href "/about" $ "about"
-      H.div ! A.class_ "two columns" ! A.style "margin-top: 2%" $
-        H.a ! A.class_ "button" ! A.style "border: none;" ! href "https://twitter.com/erewok" $ "@erewok"
-      H.div ! A.class_ "two columns" ! A.style "margin-top: 2%" $
-        H.a ! A.class_ "button" ! A.style "border: none;"  ! href "https://github.com/pellagic-puffbomb" $
-          H.img ! A.src "/assets/images/GitHub-Mark-32px.png"
+topNav = H.section ! A.class_ "nav" $ do
+    H.nav ! A.class_ "small-nav twelve columns" $
+      H.ul ! A.class_ "small-nav" $ navLinkList
+    H.nav ! A.class_ "navigation" $
+      H.div ! A.class_ "row" $ do
+        H.div ! A.class_ "three columns" $
+          H.a ! A.class_ "button" ! href "/" $
+            H.h5 "EKADANTA"
+        H.div ! A.class_ "nine columns" $
+          H.ul ! A.class_ "main-navigation u-pull-right" $ navLinkList
+
+navLinkList :: H.Html
+navLinkList = do
+  H.li $ H.a ! href "/posts" $ "Blog"
+  H.li $ H.a ! href "/projects" $ "Projects"
+  H.li $ H.a ! href "/about" $ "About"
+  H.li $ H.a ! href "/contact" $ "Contact"
 
 pageFooter :: H.Html
 pageFooter = H.footer ! A.id "page-footer" $

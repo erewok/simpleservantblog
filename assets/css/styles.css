@@ -11,6 +11,9 @@ body {
 p {
   font-size: 19px;
 }
+nav {
+  padding-top: 25px;
+}
 
 #page-header {
   text-align: center;
@@ -32,6 +35,29 @@ p {
   border-radius: 6px;
   padding: 1rem;
 }
+
+/* Navigation */
+.main-navigation > li {
+  display: inline-block;
+  text-decoration: none;
+}
+.main-navigation > li {
+  margin-left: 40px;
+}
+.main-navigation a {
+  color: #555;
+}
+.navigation .button {
+  border: none;
+}
+
+.small-nav {
+  display: none;
+  text-align: center;
+  list-style-type: none;
+}
+
+ /* Post content */
 .post-main {
   background-color: rgba(245, 245, 245, 0.3);
 }
@@ -41,15 +67,15 @@ p {
 .post-body {
   margin-top: 5px;
 }
-.top-nav button {
-  border: none;
-}
+
 .series-main {
   padding: 0.5rem 2rem;
 }
 .sidebar {
   padding-left: 2em;
 }
+
+ /*About Page */
 #about-page {
   padding: 20px 20px 20px 20px
 }
@@ -69,6 +95,7 @@ p {
   padding-left: 1rem;
 }
 
+ /*Admin Pages */
 a.admin-button {
   border: none;
   background-color: rgba(245, 245, 245, 0.5);
@@ -95,4 +122,29 @@ input#title {
 }
 .add-new {
   font-size: 40px;
+}
+
+ /*Generic Media Queries */
+/* Larger than phablet (also point when grid becomes active) */
+@media (max-width: 750px) {
+  .small-nav {
+    display: block;
+  }
+  .main-navigation {
+    display: none;
+  }
+  .navigation .three {
+    text-align: center;
+  }
+
+}
+/* Larger than mobile */
+@media (max-width: 400px) {
+
+}
+@media (min-width: 400px)  and (max-width: 750px) {
+
+}
+/* Larger than tablet */
+@media (max-width: 750px) {
 }

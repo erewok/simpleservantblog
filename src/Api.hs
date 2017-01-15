@@ -41,7 +41,9 @@ import           Models.Media                            (createPostMediaTable)
 -- This one is separate so elm can generate for it
 type BlogApi = PostApi :<|> UserApi
 type WithHtml = HomePage
+                :<|> "posts" :> BlogMain
                 :<|> "about" :> AboutPage
+                :<|> "contact" :> ContactPage
                 :<|> BlogApi
 type WithoutAssets =  WithHtml
                     :<|> LoginApi
@@ -53,7 +55,9 @@ type WithAssets =  WithHtml
 
 apihandlers :: Pool Connection -> Server WithHtml
 apihandlers conn = homePage
+                  :<|> blogMain
                   :<|> aboutPage
+                  :<|> contactPage
                   :<|> postHandlers conn
                   :<|> userHandlers conn
 
