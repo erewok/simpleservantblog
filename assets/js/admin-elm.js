@@ -12851,7 +12851,7 @@ var _pellagic_puffbomb$simpleservantblog$Admin_Views$adminPostEdit = function (p
 								_elm_lang$core$Native_List.fromArray(
 									[
 										_elm_lang$html$Html_Attributes$id('pubdate'),
-										_elm_lang$html$Html_Attributes$type$('datetime'),
+										_elm_lang$html$Html_Attributes$type$('date'),
 										_elm_lang$html$Html_Attributes$placeholder('pubdate'),
 										_elm_lang$html$Html_Events$onInput(
 										_pellagic_puffbomb$simpleservantblog$Admin_Views$updatePostPublished(post)),
