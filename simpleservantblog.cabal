@@ -23,6 +23,7 @@ library
                      , Api.User
                      , Html.Home
                      , Html.About
+                     , Html.Contact
                      , Models.Post
                      , Models.Media
                      , Models.Author

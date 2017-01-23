@@ -191,7 +191,7 @@ adminPostEdit post =
                   , value post.title ] []
           , label [ for "pubdate" ] [ text "pubdate" ]
           , input [ id "pubdate"
-                  , type' "text"
+                  , type' "date"
                   , placeholder "pubdate"
                   , onInput (updatePostPublished post)
                   , value (BlogViews.fromJustDate post.pubdate) ] []
@@ -378,6 +378,14 @@ updatePostPublished post pubdate = case pubdate of
   dateAttempt -> case fromString dateAttempt of
     Err _ -> NoOp
     Ok date -> FromAdminBackend (AdminPostDetail { post | pubdate = Just date })
+
+-- updatePostPublished : Api.BlogPost -> String -> Msg
+-- updatePostPublished post pubdate = case pubdate of
+--   "" -> FromAdminBackend (AdminPostDetail post )
+--   timeAttempt -> case fromString timeAttempt of
+--     Err _ -> NoOp
+--     Ok date -> FromAdminBackend (AdminPostDetail { post | pubdate = Just date })
+
 
 updatePostTitle : Api.BlogPost -> String -> Msg
 updatePostTitle post title = FromAdminBackend (AdminPostDetail { post | title = title })

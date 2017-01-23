@@ -8,6 +8,7 @@
     ],
     "exposed-modules": [],
     "dependencies": {
+        "Bogdanp/elm-datepicker": "3.0.1 <= v < 4.0.0",
         "circuithub/elm-html-shorthand": "11.0.0 <= v < 12.0.0",
         "elm-community/elm-json-extra": "1.0.0 <= v < 2.0.0",
         "elm-community/elm-test": "1.0.0 <= v < 2.0.0",
