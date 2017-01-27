@@ -130,8 +130,7 @@ aboutUs = H.section ! A.id "about" ! A.class_ "about u-full-width" $
       H.div ! A.class_ "twelve columns" $ do
         H.h3 ! A.class_ "separator" $ "About Us"
         H.h4 "Ekadanta Consulting is the work of Erik Aker."
-        H.h4 $ H.text $ T.unlines ["With over 6 years of experience leading software projects, "
-                                , "Erik has expertise in Python, Javascript, web application development, "
+        H.h4 $ H.text $ T.unlines ["Erik has expertise in Python, Javascript, web application development, "
                                 , "database design, test practices, and cloud infrastructure and deployment."]
 
 ourServices :: H.Html
@@ -168,9 +167,7 @@ contactForm = H.section ! A.class_ "container contact-us u-full-width u-max-full
   H.div ! A.class_ "row" $ do
     H.div ! A.class_ "four columns contact-us-details" $ do
       H.h3 "Contact"
-      H.h5 "erik.aker@ekadanta.co"
-      H.br
-      H.h5 "contact@ekadanta.co"
+      H.h5 "ekadanta.co@gmail.com"
       H.br
       H.ul ! A.class_ "social-links" $ do
         H.li $
