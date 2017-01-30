@@ -4,6 +4,7 @@
 
 module Html.Home where
 
+import           Control.Monad.Except
 import qualified Data.Text                   as T
 import           Text.Blaze.Html5            as H
 import           Text.Blaze.Html5.Attributes as A
@@ -39,9 +40,6 @@ homeSkeleton pageType@(NoJS content) = docTypeHtml $ do
 blogMain :: Handler Html
 blogMain = pure $ pageSkeleton $ HighlightElm elmApp
 
-contactPage :: Handler Html
-contactPage = pure $ pageSkeleton $ NoJS $ H.text "Coming Soon"
-
 pageSkeleton :: PageType H.Html -> H.Html
 pageSkeleton pageType@(NoJS content) = docTypeHtml $ do
   pageHead pageType
@@ -62,7 +60,6 @@ pageHead :: PageType H.Html -> H.Html
 pageHead pageType = H.head $ do
   H.title "Ekadanta.co / erik aker"
   H.meta ! A.name "viewport" ! A.content "width=device-width, initial-scale=1"
-  H.link ! A.href "//fonts.googleapis.com/css?family=Raleway:400,300,600" ! A.rel "stylesheet" ! A.type_ "text/css"
   H.link ! A.href "//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" ! A.rel "stylesheet" ! A.type_ "text/css"
   H.link ! A.href "/assets/images/favicon.ico" ! A.rel "icon"
   H.link ! A.href "/assets/css/styles.min.css" ! A.rel "stylesheet" ! A.type_ "text/css"
@@ -163,7 +160,7 @@ getInTouch = H.section ! A.id "about" ! A.class_ "about u-full-width" $
                                   , "if that's the case, so no worries."]
 
 contactForm :: H.Html
-contactForm = H.section ! A.class_ "container contact-us u-full-width u-max-full-width" $
+contactForm = H.section ! A.id "contact" ! A.class_ "container contact-us u-full-width u-max-full-width" $
   H.div ! A.class_ "row" $ do
     H.div ! A.class_ "four columns contact-us-details" $ do
       H.h3 "Contact"
@@ -177,17 +174,28 @@ contactForm = H.section ! A.class_ "container contact-us u-full-width u-max-full
           H.a ! href "https://github.com/pellagic-puffbomb" ! A.target "_new" $
             H.i ! A.class_ "fa fa-github" $ ""
         H.li $
-          H.a ! href "https://ghttps://www.linkedin.com/in/erik-aker-41a3aa89ithub.com/pellagic-puffbomb" ! A.target "_new" $
+          H.a ! href "https://linkedin.com/in/erik-aker-41a3aa89" ! A.target "_new" $
             H.i ! A.class_ "fa fa-linkedin" $ ""
     H.div ! A.class_ "eight columns contact-us-form" $
-      H.form ! A.method "post" ! A.action "/contact-submit" $ do
+      H.form ! A.method "post" ! A.action "/contact" $ do
         H.div ! A.class_ "row" $ do
           H.div ! A.class_ "six columns" $
-            H.input ! A.class_ "u-full-width" ! A.type_ "text" ! A.placeholder "Name" ! A.id "nameInput"
+            H.input ! A.class_ "u-full-width" ! A.type_ "text" ! A.name "name" ! A.placeholder "Name" ! A.id "nameInput"
           H.div ! A.class_ "six columns" $
-            H.input ! A.class_ "u-full-width" ! A.type_ "text" ! A.placeholder "Email" ! A.id "emailInput"
-        H.textarea ! A.class_ "u-full-width" ! A.placeholder "Message" ! A.id "messageInput" $ ""
+            H.input ! A.class_ "u-full-width" ! A.type_ "text" !  A.name "email" ! A.placeholder "Email" ! A.id "emailInput"
+        H.textarea ! A.class_ "u-full-width" ! A.name "message" ! A.placeholder "Message" ! A.id "messageInput" $ ""
         H.input ! A.class_ "button u-pull-right" ! A.type_ "submit" !  A.value "Send"
+
+redirectPage :: String -> H.Html
+redirectPage uri = pageSkeleton $ NoJS $ do
+  H.head $ do
+    H.title "redirecting..."
+    H.meta ! A.httpEquiv "refresh" ! A.content (H.toValue $ "1; url=" ++ uri)
+  H.body $ do
+    H.p "You are being redirected."
+    H.p $ do
+      void "If your browser does not refresh the page click "
+      H.a ! A.href (H.toValue uri) $ "here"
 
 
 ga :: T.Text

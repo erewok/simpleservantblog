@@ -35,6 +35,7 @@ library
                      , cryptonite
                      , elm-export
                      , lens
+                     , mime-mail
                      , monad-logger
                      , mtl
                      , opaleye
@@ -46,6 +47,7 @@ library
                      , servant-elm
                      , servant-server
                      , servant-auth-cookie
+                     , smtps-gmail
                      , text
                      , time
                      , tisch

@@ -1,14 +1,14 @@
-{-# LANGUAGE Arrows #-}
-{-# LANGUAGE DataKinds #-}
-{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE Arrows                #-}
+{-# LANGUAGE DataKinds             #-}
 {-# LANGUAGE DeriveGeneric         #-}
 {-# LANGUAGE DuplicateRecordFields #-}
+{-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE NoImplicitPrelude     #-}
 {-# LANGUAGE OverloadedStrings     #-}
 {-# LANGUAGE QuasiQuotes           #-}
-{-# LANGUAGE TypeApplications #-}
-{-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE TypeApplications      #-}
+{-# LANGUAGE TypeFamilies          #-}
 
 module Models.Post (
   BlogSeries(..)
@@ -22,23 +22,23 @@ module Models.Post (
   ) where
 
 import           Control.Applicative                ((<$>), (<*>))
-import Control.Lens
-import           Data.Aeson hiding (Series)
+import           Control.Lens
+import           Data.Aeson                         hiding (Series)
 import qualified Data.ByteString.Char8              as B
-import Data.Int
+import           Data.Int
 import           Data.Maybe
-import Data.Proxy
+import           Data.Proxy
 import qualified Data.Text                          as T
 import           Data.Time                          (UTCTime)
 import           Database.PostgreSQL.Simple.FromRow (FromRow, field, fromRow)
 import           Database.PostgreSQL.Simple.SqlQQ
 import           Database.PostgreSQL.Simple.ToField (toField)
 import           Database.PostgreSQL.Simple.ToRow   (ToRow, toRow)
-import           Database.PostgreSQL.Simple.Types   (Query(..))
+import           Database.PostgreSQL.Simple.Types   (Query (..))
 import           GHC.Generics
 import           Prelude                            (Eq, Int, Show, ($), (.))
-import qualified Tisch as T
 import           Servant.Elm
+import qualified Tisch                              as T
 
 --
 -- Api Helpers for Frontend --
@@ -174,7 +174,7 @@ type instance T.Database Series = Fishing
 type instance T.SchemaName Series = "public"
 type instance T.TableName Series = "series"
 type instance T.Columns Series =
-    [ 'T.Column "id" 'T.WD 'T.R SeriesId SeriesId
+    [ 'T.Column "sid" 'T.WD 'T.R SeriesId SeriesId
     , 'T.Column "name" 'T.W 'T.R T.PGText T.Text
     , 'T.Column "description" 'T.W 'T.R T.PGText T.Text
     , 'T.Column "parentid" 'T.W 'T.RN SeriesId SeriesId
@@ -182,7 +182,7 @@ type instance T.Columns Series =
 
 -- toBlogSeries :: T.HsR Series -> BlogSeries
 -- toBlogSeries s = BlogSeries
---   (view (T.col (Proxy :: Proxy "id")) s)
+--   (view (T.col (Proxy :: Proxy "sid")) s)
 --   (view (T.col (Proxy :: Proxy "name")) s)
 --   (view (T.col (Proxy :: Proxy "description")) s)
 --   (view (T.col (Proxy :: Proxy "parentid")) s)

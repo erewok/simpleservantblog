@@ -32,6 +32,7 @@ import           Api.Post
 import           Api.User
 import           Html.About
 import           Html.Home
+import           Html.Contact
 import           Models.Author                           (createAuthorTable)
 import           Models.Post                             (createPostTable,
                                                           createSeriesTable)
@@ -43,13 +44,15 @@ type BlogApi = PostApi :<|> UserApi
 type WithHtml = HomePage
                 :<|> "posts" :> BlogMain
                 :<|> "about" :> AboutPage
-                :<|> "contact" :> ContactPage
+                :<|> ContactApi
                 :<|> BlogApi
 type WithoutAssets =  WithHtml
                     :<|> LoginApi
+                    :<|> ContactApi
                     :<|> AdminBackend
 type WithAssets =  WithHtml
                   :<|> LoginApi
+                  :<|> ContactApi
                   :<|> AdminBackend
                   :<|> "assets" :> Raw
 
@@ -57,7 +60,7 @@ apihandlers :: Pool Connection -> Server WithHtml
 apihandlers conn = homePage
                   :<|> blogMain
                   :<|> aboutPage
-                  :<|> contactPage
+                  :<|> contactServer
                   :<|> postHandlers conn
                   :<|> userHandlers conn
 
@@ -71,6 +74,7 @@ withAssetsServer :: Pool Connection -> AuthCookieSettings -> RandomSource -> Ser
 withAssetsServer conn settings rs key =
   return (apihandlers conn
             :<|> loginServer conn settings rs key
+            :<|> contactServer
             :<|> adminBackendHandlers conn
             :<|> serveDirectory "assets")
 
@@ -83,6 +87,7 @@ withoutAssetsApp conn settings rs key = do
 withoutAssetsServer :: Pool Connection -> AuthCookieSettings -> RandomSource -> ServerKey -> IO (Server WithoutAssets)
 withoutAssetsServer conn settings rs key = return $ apihandlers conn
                                       :<|> loginServer conn settings rs key
+                                      :<|> contactServer
                                       :<|> adminBackendHandlers conn
 
 createAllTables :: Connection -> IO ()

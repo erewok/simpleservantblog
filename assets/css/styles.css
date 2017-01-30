@@ -235,18 +235,18 @@ section.nav {
   padding: 80px 0 20px 0;
 }
 .simplify:before {
-  background: url("http://erikaker.com/media/blog_images/2014/05/26/IMG_20120213_111053.jpg");
+  background: url("/assets/images/children_pool_sea_wall.jpg");
 }
 #simplify h5 {
   text-alignment: justify;
   text-justify: inter-word;
 }
 .creativity:before {
-  background: url("http://erikaker.com/media/blog_images/2014/05/26/IMG_20120213_111053.jpg");
+  background: url("/assets/images/children_pool_sea_wall.jpg");
   background-position: 50% 0;
 }
 .quote:before {
-  background: url("http://erikaker.com/media/blog_images/2014/05/26/IMG_20120213_111053.jpg");
+  background: url("/assets/images/children_pool_sea_wall.jpg");
 }
 
 .featured-bg-image {

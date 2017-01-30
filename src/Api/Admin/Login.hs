@@ -7,7 +7,7 @@
 
 module Api.Admin.Login where
 
-import           Control.Monad.Except
+
 import           Control.Monad.IO.Class                  (liftIO)
 import qualified Data.ByteString.Char8                   as B
 import           Data.Pool                               (Pool, withResource)
@@ -26,7 +26,9 @@ import           Text.Blaze.Html5.Attributes             as A
 import qualified Web.Users.Postgresql                    as WUP
 import qualified Web.Users.Types                         as WU
 
-import           Html.Home                               (pageSkeleton, PageType(..))
+import           Html.Home                               (pageSkeleton
+                                                        , PageType(..)
+                                                        , redirectPage)
 import           Models.Author                           (Author (..))
 
 
@@ -108,14 +110,3 @@ loginForm = H.form ! A.method "post" ! A.action "/login" $ do
     H.label ! A.for "passwdField" $ "password"
     H.input ! A.type_ "password" ! A.name "password"  ! A.id "passwdField"
   H.input ! A.class_ "button-primary" ! A.type_ "submit" ! A.value "submit"
-
-redirectPage :: String -> H.Html
-redirectPage uri = pageSkeleton $ NoJS $ do
-  H.head $ do
-    H.title "redirecting..."
-    H.meta ! A.httpEquiv "refresh" ! A.content (H.toValue $ "1; url=" ++ uri)
-  H.body $ do
-    H.p "You are being redirected."
-    H.p $ do
-      void "If your browser does not refresh the page click "
-      H.a ! A.href (H.toValue uri) $ "here"

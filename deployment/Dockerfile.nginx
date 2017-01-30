@@ -10,7 +10,7 @@ RUN ln -sf /dev/stderr /var/log/nginx/error.log
 
 # load nginx conf as root
 COPY ./deployment/nginx.conf /etc/nginx/conf.d/nginx.conf
-COPY ./deployment/cert.pem /etc/nginx/ssl.cert
+COPY ./deployment/fullchain.pem /etc/nginx/ssl.cert
 COPY ./deployment/privkey.pem /etc/nginx/ssl.dkey
 
 RUN mkdir -p /opt/server

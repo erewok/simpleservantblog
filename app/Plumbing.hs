@@ -15,7 +15,6 @@ import           Web.Users.Types            (PasswordPlain (..), User (..),
 
 import qualified Api                        as A
 import qualified Config                     as C
-import           Models.Author              (Author (..))
 
 data App = App { makeTables     :: Bool
                 , cleanSessions :: Bool
