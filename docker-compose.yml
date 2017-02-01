@@ -29,6 +29,8 @@ services:
     ports:
       - "3000:3000"
     working_dir: /opt/server
+    logging:
+      driver: fluentd
   nginx:
     build:
       context: ./
@@ -38,3 +40,5 @@ services:
       - "443:443"
     links:
       - website
+    logging:
+      driver: fluentd
