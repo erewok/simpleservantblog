@@ -34,7 +34,10 @@ homeContent = consulting
 homeSkeleton :: PageType H.Html -> H.Html
 homeSkeleton pageType@(NoJS content) = docTypeHtml $ do
   pageHead pageType
-  H.body $ H.div $ skeletonContent content
+  H.body $ H.div $ do
+    H.div ! A.class_ "container" $ topNav
+    content
+    pageFooter
 
 
 blogMain :: Handler Html
@@ -74,7 +77,7 @@ headScripts (HighlightElm _) = do
   H.script ! A.type_ "text/javascript" ! A.src "assets/js/elm.min.js" $ ""
 
 topNav :: H.Html
-topNav = H.section ! A.class_ "container nav" $ do
+topNav = H.section ! A.class_ "nav" $ do
     H.nav ! A.class_ "small-nav twelve columns" $
       H.ul ! A.class_ "small-nav" $ navLinkList
     H.nav ! A.class_ "navigation" $

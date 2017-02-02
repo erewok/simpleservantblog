@@ -58,7 +58,7 @@ contactPostH contactF = do
 thanksPage :: H.Html
 thanksPage = docTypeHtml $ homeSkeleton $ NoJS $
       H.div ! A.class_ "row" $
-        H.div ! A.id "thanks-page" $
+        H.div ! A.id "thanks-page" ! A.class_ "container" $
           H.div ! A.class_ "contact-page-box" $
             H.div ! A.class_ "u-full-width" $ do
               H.h2 "Thanks"
