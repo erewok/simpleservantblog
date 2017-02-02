@@ -24,10 +24,6 @@
 - Clearing
 - Media Queries
 */
-@font-face {
-    font-family: Aileron;
-    src: url("/asset/css/fonts/aileron/Aileron-Regular.otf") format("opentype");
-}
 
 /* Grid
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
@@ -127,7 +123,7 @@ body {
   font-size: 1.5em; /* currently ems cause chrome bug misinterpreting rems on body element */
   line-height: 1.6;
   font-weight: 400;
-  font-family: Aileron, "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: Roboto, "OpenSans", Arial, sans-serif;
   color: #222; }
 
 

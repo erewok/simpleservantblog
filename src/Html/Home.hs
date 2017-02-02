@@ -63,6 +63,7 @@ pageHead pageType = H.head $ do
   H.link ! A.href "//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" ! A.rel "stylesheet" ! A.type_ "text/css"
   H.link ! A.href "/assets/images/favicon.ico" ! A.rel "icon"
   H.link ! A.href "/assets/css/styles.min.css" ! A.rel "stylesheet" ! A.type_ "text/css"
+  H.link ! A.href "https://fonts.googleapis.com/css?family=Roboto" ! A.rel "stylesheet"
   headScripts pageType
 
 headScripts :: PageType H.Html -> H.Html
