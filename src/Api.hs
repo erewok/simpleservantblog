@@ -5,9 +5,9 @@
 {-# LANGUAGE TypeOperators     #-}
 
 module Api
-    ( BlogApi
+    ( PostApi
     , adminProxyApi
-    , blogApi
+    , postApi
     , createAllTables
     , withAssets
     , withAssetsApp
@@ -19,7 +19,7 @@ module Api
 import           Data.Pool                               (Pool)
 import           Data.Proxy
 import           Database.PostgreSQL.Simple              hiding ((:.))
-import           Network.Wai
+import           Network.Wai                             (Application, Request)
 import           Network.Wai.MakeAssets
 import           Servant
 import           Servant.Server.Experimental.Auth        (AuthHandler)
@@ -29,32 +29,21 @@ import           Web.Users.Types                         (UserStorageBackend (..
 import           Api.Admin.Admin
 import           Api.Admin.Login
 import           Api.Post
-import           Api.User
 import           Html.About
-import           Html.Home
 import           Html.Contact
+import           Html.Home
 import           Models.Author                           (createAuthorTable)
+import           Models.Media                            (createPostMediaTable)
 import           Models.Post                             (createPostTable,
                                                           createSeriesTable)
-import           Models.Media                            (createPostMediaTable)
 
 
 -- This one is separate so elm can generate for it
-type BlogApi = PostApi :<|> UserApi
 type WithHtml = HomePage
                 :<|> "posts" :> BlogMain
                 :<|> "about" :> AboutPage
                 :<|> ContactApi
-                :<|> BlogApi
-type WithoutAssets =  WithHtml
-                    :<|> LoginApi
-                    :<|> ContactApi
-                    :<|> AdminBackend
-type WithAssets =  WithHtml
-                  :<|> LoginApi
-                  :<|> ContactApi
-                  :<|> AdminBackend
-                  :<|> "assets" :> Raw
+                :<|> PostApi
 
 apihandlers :: Pool Connection -> Server WithHtml
 apihandlers conn = homePage
@@ -62,21 +51,16 @@ apihandlers conn = homePage
                   :<|> aboutPage
                   :<|> contactServer
                   :<|> postHandlers conn
-                  :<|> userHandlers conn
 
-withAssetsApp :: Pool Connection -> AuthCookieSettings -> RandomSource -> ServerKey -> IO Application
-withAssetsApp conn settings rs key = do
-  let context = (defaultAuthHandler settings key :: AuthHandler Request Username) :. EmptyContext
-  server <- withAssetsServer conn settings rs key
-  return $ serveWithContext withAssets context server
+-- Used in production
+type WithoutAssets =  WithHtml
+                    :<|> LoginApi
+                    :<|> AdminBackend
 
-withAssetsServer :: Pool Connection -> AuthCookieSettings -> RandomSource -> ServerKey -> IO (Server WithAssets)
-withAssetsServer conn settings rs key =
-  return (apihandlers conn
-            :<|> loginServer conn settings rs key
-            :<|> contactServer
-            :<|> adminBackendHandlers conn
-            :<|> serveDirectory "assets")
+withoutAssetsServer :: Pool Connection -> AuthCookieSettings -> RandomSource -> ServerKey -> IO (Server WithoutAssets)
+withoutAssetsServer conn settings rs key = return $ apihandlers conn
+                                      :<|> loginServer conn settings rs key
+                                      :<|> adminBackendHandlers conn
 
 withoutAssetsApp :: Pool Connection -> AuthCookieSettings -> RandomSource -> ServerKey -> IO Application
 withoutAssetsApp conn settings rs key = do
@@ -84,12 +68,28 @@ withoutAssetsApp conn settings rs key = do
   server <- withoutAssetsServer conn settings rs key
   return $ serveWithContext withoutAssets context server
 
-withoutAssetsServer :: Pool Connection -> AuthCookieSettings -> RandomSource -> ServerKey -> IO (Server WithoutAssets)
-withoutAssetsServer conn settings rs key = return $ apihandlers conn
-                                      :<|> loginServer conn settings rs key
-                                      :<|> contactServer
-                                      :<|> adminBackendHandlers conn
 
+-- Used in development
+type WithAssets =  WithHtml
+                  :<|> LoginApi
+                  :<|> AdminBackend
+                  :<|> "assets" :> Raw
+
+withAssetsServer :: Pool Connection -> AuthCookieSettings -> RandomSource -> ServerKey -> IO (Server WithAssets)
+withAssetsServer conn settings rs key =
+  return (apihandlers conn
+            :<|> loginServer conn settings rs key
+            :<|> adminBackendHandlers conn
+            :<|> serveDirectory "assets")
+
+withAssetsApp :: Pool Connection -> AuthCookieSettings -> RandomSource -> ServerKey -> IO Application
+withAssetsApp conn settings rs key = do
+  let context = (defaultAuthHandler settings key :: AuthHandler Request Username) :. EmptyContext
+  server <- withAssetsServer conn settings rs key
+  return $ serveWithContext withAssets context server
+
+
+-- Auxiliary, helper things
 createAllTables :: Connection -> IO ()
 createAllTables conn = initUserBackend conn >>
     execute_ conn createAuthorTable >>
@@ -98,8 +98,8 @@ createAllTables conn = initUserBackend conn >>
           execute_ conn createPostMediaTable >>
             return ()
 
-blogApi :: Proxy BlogApi
-blogApi = Proxy
+postApi :: Proxy PostApi
+postApi = Proxy
 
 adminBackendProxyApi :: Proxy AdminBackend
 adminBackendProxyApi = Proxy

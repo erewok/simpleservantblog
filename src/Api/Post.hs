@@ -18,7 +18,6 @@ import           Data.Pool                          (Pool, withResource)
 import           Database.PostgreSQL.Simple
 import           Servant
 
-
 import           Models.Post
 
 
