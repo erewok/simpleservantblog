@@ -61,6 +61,7 @@ library
                      , wai-make-assets
                      , warp
   default-language:    Haskell2010
+  default-extensions:  OverloadedStrings
 
 executable simpleservantblog-exe
   hs-source-dirs:      app
