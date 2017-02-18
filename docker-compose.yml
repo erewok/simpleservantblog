@@ -23,6 +23,9 @@ services:
       - DB_PASS
       - DB_NAME
       - DB_PASSWD=${DB_PASS}
+      - EMAIL_USER
+      - EMAIL_PASSWD
+      - EMAIL_HOST
       - ENVIRONMENT
     links:
       - database
