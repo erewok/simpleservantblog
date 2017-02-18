@@ -5,5 +5,8 @@ creds.sh
 node_modules/
 cert.pem
 privkey.pem
+fullchain.pem
+letsencrypt.log
+runit.sh
 postgresql/
 build/
