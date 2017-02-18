@@ -2,7 +2,7 @@ FROM ubuntu:16.04
 MAINTAINER Erik Aker
 
 RUN ["apt-get", "update", "-y"]
-RUN ["apt-get", install", "-y", "libpq-dev", "netcat-traditional", "netbase"]
+RUN ["apt-get", "install", "-y", "libpq-dev", "netcat-traditional", "netbase"]
 
 RUN mkdir -p /opt/server
 
