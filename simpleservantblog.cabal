@@ -25,6 +25,7 @@ library
                      , Html.Home
                      , Html.About
                      , Html.Contact
+                     , Models
                      , Models.Post
                      , Models.Media
                      , Models.Author

@@ -6,7 +6,8 @@ import           Control.Exception
 import           Control.Monad.IO.Class     (liftIO)
 import           Data.Int                   (Int64)
 import qualified Data.Text                  as T
-import           Database.PostgreSQL.Simple (Connection, execute, connectPostgreSQL)
+import           Database.PostgreSQL.Simple (Connection, connectPostgreSQL,
+                                             execute)
 import           Options.Applicative
 import           System.IO
 import           Web.Users.Types            (PasswordPlain (..), User (..),
@@ -15,10 +16,12 @@ import           Web.Users.Types            (PasswordPlain (..), User (..),
 
 import qualified Api                        as A
 import qualified Config                     as C
+import qualified Models                     as M
 
-data App = App { makeTables     :: Bool
-                , cleanSessions :: Bool
-                , newUser       :: Bool}
+data App = App { makeTables      :: Bool
+                , cleanSessions  :: Bool
+                , newUser        :: Bool
+                , makeMigrations :: Bool}
 
 parser :: Parser App
 parser = App
@@ -34,6 +37,9 @@ parser = App
       ( long "user"
       <> short 'u'
       <> help "Whether to enter user-creation loop" )
+  <*> switch
+      ( long "migrations"
+      <> help "Create new tables" )
 
 main :: IO ()
 main = do
@@ -69,7 +75,7 @@ makeUser conn = do
     let user = User uname email passwd True
     res <- createUser conn user
     case res of
-      Left err -> throwIO (userError $ show err)
+      Left err     -> throwIO (userError $ show err)
       Right userId -> makeAuthor userId conn
     return user
 
@@ -85,14 +91,21 @@ makeAuthor userId conn = do
   _ <- liftIO $ execute conn q (userId, fname, lname) :: IO Int64
   return ()
 
+migrate :: Connection -> Bool -> IO ()
+migrate _ False   = pure ()
+migrate conn True = M.makeMigrations conn
+
 runWithOptions :: Connection -> App -> IO ()
-runWithOptions conn (App True True mkUser) =
+runWithOptions conn (App True True mkUser migrations) =
   A.createAllTables conn >>
     housekeepBackend conn >>
-      userLoop conn mkUser
-runWithOptions conn (App True False mkUser) = A.createAllTables conn >> userLoop conn mkUser
-runWithOptions conn (App False True mkUser) = housekeepBackend conn >> userLoop conn mkUser
-runWithOptions conn (App False False mkUser) = userLoop conn mkUser
+      userLoop conn mkUser >>
+        migrate conn migrations
+runWithOptions conn (App True False mkUser migrations) = A.createAllTables conn
+  >> userLoop conn mkUser >> migrate conn migrations
+runWithOptions conn (App False True mkUser migrations) = housekeepBackend conn
+  >> userLoop conn mkUser >> migrate conn migrations
+runWithOptions conn (App False False mkUser migrations) = userLoop conn mkUser >> migrate conn migrations
 
 withEcho :: Bool -> IO a -> IO a
 withEcho echo action' = do
