@@ -25,6 +25,14 @@ import           Prelude                            (Eq, Bool, Int, Show, ($), (
 import           Servant.Elm
 
 
+postMediaQueryByPostId :: Query
+postMediaQueryByPostId = Query $ B.unwords [
+                                  "select m.id, m.name, m.url, m.location, m.description, pm.is_featured "
+                                , "from media m where "
+                                , " inner join post_media pm on pm.media_id = m.id "
+                                , "where pm.post_id = ?"
+                                ]
+
 data Media = Media {
   mediaid            :: !Int
   , name       :: !T.Text
@@ -37,6 +45,14 @@ instance ToJSON Media
 instance FromRow Media where
   fromRow = Media <$> field <*> field <*> field <*> field <*> field
 
+instance ToRow Media where
+  toRow m =  [toField $ mediaid (m :: Media)
+             , toField $ name m
+             , toField $ url m
+             , toField $ location m
+             , toField $ description m
+            ]
+
 
 data PostMedia = PostMedia {
   postid            :: !Int
@@ -48,13 +64,12 @@ instance ToJSON PostMedia
 instance FromRow PostMedia where
   fromRow = PostMedia <$> field <*> field <*> field
 
-postMediaQueryByPostId :: Query
-postMediaQueryByPostId = Query $ B.unwords [
-                                  "select m.id, m.name, m.url, m.location, m.description, pm.is_featured "
-                                , "from media m where "
-                                , " inner join post_media pm on pm.media_id = m.id "
-                                , "where pm.post_id = ?"
-                                ]
+
+instance ToRow PostMedia where
+  toRow pm =  [toField $ postid (pm :: PostMedia)
+             , toField $ mediaid (pm :: PostMedia)
+             , toField $ isFeatured pm
+            ]
 
 createMediaTable :: Query
 createMediaTable =
