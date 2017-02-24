@@ -11,6 +11,8 @@ services:
       - PG_PASSWORD
     volumes:
       - ./postgresql:/var/lib/postgresql
+    ports:
+      - "5432:5432"
   website:
     build:
       context: .
