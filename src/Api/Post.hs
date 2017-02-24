@@ -18,10 +18,12 @@ import           Database.PostgreSQL.Simple
 import           Servant
 
 import           Models.Post
+import           Models.Media
 
 
 type PostApi = "post" :> Get '[JSON] [PostOverview]
   :<|> "post" :> Capture "id" Int  :> Get  '[JSON] BlogPost
+  :<|> "post" :> "media" :> Capture "id" Int  :> Get  '[JSON] [Media]
   :<|> "series" :> "post" :> Capture "id" Int  :> Get  '[JSON] PostSeries
   :<|> "series" :> Get  '[JSON] [BlogSeries]
   :<|> "series" :> Capture "id" Int  :> Get '[JSON] BlogSeries
@@ -29,11 +31,13 @@ type PostApi = "post" :> Get '[JSON] [PostOverview]
 postHandlers :: Pool Connection -> Server PostApi
 postHandlers conn = blogPostListH
               :<|> blogPostDetailH
+              :<|> blogPostMediaH
               :<|> blogPostSeriesH
               :<|> blogSeriesListH
               :<|> blogSeriesDetailH
   where blogPostListH = withResource conn listPosts
         blogPostDetailH postId = withResource conn $ flip getPost postId
+        blogPostMediaH postId = withResource conn $ flip getPostMedia postId
         blogPostSeriesH postId = withResource conn $ flip getPostWithSeries postId
         blogSeriesListH = withResource conn listSeries
         blogSeriesDetailH seriesId = withResource conn $ flip getSeries seriesId
@@ -48,6 +52,9 @@ getPost conn postId = do
   case result of
     (x:_) -> return x
     []    -> throwError err404
+
+getPostMedia :: Connection -> Int -> Handler [Media]
+getPostMedia conn postId = liftIO $ query conn postMediaQueryByPostId (Only postId)
 
 getPostWithSeries :: Connection -> Int -> Handler PostSeries
 getPostWithSeries conn postId = do

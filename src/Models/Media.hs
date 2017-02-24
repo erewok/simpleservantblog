@@ -53,7 +53,6 @@ instance ToRow Media where
              , toField $ description m
             ]
 
-
 data PostMedia = PostMedia {
   postid            :: !Int
   , mediaid        :: !Int
@@ -63,7 +62,6 @@ instance ElmType PostMedia
 instance ToJSON PostMedia
 instance FromRow PostMedia where
   fromRow = PostMedia <$> field <*> field <*> field
-
 
 instance ToRow PostMedia where
   toRow pm =  [toField $ postid (pm :: PostMedia)

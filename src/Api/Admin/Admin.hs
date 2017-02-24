@@ -1,7 +1,7 @@
-{-# LANGUAGE DataKinds         #-}
-{-# LANGUAGE DeriveGeneric     #-}
-{-# LANGUAGE LambdaCase        #-}
-{-# LANGUAGE TypeOperators     #-}
+{-# LANGUAGE DataKinds     #-}
+{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE LambdaCase    #-}
+{-# LANGUAGE TypeOperators #-}
 
 module Api.Admin.Admin where
 
@@ -25,6 +25,7 @@ import           Text.Blaze.Html5.Attributes             as A
 
 import           Api.Admin.Login                         (Username (..))
 import           Models.Author                           (Author (..))
+import qualified Models.Media                            as M
 import qualified Models.Post                             as Post
 
 
@@ -59,6 +60,10 @@ type AdminApi = "admin" :> "user" :> AuthProtect "cookie-auth" :> Get '[JSON] [A
   :<|> "admin" :> "series" :> ReqBody '[JSON] Post.BlogSeries :> AuthProtect "cookie-auth" :> Post '[JSON] Post.BlogSeries
   :<|> "admin" :> "series" :> Capture "id" Int :> ReqBody '[JSON] Post.BlogSeries :> AuthProtect "cookie-auth" :> Put '[JSON] ResultResp
   :<|> "admin" :> "series" :> Capture "id" Int :> AuthProtect "cookie-auth" :> Delete '[JSON] ResultResp
+  -- :<|> "admin" :> "media" :> AuthProtect "cookie-auth" :> Get '[JSON] [M.Media]
+  -- :<|> "admin" :> "media" :> Capture "id" Int  :> AuthProtect "cookie-auth" :> Get '[JSON] M.Media
+  -- :<|> "admin" :> "media" :> ReqBody '[JSON] M.Media :> AuthProtect "cookie-auth" :> Post '[JSON] M.Media
+  -- :<|> "admin" :> "post" :> "media" :> Capture "id" Int  :> AuthProtect "cookie-auth" :> Post '[JSON] M.PostMedia
 
 adminHandlers :: Pool Connection -> Server AdminApi
 adminHandlers conn = getUsersH
@@ -147,13 +152,13 @@ addPost newPost conn = do
       retrieveResult <- lift $ getPost (fst x) conn
       case retrieveResult of
         Just post -> return post
-        Nothing -> throwError err400
+        Nothing   -> throwError err400
 
 getPostById :: Int -> Connection -> Handler Post.BlogPost
 getPostById postId conn = do
   result <- liftIO $ getPost postId conn
   case result of
-    Nothing -> throwError err404
+    Nothing   -> throwError err404
     Just post -> return post
 
 getPost :: Int -> Connection -> IO (Maybe Post.BlogPost)
@@ -162,7 +167,7 @@ getPost postId conn = do
   result <- liftIO $ query conn q (Only postId)
   case result of
     (x:_)-> return $ Just x
-    _ -> return Nothing
+    _     -> return Nothing
 
 addPost' :: Post.BlogPost -> Connection -> IO [(Int, T.Text)]
 addPost' newPost conn = do
