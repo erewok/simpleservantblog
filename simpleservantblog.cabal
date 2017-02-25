@@ -1,5 +1,5 @@
 name:                simpleservantblog
-version:             0.1.0.0
+version:             0.2.0.0
 synopsis:            A CMS, blog-CRUD thing using Servant and Elm
 description:         Please see README.md
 homepage:            https://github.com/pellagic-puffbomb/simpleservantblog#readme
@@ -22,6 +22,7 @@ library
                      , Api.Post
                      , Api.Projects
                      , Api.Projects.TacoShop
+                    --  , Api.Multipart
                      , Html.Home
                      , Html.About
                      , Html.Contact
@@ -35,7 +36,10 @@ library
                      , bytestring
                      , cereal
                      , cryptonite
+                     , directory
                      , elm-export
+                     , http-api-data
+                     , http-media
                      , lens
                      , mime-mail
                      , monad-logger
@@ -44,16 +48,18 @@ library
                      , postgresql-simple
                      , random
                      , resource-pool
+                     , resourcet
                      , servant
                      , servant-blaze
                      , servant-foreign
                      , servant-elm
+                     , servant-multipart
                      , servant-server
                      , servant-auth-cookie
                      , smtps-gmail
                      , text
                      , time
-                     , tisch
+                    --  , tisch
                      , transformers
                      , users
                      , users-postgresql-simple

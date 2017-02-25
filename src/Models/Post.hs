@@ -37,7 +37,7 @@ import           Database.PostgreSQL.Simple.Types   (Query (..))
 import           GHC.Generics
 import           Prelude                            (Eq, Int, Show, ($), (.))
 import           Servant.Elm
-import qualified Tisch                              as T
+-- import qualified Tisch                              as T
 
 --
 -- Api Helpers for Frontend --
@@ -153,31 +153,31 @@ createPostTable =
          );
    |]
 
-data Fishing -- db name
-
-newtype SeriesId = SeriesId { unSeriesId :: Int32 }
-  deriving (Eq, Show)
-
-instance Wrapped SeriesId where
-  type Unwrapped SeriesId = Int32
-  _Wrapped' = iso unSeriesId SeriesId
-instance T.PgTyped SeriesId where
-  type PgType SeriesId = T.PGInt4
-instance T.ToKol SeriesId SeriesId
-instance T.QueryRunnerColumnDefault T.PGInt4 SeriesId where
-  queryRunnerColumnDefault = T.qrcWrapped
-
-data Series
-data instance T.Table Series = Series
-type instance T.Database Series = Fishing
-type instance T.SchemaName Series = "public"
-type instance T.TableName Series = "series"
-type instance T.Columns Series =
-    [ 'T.Column "sid" 'T.WD 'T.R SeriesId SeriesId
-    , 'T.Column "name" 'T.W 'T.R T.PGText T.Text
-    , 'T.Column "description" 'T.W 'T.R T.PGText T.Text
-    , 'T.Column "parentid" 'T.W 'T.RN SeriesId SeriesId
-    ]
+-- data Fishing -- db name
+--
+-- newtype SeriesId = SeriesId { unSeriesId :: Int32 }
+--   deriving (Eq, Show)
+--
+-- instance Wrapped SeriesId where
+--   type Unwrapped SeriesId = Int32
+--   _Wrapped' = iso unSeriesId SeriesId
+-- instance T.PgTyped SeriesId where
+--   type PgType SeriesId = T.PGInt4
+-- instance T.ToKol SeriesId SeriesId
+-- instance T.QueryRunnerColumnDefault T.PGInt4 SeriesId where
+--   queryRunnerColumnDefault = T.qrcWrapped
+--
+-- data Series
+-- data instance T.Table Series = Series
+-- type instance T.Database Series = Fishing
+-- type instance T.SchemaName Series = "public"
+-- type instance T.TableName Series = "series"
+-- type instance T.Columns Series =
+--     [ 'T.Column "sid" 'T.WD 'T.R SeriesId SeriesId
+--     , 'T.Column "name" 'T.W 'T.R T.PGText T.Text
+--     , 'T.Column "description" 'T.W 'T.R T.PGText T.Text
+--     , 'T.Column "parentid" 'T.W 'T.RN SeriesId SeriesId
+--     ]
 
 -- toBlogSeries :: T.HsR Series -> BlogSeries
 -- toBlogSeries s = BlogSeries

@@ -1,8 +1,8 @@
-{-# LANGUAGE DataKinds         #-}
-{-# LANGUAGE DeriveGeneric     #-}
-{-# LANGUAGE LambdaCase        #-}
-{-# LANGUAGE TypeFamilies      #-}
-{-# LANGUAGE TypeOperators     #-}
+{-# LANGUAGE DataKinds     #-}
+{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE LambdaCase    #-}
+{-# LANGUAGE TypeFamilies  #-}
+{-# LANGUAGE TypeOperators #-}
 
 module Api.Admin.Login where
 
@@ -22,12 +22,13 @@ import           Servant.Server.Experimental.Auth        (AuthHandler)
 import           Servant.Server.Experimental.Auth.Cookie
 import           Text.Blaze.Html5                        as H
 import           Text.Blaze.Html5.Attributes             as A
+import           Web.FormUrlEncoded                      (FromForm)
 import qualified Web.Users.Postgresql                    as WUP
 import qualified Web.Users.Types                         as WU
 
-import           Html.Home                               (pageSkeleton
-                                                        , PageType(..)
-                                                        , redirectPage)
+import           Html.Home                               (PageType (..),
+                                                          pageSkeleton,
+                                                          redirectPage)
 import           Models.Author                           (Author (..))
 
 
@@ -39,7 +40,7 @@ type instance AuthCookieData = Username
 
 type LoginApi = "login" :> Get '[HTML] Html
                 :<|> "login" :> ReqBody '[FormUrlEncoded] LoginForm
-                             :> Post '[HTML] (Headers '[Header "set-cookie" B.ByteString] Html)
+                             :> Post '[HTML] (Headers '[Header "set-cookie" EncryptedSession] Html)
 
 
 loginServer :: Pool Connection -> AuthCookieSettings -> RandomSource -> ServerKey -> Server LoginApi
@@ -54,16 +55,16 @@ loginPost :: LoginForm
             -> RandomSource
             -> ServerKey
             -> Connection
-            -> Handler (Headers '[Header "set-cookie" B.ByteString] Html)
+            -> Handler (Headers '[Header "set-cookie" EncryptedSession] Html)
 loginPost loginF settings rs key conn = do
   let uname = lfUsername loginF
   authResult <- liftIO $ WU.authUser conn uname (WU.PasswordPlain $ lfPassword loginF) 12000000
   case authResult of
-    Nothing -> return $ addHeader "" (loginPage False)
+    Nothing -> return $ addHeader emptyEncryptedSession (loginPage False)
     Just sessionid -> do
       userid <- liftIO $ WU.getUserIdByName conn uname
       case userid of
-        Nothing -> return $ addHeader "" (loginPage False)
+        Nothing -> return $ addHeader emptyEncryptedSession (loginPage False)
         Just uid ->
           addSession
             settings -- the settings
@@ -75,21 +76,9 @@ loginPost loginF settings rs key conn = do
 data LoginForm = LoginForm
  { lfUsername :: !T.Text
  , lfPassword :: !T.Text
- } deriving (Eq, Show)
+ } deriving (Eq, Show, Generic)
 
-
-instance FromFormUrlEncoded LoginForm where
- fromFormUrlEncoded d = do
-   username <- case lookup "username" d of
-     Nothing -> Left "username field is missing"
-     Just  x -> return x
-   password <- case lookup "password" d of
-     Nothing -> Left "password field is missing"
-     Just  x -> return x
-   return LoginForm
-     { lfUsername = username
-     , lfPassword = password }
-
+instance FromForm LoginForm
 loginPage :: Bool -> H.Html
 loginPage firstTime = docTypeHtml $ pageSkeleton $ NoJS $
       H.div ! A.class_ "row main" $

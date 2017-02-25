@@ -1,6 +1,5 @@
 {-# LANGUAGE DataKinds     #-}
 {-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE LambdaCase    #-}
 {-# LANGUAGE TypeOperators #-}
 
 module Api.Admin.Admin where
@@ -19,6 +18,7 @@ import           GHC.Generics
 import           Servant
 import           Servant.Elm
 import           Servant.HTML.Blaze
+import Servant.Multipart
 import           Servant.Server.Experimental.Auth.Cookie
 import           Text.Blaze.Html5                        as H
 import           Text.Blaze.Html5.Attributes             as A
@@ -62,8 +62,11 @@ type AdminApi = "admin" :> "user" :> AuthProtect "cookie-auth" :> Get '[JSON] [A
   :<|> "admin" :> "series" :> Capture "id" Int :> AuthProtect "cookie-auth" :> Delete '[JSON] ResultResp
   -- :<|> "admin" :> "media" :> AuthProtect "cookie-auth" :> Get '[JSON] [M.Media]
   -- :<|> "admin" :> "media" :> Capture "id" Int  :> AuthProtect "cookie-auth" :> Get '[JSON] M.Media
-  -- :<|> "admin" :> "media" :> ReqBody '[JSON] M.Media :> AuthProtect "cookie-auth" :> Post '[JSON] M.Media
-  -- :<|> "admin" :> "post" :> "media" :> Capture "id" Int  :> AuthProtect "cookie-auth" :> Post '[JSON] M.PostMedia
+  -- :<|> "admin" :> "media" :> MultipartForm MultipartData :> AuthProtect "cookie-auth" :> Post '[JSON] M.Media
+  -- :<|> "admin" :> "media" :> Capture "id" Int :> ReqBody '[JSON] M.Media :> AuthProtect "cookie-auth" :> Put '[JSON] ResultResp
+  -- :<|> "admin" :> "media" :> Capture "id" Int :> AuthProtect "cookie-auth" :> Delete '[JSON] ResultResp
+  -- :<|> "admin" :> "post" :> "media" :> Capture "pid" Int  :> Capture "mid" Int  :> AuthProtect "cookie-auth" :> Post '[JSON] ResultResp
+  -- :<|> "admin" :> "post" :> "media" :> Capture "pid" Int  :> Capture "mid" Int  :> AuthProtect "cookie-auth" :> Delete '[JSON] ResultResp
 
 adminHandlers :: Pool Connection -> Server AdminApi
 adminHandlers conn = getUsersH
@@ -79,6 +82,13 @@ adminHandlers conn = getUsersH
                 :<|> blogSeriesAddH
                 :<|> blogSeriesUpdateH
                 :<|> blogSeriesDeleteH
+                -- :<|> mediaGetAllH
+                -- :<|> mediaGetDetailH
+                -- :<|> mediaPostH
+                -- :<|> mediaPutH
+                -- :<|> mediaDeleteH
+                -- :<|> attachMediaToPostH
+                -- :<|> deleteMediaFromPostH
   where getUsersH _ = go getUsers
         userDetailH userId _ = go $ getUserById userId
         userAddH newUser _ = go $ addUser newUser
@@ -92,6 +102,13 @@ adminHandlers conn = getUsersH
         blogSeriesAddH newSeries _ = go $ addSeries newSeries
         blogSeriesUpdateH seriesId series _ = go $ updateSeries seriesId series
         blogSeriesDeleteH seriesId _ = go $ deleteSeries seriesId
+        -- mediaGetAllH _ = go getAllMedia
+        -- mediaGetDetailH mediaId _ = go $ getMediaById mediaId
+        -- mediaPostH newMedia _ = go $ createMedia newMedia
+        -- mediaPutH mediaId editedMedia _ = go $ updateMedia mediaId editedMedia
+        -- mediaDeleteH mediaId _ = go $ deleteMedia mediaId
+        -- attachMediaToPostH postId mediaId _ = go $ attachPostMedia postId mediaId
+        -- deleteMediaFromPostH postId mediaId _ = go $ detachPostMedia postId mediaId
         go = withResource conn
 
 adminPage :: Username -> Handler Html
@@ -145,11 +162,11 @@ getAllPosts conn = liftIO $ query_ conn "select * from post"
 
 addPost :: Post.BlogPost -> Connection -> Handler Post.BlogPost
 addPost newPost conn = do
-  result <- lift $ addPost' newPost conn
+  result <- liftIO $ addPost' newPost conn
   case result of
     []    -> throwError err404
     (x:_) -> do
-      retrieveResult <- lift $ getPost (fst x) conn
+      retrieveResult <- liftIO $ getPost (fst x) conn
       case retrieveResult of
         Just post -> return post
         Nothing   -> throwError err400
@@ -245,6 +262,60 @@ deleteSeries seriesId conn = do
   case result of
     0 -> throwError err400
     _ -> return $ ResultResp "success" "series and posts deleted"
+
+getAllMedia :: Connection -> Handler [M.Media]
+getAllMedia conn = liftIO $ query_ conn "select * from media"
+
+getMedia :: Int -> Connection -> IO (Maybe M.Media)
+getMedia mediaId conn = do
+  let q = "select * from media where id = ?"
+  result <- liftIO $ query conn q (Only mediaId)
+  case result of
+    (x:_)-> return $ Just x
+    _     -> return Nothing
+
+getMediaById :: Int -> Connection -> Handler M.Media
+getMediaById mediaId conn = do
+  result <- liftIO $ getMedia mediaId conn
+  case result of
+    Nothing   -> throwError err404
+    Just post -> return post
+
+createMedia :: MultipartData -> Connection -> Handler M.Media
+createMedia multipartData conn = undefined
+
+updateMedia :: Int -> M.Media -> Connection -> Handler ResultResp
+updateMedia mediaId editedMedia conn = do
+  let q = Query $ B.unwords ["update media set name = ?, url = ?, location = ?, description = ?"
+                           , "where id = ?"]
+  result <- liftIO $ execute conn q (M.name editedMedia
+                                   , M.url editedMedia
+                                   , M.location editedMedia
+                                   , M.description editedMedia
+                                   , mediaId)
+  case result of
+    0 -> throwError err400
+    _ -> return $ ResultResp "success" "media updated"
+
+
+deleteMedia :: Int -> Connection -> Handler ResultResp
+deleteMedia mediaId conn = do
+  let q = "delete from media where id = ?"
+  result <- liftIO $ execute conn q (Only mediaId)
+  case result of
+    0 -> throwError err400
+    _ -> return $ ResultResp "success" "user deleted"
+
+attachPostMedia :: Int -> Int -> Connection -> Handler ResultResp
+attachPostMedia postId mediaId conn = undefined
+
+detachPostMedia ::Int -> Int -> Connection -> Handler ResultResp
+detachPostMedia postId mediaId conn = do
+  let q = "delete from postmedia where post_id = ? and media_id = ?"
+  result <- liftIO $ execute conn q (postId, mediaId)
+  case result of
+    0 -> throwError err400
+    _ -> return $ ResultResp "success" "media detached from post"
 
 adminSkeleton :: Username -> H.Html
 adminSkeleton uname = do

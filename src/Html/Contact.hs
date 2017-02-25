@@ -1,6 +1,7 @@
-{-# LANGUAGE DataKinds         #-}
-{-# LANGUAGE TypeFamilies      #-}
-{-# LANGUAGE TypeOperators     #-}
+{-# LANGUAGE DataKinds     #-}
+{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE TypeFamilies  #-}
+{-# LANGUAGE TypeOperators #-}
 
 module Html.Contact where
 
@@ -8,13 +9,15 @@ import           Control.Exception           (throwIO)
 import           Control.Monad.IO.Class      (liftIO)
 import qualified Data.Text                   as T
 import qualified Data.Text.Lazy              as L
+import           GHC.Generics
 import           Network.Mail.Client.Gmail   (sendGmail)
-import           Network.Mail.Mime           (Address(..))
+import           Network.Mail.Mime           (Address (..))
 import           Servant
 import           Servant.HTML.Blaze
 import           System.Environment          (lookupEnv)
 import           Text.Blaze.Html5            as H
 import           Text.Blaze.Html5.Attributes as A
+import           Web.FormUrlEncoded          (FromForm)
 
 import           Html.Home                   (PageType (..), contactForm,
                                               homeSkeleton, redirectPage)
@@ -23,7 +26,9 @@ data ContactForm = ContactForm
  { cname    :: !T.Text
  , cemail   :: !T.Text
  , cmessage :: !T.Text
- } deriving (Eq, Show)
+ } deriving (Eq, Show, Generic)
+
+instance FromForm ContactForm
 
 data EmailCreds = EmailCreds
   { emailUsername :: !T.Text
@@ -103,20 +108,3 @@ getEmailCreds = do
    (T.pack <$> emailUser)
      <*> (T.pack <$> emailPasswd)
        <*> (T.pack <$> emailHost)
-
-
-instance FromFormUrlEncoded ContactForm where
- fromFormUrlEncoded d = do
-   name <- case lookup "name" d of
-     Nothing -> Left "name field is missing"
-     Just  x -> return x
-   email <- case lookup "email" d of
-     Nothing -> Left "email field is missing"
-     Just  x -> return x
-   message <- case lookup "message" d of
-     Nothing -> Left "message field is missing"
-     Just  x -> return x
-   return ContactForm
-     { cname = name
-     , cemail = email
-     , cmessage = message }

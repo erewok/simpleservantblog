@@ -2,23 +2,27 @@
 # For more information, see: http://docs.haskellstack.org/en/stable/yaml_configuration/
 
 # Specifies the GHC version and set of packages available (e.g., lts-3.5, nightly-2015-09-21, ghc-7.10.2)
-resolver: lts-7.14
+# resolver: lts-8.2
+resolver: nightly-2017-02-25
 
 # Local packages, usually specified by relative directory name
 packages:
 - '.'
 - location:
-    git: https://www.github.com/mattjbray/elm-export
-    commit: 8868c1f09597f44c2e18e014cd9fbcf8320c3fea
+    git: https://github.com/krisajenkins/elm-export.git
+    commit: 94b939bb95ec4a86ae634e785ee93b66c3c1c7e6
   extra-dep: True
 - location:
     git: https://www.github.com/mattjbray/servant-elm
-    commit: d303d2699c28bf39b0dde33627409e558ccb98ce
+    commit: 301179e3263e3f698c6d34d5f003040f1e5a38d6
   extra-dep: True
+# - location:
+#     git: https://github.com/k0001/tisch.git
+#     commit: 2c9da610c7168cdcee59b63753a265e5ad85fa2d
+#   extra-dep: True
 - location:
-    git: https://github.com/k0001/tisch.git
-    commit: ac5b7da260ed834310a334459628343b9de7553f
-  extra-dep: True
+    git: https://github.com/haskell-servant/servant-multipart.git
+    commit: 5f4ee235c9efc969dbdc179167936707625c8982
 # Packages to be pulled from upstream that are not in the resolver (e.g., acme-missiles-0.3)
 extra-deps:
   - wai-make-assets-0.1.1

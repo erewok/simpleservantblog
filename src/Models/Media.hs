@@ -21,7 +21,8 @@ import           Database.PostgreSQL.Simple.ToField (toField)
 import           Database.PostgreSQL.Simple.ToRow   (ToRow, toRow)
 import           Database.PostgreSQL.Simple.Types   (Query (..))
 import           GHC.Generics
-import           Prelude                            (Eq, Bool, Int, Show, ($), (.))
+import           Prelude                            (Bool, Eq, Int, Show, ($),
+                                                     (.))
 import           Servant.Elm
 
 
@@ -34,11 +35,11 @@ postMediaQueryByPostId = Query $ B.unwords [
                                 ]
 
 data Media = Media {
-  mediaid            :: !Int
-  , name       :: !T.Text
-  , url        :: !T.Text
-  , location        :: !T.Text
-  , description        :: !T.Text
+  mediaid       :: !Int
+  , name        :: !T.Text
+  , url         :: !T.Text
+  , location    :: !T.Text
+  , description :: !T.Text
   } deriving (Eq, Show, Generic)
 instance ElmType Media
 instance ToJSON Media
@@ -54,9 +55,9 @@ instance ToRow Media where
             ]
 
 data PostMedia = PostMedia {
-  postid            :: !Int
-  , mediaid        :: !Int
-  , isFeatured        :: !Bool
+  postid       :: !Int
+  , mediaid    :: !Int
+  , isFeatured :: !Bool
   } deriving (Eq, Show, Generic)
 instance ElmType PostMedia
 instance ToJSON PostMedia
