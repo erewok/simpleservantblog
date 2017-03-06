@@ -43,6 +43,7 @@ data Media = Media {
   } deriving (Eq, Show, Generic)
 instance ElmType Media
 instance ToJSON Media
+instance FromJSON Media
 instance FromRow Media where
   fromRow = Media <$> field <*> field <*> field <*> field <*> field
 

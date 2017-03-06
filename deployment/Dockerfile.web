@@ -5,6 +5,7 @@ RUN ["apt-get", "update", "-y"]
 RUN ["apt-get", "install", "-y", "libpq-dev", "netcat-traditional", "netbase"]
 
 RUN mkdir -p /opt/server
+RUN mkdir -p /opt/server/media
 
 COPY ./assets /opt/server/assets/
 COPY ./client /opt/server/client/

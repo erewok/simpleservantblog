@@ -4,10 +4,12 @@
 
 module Api.Admin.Admin where
 
+import           Control.Exception                       (catch)
 import           Control.Monad.Except
 import           Control.Monad.IO.Class                  (liftIO)
 import           Data.Aeson
 import qualified Data.ByteString.Char8                   as B
+import           Data.Int                                (Int64)
 import           Data.Monoid                             ((<>))
 import           Data.Pool                               (Pool, withResource)
 import qualified Data.Text                               as T
@@ -18,8 +20,9 @@ import           GHC.Generics
 import           Servant
 import           Servant.Elm
 import           Servant.HTML.Blaze
-import Servant.Multipart
+import           Servant.Multipart
 import           Servant.Server.Experimental.Auth.Cookie
+import           System.Directory                        (copyFile)
 import           Text.Blaze.Html5                        as H
 import           Text.Blaze.Html5.Attributes             as A
 
@@ -60,13 +63,13 @@ type AdminApi = "admin" :> "user" :> AuthProtect "cookie-auth" :> Get '[JSON] [A
   :<|> "admin" :> "series" :> ReqBody '[JSON] Post.BlogSeries :> AuthProtect "cookie-auth" :> Post '[JSON] Post.BlogSeries
   :<|> "admin" :> "series" :> Capture "id" Int :> ReqBody '[JSON] Post.BlogSeries :> AuthProtect "cookie-auth" :> Put '[JSON] ResultResp
   :<|> "admin" :> "series" :> Capture "id" Int :> AuthProtect "cookie-auth" :> Delete '[JSON] ResultResp
-  -- :<|> "admin" :> "media" :> AuthProtect "cookie-auth" :> Get '[JSON] [M.Media]
-  -- :<|> "admin" :> "media" :> Capture "id" Int  :> AuthProtect "cookie-auth" :> Get '[JSON] M.Media
-  -- :<|> "admin" :> "media" :> MultipartForm MultipartData :> AuthProtect "cookie-auth" :> Post '[JSON] M.Media
-  -- :<|> "admin" :> "media" :> Capture "id" Int :> ReqBody '[JSON] M.Media :> AuthProtect "cookie-auth" :> Put '[JSON] ResultResp
-  -- :<|> "admin" :> "media" :> Capture "id" Int :> AuthProtect "cookie-auth" :> Delete '[JSON] ResultResp
-  -- :<|> "admin" :> "post" :> "media" :> Capture "pid" Int  :> Capture "mid" Int  :> AuthProtect "cookie-auth" :> Post '[JSON] ResultResp
-  -- :<|> "admin" :> "post" :> "media" :> Capture "pid" Int  :> Capture "mid" Int  :> AuthProtect "cookie-auth" :> Delete '[JSON] ResultResp
+  :<|> "admin" :> "media" :> AuthProtect "cookie-auth" :> Get '[JSON] [M.Media]
+  :<|> "admin" :> "media" :> Capture "id" Int  :> AuthProtect "cookie-auth" :> Get '[JSON] M.Media
+  :<|> "admin" :> "media" :> MultipartForm MultipartData :> AuthProtect "cookie-auth" :> Post '[JSON] ResultResp
+  :<|> "admin" :> "media" :> Capture "id" Int :> ReqBody '[JSON] M.Media :> AuthProtect "cookie-auth" :> Put '[JSON] ResultResp
+  :<|> "admin" :> "media" :> Capture "id" Int :> AuthProtect "cookie-auth" :> Delete '[JSON] ResultResp
+  :<|> "admin" :> "post" :> "media" :> Capture "pid" Int  :> Capture "mid" Int  :> AuthProtect "cookie-auth" :> Post '[JSON] ResultResp
+  :<|> "admin" :> "post" :> "media" :> Capture "pid" Int  :> Capture "mid" Int  :> AuthProtect "cookie-auth" :> Delete '[JSON] ResultResp
 
 adminHandlers :: Pool Connection -> Server AdminApi
 adminHandlers conn = getUsersH
@@ -82,13 +85,13 @@ adminHandlers conn = getUsersH
                 :<|> blogSeriesAddH
                 :<|> blogSeriesUpdateH
                 :<|> blogSeriesDeleteH
-                -- :<|> mediaGetAllH
-                -- :<|> mediaGetDetailH
-                -- :<|> mediaPostH
-                -- :<|> mediaPutH
-                -- :<|> mediaDeleteH
-                -- :<|> attachMediaToPostH
-                -- :<|> deleteMediaFromPostH
+                :<|> mediaGetAllH
+                :<|> mediaGetDetailH
+                :<|> mediaPostH
+                :<|> mediaPutH
+                :<|> mediaDeleteH
+                :<|> attachMediaToPostH
+                :<|> deleteMediaFromPostH
   where getUsersH _ = go getUsers
         userDetailH userId _ = go $ getUserById userId
         userAddH newUser _ = go $ addUser newUser
@@ -102,13 +105,13 @@ adminHandlers conn = getUsersH
         blogSeriesAddH newSeries _ = go $ addSeries newSeries
         blogSeriesUpdateH seriesId series _ = go $ updateSeries seriesId series
         blogSeriesDeleteH seriesId _ = go $ deleteSeries seriesId
-        -- mediaGetAllH _ = go getAllMedia
-        -- mediaGetDetailH mediaId _ = go $ getMediaById mediaId
-        -- mediaPostH newMedia _ = go $ createMedia newMedia
-        -- mediaPutH mediaId editedMedia _ = go $ updateMedia mediaId editedMedia
-        -- mediaDeleteH mediaId _ = go $ deleteMedia mediaId
-        -- attachMediaToPostH postId mediaId _ = go $ attachPostMedia postId mediaId
-        -- deleteMediaFromPostH postId mediaId _ = go $ detachPostMedia postId mediaId
+        mediaGetAllH _ = go getAllMedia
+        mediaGetDetailH mediaId _ = go $ getMediaById mediaId
+        mediaPostH newMedia _ = go $ createMedia newMedia
+        mediaPutH mediaId editedMedia _ = go $ updateMedia mediaId editedMedia
+        mediaDeleteH mediaId _ = go $ deleteMedia mediaId
+        attachMediaToPostH postId mediaId _ = go $ attachPostMedia postId mediaId
+        deleteMediaFromPostH postId mediaId _ = go $ detachPostMedia postId mediaId
         go = withResource conn
 
 adminPage :: Username -> Handler Html
@@ -233,7 +236,7 @@ deletePost postId conn = do
 
 addSeries :: Post.BlogSeries -> Connection -> Handler Post.BlogSeries
 addSeries newSeries conn = do
-  let q = "insert into series (name, description, parentid) values (?, ?, ?)  returning id"
+  let q = "insert into series (name, description, parentid) values (?, ?, ?) returning id"
   result <- liftIO $ query conn q (Post.name newSeries
                                   , Post.description newSeries
                                   , Post.parentid newSeries) :: Handler [Only Int]
@@ -281,17 +284,31 @@ getMediaById mediaId conn = do
     Nothing   -> throwError err404
     Just post -> return post
 
-createMedia :: MultipartData -> Connection -> Handler M.Media
-createMedia multipartData conn = undefined
+saveFileToStatic :: FilePath -> T.Text -> IO FilePath
+saveFileToStatic fileLocTemp filename = do
+  let newFileName = "/opt/server/media/" ++ T.unpack filename
+  copyFile fileLocTemp newFileName
+  return newFileName
+
+urlFromFileLoc :: FilePath -> FilePath
+urlFromFileLoc path = T.unpack $ T.replace "/opt/server" "" $ T.pack path
+
+createMediaWithLoc :: T.Text -> FilePath -> Connection -> IO Int64
+createMediaWithLoc name path conn = do
+  let q = "insert into media (name, location, url) values (?, ?, ?)"
+  execute conn q (name, urlFromFileLoc path, path)
+
+createMedia :: MultipartData -> Connection -> Handler ResultResp
+createMedia multipartData conn = do
+  fileLocs <- forM (files multipartData) $ \file -> do
+    savedPath <- liftIO $ saveFileToStatic (fdFilePath file) (fdFileName file)
+    liftIO $ createMediaWithLoc (fdFileName file) savedPath conn
+  return $ ResultResp "success" "media saved"
 
 updateMedia :: Int -> M.Media -> Connection -> Handler ResultResp
 updateMedia mediaId editedMedia conn = do
-  let q = Query $ B.unwords ["update media set name = ?, url = ?, location = ?, description = ?"
-                           , "where id = ?"]
+  let q = "update media set name = ? where id = ?"
   result <- liftIO $ execute conn q (M.name editedMedia
-                                   , M.url editedMedia
-                                   , M.location editedMedia
-                                   , M.description editedMedia
                                    , mediaId)
   case result of
     0 -> throwError err400
@@ -306,8 +323,12 @@ deleteMedia mediaId conn = do
     0 -> throwError err400
     _ -> return $ ResultResp "success" "user deleted"
 
+
 attachPostMedia :: Int -> Int -> Connection -> Handler ResultResp
-attachPostMedia postId mediaId conn = undefined
+attachPostMedia postId mediaId conn = do
+  let q = "insert into post_media (post_id, media_id) values (?, ?)"
+  result <- liftIO $ execute conn q (postId, mediaId)
+  pure $ ResultResp "success" "post Media created"
 
 detachPostMedia ::Int -> Int -> Connection -> Handler ResultResp
 detachPostMedia postId mediaId conn = do

@@ -1,8 +1,8 @@
-{-# LANGUAGE DataKinds     #-}
-{-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE LambdaCase    #-}
-{-# LANGUAGE TypeFamilies  #-}
-{-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE DataKinds             #-}
+{-# LANGUAGE DeriveGeneric         #-}
+{-# LANGUAGE DuplicateRecordFields #-}
+{-# LANGUAGE TypeFamilies          #-}
+{-# LANGUAGE TypeOperators         #-}
 
 module Api.Admin.Login where
 
@@ -57,8 +57,8 @@ loginPost :: LoginForm
             -> Connection
             -> Handler (Headers '[Header "set-cookie" EncryptedSession] Html)
 loginPost loginF settings rs key conn = do
-  let uname = lfUsername loginF
-  authResult <- liftIO $ WU.authUser conn uname (WU.PasswordPlain $ lfPassword loginF) 12000000
+  let uname = username (loginF :: LoginForm)
+  authResult <- liftIO $ WU.authUser conn uname (WU.PasswordPlain $ password loginF) 12000000
   case authResult of
     Nothing -> return $ addHeader emptyEncryptedSession (loginPage False)
     Just sessionid -> do
@@ -74,8 +74,8 @@ loginPost loginF settings rs key conn = do
             (redirectPage "/admin")
 
 data LoginForm = LoginForm
- { lfUsername :: !T.Text
- , lfPassword :: !T.Text
+ { username :: !T.Text
+ , password :: !T.Text
  } deriving (Eq, Show, Generic)
 
 instance FromForm LoginForm

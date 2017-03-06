@@ -1,8 +1,9 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 module Config where
 
-import           Control.Exception                    (throwIO)
+import qualified Control.Exception                    as Exc
 import           Control.Monad.Except                 (MonadError)
 import           Control.Monad.Reader                 (MonadIO, MonadReader,
                                                        ReaderT)
@@ -40,9 +41,9 @@ data Environment
 
 -- | This returns a 'Middleware' based on the environment that we're in.
 setLogger :: Environment -> Middleware
-setLogger Test = id
+setLogger Test  = id
 setLogger Local = logStdoutDev
-setLogger _    = logStdout
+setLogger _     = logStdout
 
 
 makeConnString :: IO (Maybe BS.ByteString)
@@ -67,5 +68,5 @@ makePool :: IO (Pool Connection)
 makePool = do
   connString <- makeConnString
   case connString of
-    Nothing -> throwIO (userError "Database Configuration not present in environment.")
+    Nothing -> Exc.throwIO (userError "Database Configuration not present in environment.")
     Just info -> createPool (connectPostgreSQL info) close 1 10 10
