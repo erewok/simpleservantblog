@@ -1,5 +1,6 @@
 {-# LANGUAGE DataKinds         #-}
 {-# LANGUAGE LambdaCase        #-}
+{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeFamilies      #-}
 {-# LANGUAGE TypeOperators     #-}
 
@@ -10,13 +11,16 @@ module Api.Post
     ) where
 
 import           Control.Monad.Except
-import           Control.Monad.IO.Class             (liftIO)
-import qualified Data.List                          as L
+import           Control.Monad.IO.Class     (liftIO)
+import           Data.Aeson
+import qualified Data.List                  as L
 import           Data.Maybe
-import           Data.Pool                          (Pool, withResource)
+import           Data.Pool                  (Pool, withResource)
 import           Database.PostgreSQL.Simple
+import           GHC.Generics
 import           Servant
 
+import           Api.Errors                 (appJson404)
 import           Models.Post
 
 
@@ -41,13 +45,14 @@ postHandlers conn = blogPostListH
 listPosts :: Connection -> Handler [PostOverview]
 listPosts conn = liftIO $ query_ conn postOverviewAllQuery
 
+
 getPost :: Connection -> Int -> Handler BlogPost
 getPost conn postId = do
   let q = "select * from post where id = ? and pubdate is not null"
   result <- liftIO $ query conn q (Only postId)
   case result of
     (x:_) -> return x
-    []    -> throwError err404
+    []    -> throwError $ appJson404 "Post not found"
 
 getPostWithSeries :: Connection -> Int -> Handler PostSeries
 getPostWithSeries conn postId = do
@@ -78,4 +83,4 @@ getSeries conn seriesId = do
   res <- liftIO $ query conn q (Only seriesId)
   case res of
     (x:_) -> return x
-    _ -> throwError err404
+    _     -> throwError $ appJson404 "Series not found"

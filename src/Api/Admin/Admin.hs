@@ -24,6 +24,7 @@ import           Text.Blaze.Html5                        as H
 import           Text.Blaze.Html5.Attributes             as A
 
 import           Api.Admin.Login                         (Username (..))
+import Api.Errors
 import           Models.Author                           (Author (..))
 import qualified Models.Post                             as Post
 

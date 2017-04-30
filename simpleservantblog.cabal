@@ -19,6 +19,7 @@ library
                      , Config
                      , Api.Admin.Admin
                      , Api.Admin.Login
+                     , Api.Errors
                      , Api.Post
                      , Api.Projects
                      , Api.Projects.TacoShop
@@ -36,6 +37,7 @@ library
                      , cereal
                      , cryptonite
                      , elm-export
+                     , http-types
                      , lens
                      , mime-mail
                      , monad-logger
