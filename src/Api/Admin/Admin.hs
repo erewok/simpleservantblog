@@ -1,7 +1,7 @@
-{-# LANGUAGE DataKinds         #-}
-{-# LANGUAGE DeriveGeneric     #-}
-{-# LANGUAGE LambdaCase        #-}
-{-# LANGUAGE TypeOperators     #-}
+{-# LANGUAGE DataKinds     #-}
+{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE LambdaCase    #-}
+{-# LANGUAGE TypeOperators #-}
 
 module Api.Admin.Admin where
 
@@ -24,7 +24,7 @@ import           Text.Blaze.Html5                        as H
 import           Text.Blaze.Html5.Attributes             as A
 
 import           Api.Admin.Login                         (Username (..))
-import Api.Errors
+import           Api.Errors
 import           Models.Author                           (Author (..))
 import qualified Models.Post                             as Post
 
@@ -104,7 +104,7 @@ getUserById userId conn = do
   res <- liftIO $ query conn q (Only userId)
   case res of
     (x:_) -> return x
-    _     -> throwError err404
+    _     -> throwError $ appJson404 "Unknown author"
 
 addUser :: Author -> Connection -> Handler Author
 addUser newAuthor conn = do
@@ -148,13 +148,13 @@ addPost newPost conn = do
       retrieveResult <- lift $ getPost (fst x) conn
       case retrieveResult of
         Just post -> return post
-        Nothing -> throwError err400
+        Nothing   -> throwError err400
 
 getPostById :: Int -> Connection -> Handler Post.BlogPost
 getPostById postId conn = do
   result <- liftIO $ getPost postId conn
   case result of
-    Nothing -> throwError err404
+    Nothing   -> throwError err404
     Just post -> return post
 
 getPost :: Int -> Connection -> IO (Maybe Post.BlogPost)
@@ -163,7 +163,7 @@ getPost postId conn = do
   result <- liftIO $ query conn q (Only postId)
   case result of
     (x:_)-> return $ Just x
-    _ -> return Nothing
+    _     -> return Nothing
 
 addPost' :: Post.BlogPost -> Connection -> IO [(Int, T.Text)]
 addPost' newPost conn = do
