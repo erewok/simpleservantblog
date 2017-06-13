@@ -183,10 +183,10 @@ contactForm = H.section ! A.id "contact" ! A.class_ "container contact-us u-full
       H.form ! A.method "post" ! A.action "/contact" $ do
         H.div ! A.class_ "row" $ do
           H.div ! A.class_ "six columns" $
-            H.input ! A.class_ "u-full-width" ! A.type_ "text" ! A.name "name" ! A.placeholder "Name" ! A.id "nameInput"
+            H.input ! A.class_ "u-full-width" ! A.type_ "text" ! A.name "cname" ! A.placeholder "Name" ! A.id "nameInput"
           H.div ! A.class_ "six columns" $
-            H.input ! A.class_ "u-full-width" ! A.type_ "text" !  A.name "email" ! A.placeholder "Email" ! A.id "emailInput"
-        H.textarea ! A.class_ "u-full-width" ! A.name "message" ! A.placeholder "Message" ! A.id "messageInput" $ ""
+            H.input ! A.class_ "u-full-width" ! A.type_ "text" !  A.name "cemail" ! A.placeholder "Email" ! A.id "emailInput"
+        H.textarea ! A.class_ "u-full-width" ! A.name "cmessage" ! A.placeholder "Message" ! A.id "messageInput" $ ""
         H.input ! A.class_ "button u-pull-right" ! A.type_ "submit" !  A.value "Send"
 
 redirectPage :: String -> H.Html

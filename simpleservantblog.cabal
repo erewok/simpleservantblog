@@ -28,6 +28,7 @@ library
                      , Html.Contact
                      , Models
                      , Models.Post
+                     , Models.Projects
                      , Models.Media
                      , Models.Author
   build-depends:       base >= 4.7 && < 5
@@ -37,6 +38,7 @@ library
                      , cereal
                      , cryptonite
                      , elm-export
+                     , http-api-data
                      , http-types
                      , lens
                      , mime-mail
@@ -55,7 +57,6 @@ library
                      , smtps-gmail
                      , text
                      , time
-                     , tisch
                      , transformers
                      , users
                      , users-postgresql-simple
@@ -100,11 +101,19 @@ test-suite simpleservantblog-test
   main-is:             Spec.hs
   build-depends:       base
                      , simpleservantblog
+                     , cryptonite
+                     , data-default
                      , hspec
                      , http-client
                      , http-types
+                     , postgresql-simple
+                     , QuickCheck
+                     , resource-pool
+                     , servant-auth-cookie
                      , servant-client
+                     , servant-quickcheck
                      , servant-server
+                     , text
                      , transformers
                      , warp >= 3.2.4
                      , wai

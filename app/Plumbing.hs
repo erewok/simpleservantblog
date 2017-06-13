@@ -5,6 +5,7 @@ module Main where
 import           Control.Exception
 import           Control.Monad.IO.Class     (liftIO)
 import           Data.Int                   (Int64)
+import Data.Monoid ((<>))
 import qualified Data.Text                  as T
 import           Database.PostgreSQL.Simple (Connection, connectPostgreSQL,
                                              execute)
