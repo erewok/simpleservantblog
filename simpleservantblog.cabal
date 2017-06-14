@@ -26,6 +26,7 @@ library
                      , Html.Home
                      , Html.About
                      , Html.Contact
+                     , Html.Projects
                      , Models
                      , Models.Post
                      , Models.Projects
