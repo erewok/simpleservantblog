@@ -1,5 +1,6 @@
 {-# LANGUAGE DataKinds     #-}
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE LambdaCase    #-}
 {-# LANGUAGE TypeOperators #-}
 
 module Api.Admin.Admin where
@@ -27,6 +28,7 @@ import           Text.Blaze.Html5                        as H
 import           Text.Blaze.Html5.Attributes             as A
 
 import           Api.Admin.Login                         (Username (..))
+import           Api.Errors
 import           Models.Author                           (Author (..))
 import qualified Models.Media                            as M
 import qualified Models.Post                             as Post
@@ -128,7 +130,7 @@ getUserById userId conn = do
   res <- liftIO $ query conn q (Only userId)
   case res of
     (x:_) -> return x
-    _     -> throwError err404
+    _     -> throwError $ appJson404 "Unknown author"
 
 addUser :: Author -> Connection -> Handler Author
 addUser newAuthor conn = do

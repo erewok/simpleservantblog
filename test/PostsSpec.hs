@@ -2,6 +2,10 @@ module PostsSpec where
 
 import           Control.Exception          (throwIO)
 import           Control.Monad.Trans.Except
+import           Control.Monad.IO.Class     (liftIO)
+import           Crypto.Cipher.Types
+import           Crypto.Random              (drgNew)
+import           Data.Default
 import           Data.Pool                  (Pool)
 import           Data.Proxy
 import qualified Data.Text                  as T
@@ -13,7 +17,10 @@ import           Network.Wai                (Application)
 import           Network.Wai.Handler.Warp
 import           Servant
 import           Servant.Client
+import           Servant.QuickCheck
+import           Servant.Server.Experimental.Auth.Cookie
 import           Test.Hspec
+import Test.QuickCheck
 
 import           Api
 import           Api.Post
@@ -36,25 +43,34 @@ getPostOs
 mkApp :: Pool Connection -> Application
 mkApp conn = serve postApi $ postHandlers conn
 
+wholeSiteChecks :: Pool Connection -> Spec
+wholeSiteChecks conn = it "won't crash and conforms to various rules" $
+    withServantServer postApi (pure $ postHandlers conn) $ \burl ->
+      serverSatisfies postApi burl stdArgs
+        ( not500
+        <%> onlyJsonObjects
+        <%> mempty)
 
-spec :: Pool Connection -> Spec
-spec conn = do
-  describe "/post" $ do
-    withClient (liftIO mkApp conn) $ do
-      it "get a list of post Overviews" $ \ host -> do
+
+spec :: Spec
+spec = describe "Post API tests" $ do
+    conn <- C.makePool
+    wholeSiteChecks conn
+    withClient (pure $ mkApp conn) $ do
+      it "get a list of post Overviews" $ \ host ->
         try host getPostOs `shouldReturn` []
-
-      it "allows to show items by id" $ \ host -> do
-        try host (getPostById 0) `shouldReturn` Item 0 "example item"
-
-      it "throws a 404 for missing post" $ \ host -> do
+--
+--       it "allows to show items by id" $ \ host ->
+--         try host (getPostById 0) `shouldReturn` Item 0 "example item"
+--
+      it "throws a 404 for missing post" $ \ host ->
         try host (getPostById 42) `shouldThrow` (\ e -> responseStatus e == notFound404)
 
 withClient :: IO Application -> SpecWith Host -> SpecWith ()
-withClient x innerSpec =
-  beforeAll (newManager defaultManagerSettings) $ do
-    flip aroundWith innerSpec $ \ action -> \ manager -> do
-      testWithApplication x $ \ port -> do
+withClient ap innerSpec =
+  beforeAll (newManager defaultManagerSettings) $
+    flip aroundWith innerSpec $ \ action manager ->
+      testWithApplication ap $ \ port -> do
         let baseUrl = BaseUrl Http "localhost" port ""
         action (manager, baseUrl)
 

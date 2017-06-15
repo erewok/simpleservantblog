@@ -1,7 +1,8 @@
-{-# LANGUAGE DataKinds     #-}
-{-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE TypeFamilies  #-}
-{-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE DataKinds         #-}
+{-# LANGUAGE DeriveGeneric     #-}
+{-# LANGUAGE TypeFamilies      #-}
+{-# LANGUAGE TypeOperators     #-}
+
 
 module Html.Contact where
 
@@ -17,7 +18,7 @@ import           Servant.HTML.Blaze
 import           System.Environment          (lookupEnv)
 import           Text.Blaze.Html5            as H
 import           Text.Blaze.Html5.Attributes as A
-import           Web.FormUrlEncoded          (FromForm)
+import           Web.FormUrlEncoded          (FromForm, Form)
 
 import           Html.Home                   (PageType (..), contactForm,
                                               homeSkeleton, redirectPage)

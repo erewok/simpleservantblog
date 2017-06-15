@@ -1,0 +1,25 @@
+addons:
+  apt:
+    packages:
+    - libgmp-dev
+  ssh_known_hosts: $SERVER_HOSTNAME
+language: c
+sudo: false
+cache:
+  directories:
+  - $HOME/.local/bin
+  - $HOME/.stack
+os:
+  - linux
+before_install:
+  - curl https://gist.github.com/pellagic-puffbomb/dd2405a8958a9a1f9cbf5e8a33f478d8 | sh
+script:
+  - stack setup
+  - stack test
+after_success:
+  - rm -rf ./build
+  - mkdir ./build
+  - sh deployment/builder.sh `pwd`/build
+  - openssl aes-256-cbc -K $encrypted_72860efd75cd_key -iv $encrypted_72860efd75cd_iv -in deploy_rsa.enc -out /tmp/deploy_rsa -d
+  - chmod 600 /tmp/deploy_rsa
+  - scp -i /tmp/deploy_rsa `pwd`/build/simpleservantblog-exe $SERVER_USER@$SERVER_HOSTNAME:$BUILD_LOC/

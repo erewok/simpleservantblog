@@ -1,7 +1,7 @@
-{-# LANGUAGE DataKinds         #-}
-{-# LANGUAGE LambdaCase        #-}
-{-# LANGUAGE TypeFamilies      #-}
-{-# LANGUAGE TypeOperators     #-}
+{-# LANGUAGE DataKinds     #-}
+{-# LANGUAGE LambdaCase    #-}
+{-# LANGUAGE TypeFamilies  #-}
+{-# LANGUAGE TypeOperators #-}
 
 module Api
     ( PostApi
@@ -12,6 +12,7 @@ module Api
     , withAssetsApp
     , withoutAssets
     , withoutAssetsApp
+    , withoutAssetsServer
     ) where
 
 

@@ -1,4 +1,4 @@
-FROM fpco/stack-build:lts-7.1
+FROM fpco/stack-build
 MAINTAINER Erik Aker
 
 RUN ["apt-get", "-y", "update"]

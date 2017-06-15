@@ -19,6 +19,7 @@ library
                      , Config
                      , Api.Admin.Admin
                      , Api.Admin.Login
+                     , Api.Errors
                      , Api.Post
                      , Api.Projects
                      , Api.Projects.TacoShop
@@ -26,8 +27,10 @@ library
                      , Html.Home
                      , Html.About
                      , Html.Contact
+                     , Html.Projects
                      , Models
                      , Models.Post
+                     , Models.Projects
                      , Models.Media
                      , Models.Author
   build-depends:       base >= 4.7 && < 5
@@ -40,6 +43,7 @@ library
                      , elm-export
                      , http-api-data
                      , http-media
+                     , http-types
                      , lens
                      , mime-mail
                      , monad-logger
@@ -59,7 +63,6 @@ library
                      , smtps-gmail
                      , text
                      , time
-                    --  , tisch
                      , transformers
                      , users
                      , users-postgresql-simple
@@ -104,11 +107,19 @@ test-suite simpleservantblog-test
   main-is:             Spec.hs
   build-depends:       base
                      , simpleservantblog
+                     , cryptonite
+                     , data-default
                      , hspec
                      , http-client
                      , http-types
+                     , postgresql-simple
+                     , QuickCheck
+                     , resource-pool
+                     , servant-auth-cookie
                      , servant-client
+                     , servant-quickcheck
                      , servant-server
+                     , text
                      , transformers
                      , warp >= 3.2.4
                      , wai

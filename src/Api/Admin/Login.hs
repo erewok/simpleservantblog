@@ -1,8 +1,7 @@
-{-# LANGUAGE DataKinds             #-}
-{-# LANGUAGE DeriveGeneric         #-}
-{-# LANGUAGE DuplicateRecordFields #-}
-{-# LANGUAGE TypeFamilies          #-}
-{-# LANGUAGE TypeOperators         #-}
+{-# LANGUAGE DataKinds         #-}
+{-# LANGUAGE DeriveGeneric     #-}
+{-# LANGUAGE TypeFamilies      #-}
+{-# LANGUAGE TypeOperators     #-}
 
 module Api.Admin.Login where
 
@@ -38,10 +37,21 @@ instance Serialize Username
 
 type instance AuthCookieData = Username
 
+
+type Cookied a = (Headers '[Header "set-cookie" EncryptedSession] a)
+
 type LoginApi = "login" :> Get '[HTML] Html
                 :<|> "login" :> ReqBody '[FormUrlEncoded] LoginForm
                              :> Post '[HTML] (Headers '[Header "set-cookie" EncryptedSession] Html)
 
+
+data LoginForm = LoginForm
+ { lfUsername :: !T.Text
+ , lfPassword :: !T.Text
+ } deriving (Eq, Show, Generic)
+
+
+instance FromForm LoginForm
 
 loginServer :: Pool Connection -> AuthCookieSettings -> RandomSource -> ServerKey -> Server LoginApi
 loginServer conn settings rs key = loginPageH
@@ -73,12 +83,7 @@ loginPost loginF settings rs key conn = do
             (Username $ T.unpack uname)
             (redirectPage "/admin")
 
-data LoginForm = LoginForm
- { username :: !T.Text
- , password :: !T.Text
- } deriving (Eq, Show, Generic)
 
-instance FromForm LoginForm
 loginPage :: Bool -> H.Html
 loginPage firstTime = docTypeHtml $ pageSkeleton $ NoJS $
       H.div ! A.class_ "row main" $
@@ -93,8 +98,8 @@ loginForm :: H.Html
 loginForm = H.form ! A.method "post" ! A.action "/login" $ do
   H.div ! A.class_ "five columns" $ do
     H.label ! A.for "usernameField" $ "username"
-    H.input ! A.type_ "text" ! A.name "username" ! A.id "usernameField"
+    H.input ! A.type_ "text" ! A.name "lfUsername" ! A.id "usernameField"
   H.div ! A.class_ "five columns" $ do
     H.label ! A.for "passwdField" $ "password"
-    H.input ! A.type_ "password" ! A.name "password"  ! A.id "passwdField"
+    H.input ! A.type_ "password" ! A.name "lfPassword"  ! A.id "passwdField"
   H.input ! A.class_ "button-primary" ! A.type_ "submit" ! A.value "submit"

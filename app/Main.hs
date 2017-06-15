@@ -56,5 +56,5 @@ main = do
 
   withResource pool housekeepBackend -- Housekeeping: eliminate old sessions
   let app = if environment == C.Local then A.withAssetsApp else A.withoutAssetsApp
-  putStrLn "SimpleServantBlog up and ready to accept requests"
+  putStrLn $ "SimpleServantBlog up on port " ++ show port ++ " and ready to accept requests"
   app pool cookieSettings rs sk >>= Warp.run port <$> logger

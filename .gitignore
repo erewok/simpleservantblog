@@ -1,4 +1,6 @@
 *~
+*#
+.DS_STORE
 .stack-work/
 elm-stuff/
 creds.sh
