@@ -17,11 +17,15 @@ import           Models.Projects             (Project (..))
 
 type ProjectsApi = "projects" :> Get '[HTML] Html
 
+projectsServer :: Server ProjectsApi
+projectsServer = projectPageH
+  where projectPageH = return projectPage
+
 projectPage :: H.Html
 projectPage = docTypeHtml $ homeSkeleton $ NoJS $
       H.div ! A.class_ "row" $
         H.div ! A.id "projects-page" $
-          H.div ! A.class_ "projects-page-box" $ H.p ""
+          H.div ! A.class_ "projects-page-box" $ H.p "Content Coming Soon"
 
 
 projectDetail :: H.Html

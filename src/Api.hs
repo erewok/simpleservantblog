@@ -32,6 +32,7 @@ import           Api.Post
 import           Html.About
 import           Html.Contact
 import           Html.Home
+import           Html.Projects
 import           Models.Author                           (createAuthorTable)
 import           Models.Media                            (createPostMediaTable)
 import           Models.Post                             (createPostTable,
@@ -43,6 +44,7 @@ type WithHtml = HomePage
                 :<|> "posts" :> BlogMain
                 :<|> "about" :> AboutPage
                 :<|> ContactApi
+                :<|> ProjectsApi
                 :<|> PostApi
 
 apihandlers :: Pool Connection -> Server WithHtml
@@ -50,6 +52,7 @@ apihandlers conn = homePage
                   :<|> blogMain
                   :<|> aboutPage
                   :<|> contactServer
+                  :<|> projectsServer
                   :<|> postHandlers conn
 
 -- Used in production
