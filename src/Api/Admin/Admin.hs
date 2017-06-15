@@ -1,6 +1,5 @@
 {-# LANGUAGE DataKinds     #-}
 {-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE LambdaCase    #-}
 {-# LANGUAGE TypeOperators #-}
 
 module Api.Admin.Admin where
@@ -116,8 +115,8 @@ adminHandlers conn = getUsersH
         deleteMediaFromPostH postId mediaId _ = go $ detachPostMedia postId mediaId
         go = withResource conn
 
-adminPage :: Username -> Handler Html
-adminPage uname = return $ docTypeHtml $ adminSkeleton uname
+adminPage :: WithMetadata Username -> Handler Html
+adminPage uname = return $ docTypeHtml $ adminSkeleton $ wmData uname
 
 getUsers :: Connection -> Handler [Author]
 getUsers conn = do

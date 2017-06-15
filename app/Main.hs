@@ -45,7 +45,8 @@ main = do
     Nothing  -> pure C.Production
     Just env -> pure (read env :: C.Environment)
   rs <- mkRandomSource drgNew 1000
-  sk <- mkServerKey 24 Nothing
+  sk <-  generateRandomBytes 24
+  let key = mkPersistentServerKey sk
   pool <- C.makePool
   -- let cfg = C.Config { C.getPool = pool
   --                    , C.getEnv =  environment}
@@ -57,4 +58,4 @@ main = do
   withResource pool housekeepBackend -- Housekeeping: eliminate old sessions
   let app = if environment == C.Local then A.withAssetsApp else A.withoutAssetsApp
   putStrLn $ "SimpleServantBlog up on port " ++ show port ++ " and ready to accept requests"
-  app pool cookieSettings rs sk >>= Warp.run port <$> logger
+  app pool cookieSettings rs key >>= Warp.run port <$> logger

@@ -53,7 +53,7 @@ data LoginForm = LoginForm
 
 instance FromForm LoginForm
 
-loginServer :: Pool Connection -> AuthCookieSettings -> RandomSource -> ServerKey -> Server LoginApi
+loginServer :: Pool Connection -> AuthCookieSettings -> RandomSource -> PersistentServerKey -> Server LoginApi
 loginServer conn settings rs key = loginPageH
             :<|> loginPostH
             where
@@ -63,12 +63,12 @@ loginServer conn settings rs key = loginPageH
 loginPost :: LoginForm
             -> AuthCookieSettings
             -> RandomSource
-            -> ServerKey
+            -> PersistentServerKey
             -> Connection
             -> Handler (Headers '[Header "set-cookie" EncryptedSession] Html)
 loginPost loginF settings rs key conn = do
-  let uname = username (loginF :: LoginForm)
-  authResult <- liftIO $ WU.authUser conn uname (WU.PasswordPlain $ password loginF) 12000000
+  let uname = lfUsername (loginF :: LoginForm)
+  authResult <- liftIO $ WU.authUser conn uname (WU.PasswordPlain $ lfPassword loginF) 12000000
   case authResult of
     Nothing -> return $ addHeader emptyEncryptedSession (loginPage False)
     Just sessionid -> do

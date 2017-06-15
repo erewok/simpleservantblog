@@ -57,14 +57,14 @@ type WithoutAssets =  WithHtml
                     :<|> LoginApi
                     :<|> AdminBackend
 
-withoutAssetsServer :: Pool Connection -> AuthCookieSettings -> RandomSource -> ServerKey -> IO (Server WithoutAssets)
+withoutAssetsServer :: Pool Connection -> AuthCookieSettings -> RandomSource -> PersistentServerKey -> IO (Server WithoutAssets)
 withoutAssetsServer conn settings rs key = return $ apihandlers conn
                                       :<|> loginServer conn settings rs key
                                       :<|> adminBackendHandlers conn
 
-withoutAssetsApp :: Pool Connection -> AuthCookieSettings -> RandomSource -> ServerKey -> IO Application
+withoutAssetsApp :: Pool Connection -> AuthCookieSettings -> RandomSource -> PersistentServerKey -> IO Application
 withoutAssetsApp conn settings rs key = do
-  let context = (defaultAuthHandler settings key :: AuthHandler Request Username) :. EmptyContext
+  let context = (defaultAuthHandler settings key :: AuthHandler Request (WithMetadata Username)) :. EmptyContext
   server <- withoutAssetsServer conn settings rs key
   return $ serveWithContext withoutAssets context server
 
@@ -75,16 +75,16 @@ type WithAssets =  WithHtml
                   :<|> AdminBackend
                   :<|> "assets" :> Raw
 
-withAssetsServer :: Pool Connection -> AuthCookieSettings -> RandomSource -> ServerKey -> IO (Server WithAssets)
+withAssetsServer :: Pool Connection -> AuthCookieSettings -> RandomSource -> PersistentServerKey -> IO (Server WithAssets)
 withAssetsServer conn settings rs key =
   return (apihandlers conn
             :<|> loginServer conn settings rs key
             :<|> adminBackendHandlers conn
             :<|> serveDirectory "assets")
 
-withAssetsApp :: Pool Connection -> AuthCookieSettings -> RandomSource -> ServerKey -> IO Application
+withAssetsApp :: Pool Connection -> AuthCookieSettings -> RandomSource -> PersistentServerKey -> IO Application
 withAssetsApp conn settings rs key = do
-  let context = (defaultAuthHandler settings key :: AuthHandler Request Username) :. EmptyContext
+  let context = (defaultAuthHandler settings key :: AuthHandler Request (WithMetadata Username)) :. EmptyContext
   server <- withAssetsServer conn settings rs key
   return $ serveWithContext withAssets context server
 
