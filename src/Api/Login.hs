@@ -3,7 +3,7 @@
 {-# LANGUAGE TypeFamilies      #-}
 {-# LANGUAGE TypeOperators     #-}
 
-module Api.Admin.Login where
+module Api.Login where
 
 
 import           Control.Monad.IO.Class                  (liftIO)

@@ -1,5 +1,4 @@
 {-# LANGUAGE DataKinds     #-}
-{-# LANGUAGE LambdaCase    #-}
 {-# LANGUAGE TypeFamilies  #-}
 {-# LANGUAGE TypeOperators #-}
 
@@ -26,8 +25,8 @@ import           Servant.Server.Experimental.Auth        (AuthHandler)
 import           Servant.Server.Experimental.Auth.Cookie
 import           Web.Users.Types                         (UserStorageBackend (..))
 
-import           Api.Admin.Admin
-import           Api.Admin.Login
+import           Api.Admin
+import           Api.Login
 import           Api.Post
 import           Html.About
 import           Html.Contact

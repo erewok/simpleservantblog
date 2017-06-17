@@ -1,5 +1,6 @@
 {-# LANGUAGE DataKinds         #-}
 {-# LANGUAGE LambdaCase        #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Html.Home where
 
@@ -174,7 +175,7 @@ contactForm = H.section ! A.id "contact" ! A.class_ "container contact-us u-full
           H.a ! href "https://twitter.com/erewok" ! A.target "_new" $
             H.i ! A.class_ "fa fa-twitter" $ ""
         H.li $
-          H.a ! href "https://github.com/pellagic-puffbomb" ! A.target "_new" $
+          H.a ! href "https://github.com/erewok" ! A.target "_new" $
             H.i ! A.class_ "fa fa-github" $ ""
         H.li $
           H.a ! href "https://linkedin.com/in/erik-aker-41a3aa89" ! A.target "_new" $

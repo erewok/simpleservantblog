@@ -21,7 +21,7 @@ import           Database.PostgreSQL.Simple.ToField (toField)
 import           Database.PostgreSQL.Simple.ToRow   (ToRow, toRow)
 import           Database.PostgreSQL.Simple.Types   (Query (..))
 import           GHC.Generics
-import           Prelude                            (Eq, Int, Show, ($), (.))
+import           Prelude                            (Eq, Int, Show, ($))
 import           Servant.Elm
 
 
@@ -31,10 +31,10 @@ data Project = Project {
   , slug               :: !T.Text
   , description        :: Maybe T.Text
   , source             :: Maybe T.Text
-  , source_url         :: Maybe T.Text
-  , projectLocalUrl  :: Maybe T.Text
+  , sourceUrl         :: Maybe T.Text
+  , projectLocalUrl    :: Maybe T.Text
   , language           :: Maybe T.Text
-  , list_order         :: Maybe Int
+  , listOrder         :: Maybe Int
   } deriving (Eq, Show, Generic)
 
 instance ElmType Project
@@ -51,10 +51,10 @@ instance ToRow Project where
              , toField $ slug p
              , toField $ description p
              , toField $ source p
-             , toField $ source_url p
+             , toField $ sourceUrl p
              , toField $ projectLocalUrl p
              , toField $ language p
-             , toField $ list_order p
+             , toField $ listOrder p
              ]
 
 

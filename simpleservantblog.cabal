@@ -17,13 +17,17 @@ library
   hs-source-dirs:      src
   exposed-modules:     Api
                      , Config
-                     , Api.Admin.Admin
-                     , Api.Admin.Login
+                     , Api.Admin
+                     , Api.Login
                      , Api.Errors
                      , Api.Post
+                     , Api.Types
                      , Api.Projects
                      , Api.Projects.TacoShop
-                    --  , Api.Multipart
+                     , Api.Admin.MediaAdmin
+                     , Api.Admin.PostAdmin
+                     , Api.Admin.SeriesAdmin
+                     , Api.Admin.UserAdmin
                      , Html.Home
                      , Html.About
                      , Html.Contact
