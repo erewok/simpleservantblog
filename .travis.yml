@@ -12,7 +12,7 @@ cache:
 os:
   - linux
 before_install:
-  - curl https://gist.github.com/pellagic-puffbomb/dd2405a8958a9a1f9cbf5e8a33f478d8 | sh
+  - curl https://gist.github.com/erewok/dd2405a8958a9a1f9cbf5e8a33f478d8 | sh
 script:
   - stack setup
   - stack test
