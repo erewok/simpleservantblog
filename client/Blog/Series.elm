@@ -5,7 +5,6 @@ import Debug exposing (..)
 import Dict exposing (..)
 import Exts.List as EL
 import Html exposing (..)
-import Html.App exposing (program)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Http

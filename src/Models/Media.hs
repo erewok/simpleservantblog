@@ -1,6 +1,7 @@
 {-# LANGUAGE DeriveGeneric         #-}
 {-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE NoImplicitPrelude     #-}
+{-# LANGUAGE OverloadedStrings     #-}
 {-# LANGUAGE QuasiQuotes           #-}
 
 module Models.Media (
@@ -21,8 +22,8 @@ import           Database.PostgreSQL.Simple.ToField (toField)
 import           Database.PostgreSQL.Simple.ToRow   (ToRow, toRow)
 import           Database.PostgreSQL.Simple.Types   (Query (..))
 import           GHC.Generics
-import           Prelude                            (Bool, Eq, Int, Show, ($),
-                                                     (.))
+import           Prelude                            (Bool, Eq, Int, Show, ($))
+
 import           Servant.Elm
 
 

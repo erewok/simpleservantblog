@@ -1,5 +1,7 @@
-{-# LANGUAGE DataKinds     #-}
-{-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE DataKinds         #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TypeFamilies      #-}
+{-# LANGUAGE TypeOperators     #-}
 
 module Api.Admin.MediaAdmin
   ( MediaAdminApi
@@ -16,13 +18,14 @@ import           Database.PostgreSQL.Simple
 import           Database.PostgreSQL.Simple.Types        (Query (..))
 import qualified Data.Text                               as T
 import           Servant
+import           Servant.Server.Experimental.Auth.Cookie
+import           Servant.HTML.Blaze
 import           Servant.Multipart
 import           System.Directory                        (copyFile)
 
 import           Api.Errors                              (appJson404)
-import           Api.Types  (ResultResp(..))
+import           Api.Types                               (ResultResp(..), AttachForm(..))
 import qualified Models.Media                            as M
-import qualified Models.Post                             as Post
 
 
 type MediaAdminApi = "admin" :> "media" :> AuthProtect "cookie-auth" :> Get '[JSON] [M.Media]
@@ -30,8 +33,8 @@ type MediaAdminApi = "admin" :> "media" :> AuthProtect "cookie-auth" :> Get '[JS
   :<|> "admin" :> "media" :> MultipartForm MultipartData :> AuthProtect "cookie-auth" :> Post '[JSON] ResultResp
   :<|> "admin" :> "media" :> Capture "id" Int :> ReqBody '[JSON] M.Media :> AuthProtect "cookie-auth" :> Put '[JSON] ResultResp
   :<|> "admin" :> "media" :> Capture "id" Int :> AuthProtect "cookie-auth" :> Delete '[JSON] ResultResp
-  :<|> "admin" :> "post" :> "media" :> Capture "pid" Int  :> Capture "mid" Int  :> AuthProtect "cookie-auth" :> Post '[JSON] ResultResp
-  :<|> "admin" :> "post" :> "media" :> Capture "pid" Int  :> Capture "mid" Int  :> AuthProtect "cookie-auth" :> Delete '[JSON] ResultResp
+  :<|> "admin" :> "post" :> "media" :> ReqBody '[JSON] AttachForm  :> AuthProtect "cookie-auth" :> Post '[JSON] ResultResp
+  :<|> "admin" :> "post" :> "media" :> Capture "mid" Int :> Capture "pid" Int :> AuthProtect "cookie-auth" :> Delete '[JSON] ResultResp
 
 mediaAdminHandlers :: Pool Connection -> Server MediaAdminApi
 mediaAdminHandlers conn = mediaGetAllH
@@ -41,13 +44,13 @@ mediaAdminHandlers conn = mediaGetAllH
                           :<|> mediaDeleteH
                           :<|> attachMediaToPostH
                           :<|> deleteMediaFromPostH
-  where mediaGetAllH _ = go getAllMedia
-        mediaGetDetailH mediaId _ = go $ getMediaById mediaId
+  where mediaGetAllH _ = withResource conn getAllMedia
+        mediaGetDetailH mediaId _ = withResource conn $ getMediaById mediaId
         mediaPostH newMedia _ = go $ createMedia newMedia
         mediaPutH mediaId editedMedia _ = go $ updateMedia mediaId editedMedia
         mediaDeleteH mediaId _ = go $ deleteMedia mediaId
-        attachMediaToPostH postId mediaId _ = go $ attachPostMedia postId mediaId
-        deleteMediaFromPostH postId mediaId _ = go $ detachPostMedia postId mediaId
+        attachMediaToPostH attachForm _ = go $ attachPostMedia attachForm
+        deleteMediaFromPostH mid pid _ = go $ detachPostMedia mid pid
         go = withResource conn
 
 getAllMedia :: Connection -> Handler [M.Media]
@@ -66,7 +69,7 @@ getMediaById mediaId conn = do
   result <- liftIO $ getMedia mediaId conn
   case result of
     Nothing   -> throwError err404
-    Just post -> return post
+    Just media -> return media
 
 saveFileToStatic :: FilePath -> T.Text -> IO FilePath
 saveFileToStatic fileLocTemp filename = do
@@ -101,21 +104,26 @@ updateMedia mediaId editedMedia conn = do
 
 deleteMedia :: Int -> Connection -> Handler ResultResp
 deleteMedia mediaId conn = do
-  let q = "delete from media where id = ?"
-  result <- liftIO $ execute conn q (Only mediaId)
-  case result of
+  -- must detach media from all posts where it's connected
+  let deleteQ = "delete from postmedia where media_id = ?"
+  result' <- liftIO $ execute conn deleteQ (Only mediaId)
+  case result' of
     0 -> throwError err400
-    _ -> return $ ResultResp "success" "user deleted"
+    _ -> do -- now we can delete the media
+      let q = "delete from media where id = ?"
+      result <- liftIO $ execute conn q (Only mediaId)
+      case result of
+        0 -> throwError err400
+        _ -> return $ ResultResp "success" "user deleted"
 
-
-attachPostMedia :: Int -> Int -> Connection -> Handler ResultResp
-attachPostMedia postId mediaId conn = do
+attachPostMedia :: AttachForm -> Connection -> Handler ResultResp
+attachPostMedia (AttachForm postId mediaId) conn = do
   let q = "insert into post_media (post_id, media_id) values (?, ?)"
   result <- liftIO $ execute conn q (postId, mediaId)
   pure $ ResultResp "success" "post Media created"
 
-detachPostMedia ::Int -> Int -> Connection -> Handler ResultResp
-detachPostMedia postId mediaId conn = do
+detachPostMedia :: Int -> Int -> Connection -> Handler ResultResp
+detachPostMedia mediaId postId conn = do
   let q = "delete from postmedia where post_id = ? and media_id = ?"
   result <- liftIO $ execute conn q (postId, mediaId)
   case result of

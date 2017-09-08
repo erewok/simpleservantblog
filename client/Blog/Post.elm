@@ -3,7 +3,6 @@ module Blog.Post exposing (..)
 import Date exposing (..)
 import Dict exposing (..)
 import Html exposing (..)
-import Html.App exposing (program)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Markdown as M

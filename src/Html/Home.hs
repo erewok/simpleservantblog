@@ -1,5 +1,4 @@
 {-# LANGUAGE DataKinds         #-}
-{-# LANGUAGE LambdaCase        #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 module Html.Home where
