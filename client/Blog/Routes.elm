@@ -1,7 +1,7 @@
 module Blog.Routes exposing (..)
 
 import String
-import UrlParser exposing (Parser, parse, (</>), format, int, oneOf, s, string)
+import UrlParser exposing (Parser, parsePath, (</>), map, int, oneOf, s, string)
 import Navigation exposing (Location)
 import Html.Attributes exposing (href, attribute)
 import Html exposing (Html, Attribute, a)
@@ -25,21 +25,21 @@ delta2url previous current =
 routeParser : Parser (Route -> a) a
 routeParser =
     oneOf
-        [ format PostDetailRoute (s "posts" </> int)
-        , format SeriesPostDetailRoute (s "series" </> int </> s "posts" </> int)
-        , format HomeRoute (s "")
+        [ map PostDetailRoute (s "posts" </> int)
+        , map SeriesPostDetailRoute (s "series" </> int </> s "posts" </> int)
+        , map HomeRoute (s "")
         ]
 
 
-fromUrl : Location -> Result String Route
+fromUrl : Location -> Maybe Route
 fromUrl location =
-    parse identity routeParser (String.dropLeft 1 location.hash)
+    parsePath routeParser location
 
 
 location2messages : Location -> List Msg
 location2messages location =
     case fromUrl location of
-        Ok route ->
+        Just route ->
             case route of
                 HomeRoute ->
                     [ FromFrontend SeePostList ]
@@ -50,8 +50,8 @@ location2messages location =
                 SeriesPostDetailRoute seriesId postId ->
                     [ FromFrontend <| SeeSeriesPostDetail postId seriesId ]
 
-        Err error ->
-            [ Error error ]
+        Nothing ->
+            [ FromFrontend SeePostList ]
 
 
 toUrl : Route -> String

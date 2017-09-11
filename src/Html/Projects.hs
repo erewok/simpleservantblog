@@ -1,10 +1,9 @@
-{-# LANGUAGE DataKinds #-}
-{-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE DataKinds         #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TypeOperators     #-}
 
 module Html.Projects where
 
-import           Control.Monad.Except
-import qualified Data.Text                   as T
 import           Servant
 import           Servant.HTML.Blaze
 import           Text.Blaze.Html5            as H

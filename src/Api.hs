@@ -28,6 +28,7 @@ import           Web.Users.Types                         (UserStorageBackend (..
 import           Api.Admin
 import           Api.Login
 import           Api.Post
+import           Admin
 import           Html.About
 import           Html.Contact
 import           Html.Home
@@ -45,6 +46,7 @@ type WithHtml = HomePage
                 :<|> ContactApi
                 :<|> ProjectsApi
                 :<|> PostApi
+                :<|> AdminHtml
 
 apihandlers :: Pool Connection -> Server WithHtml
 apihandlers conn = homePage
@@ -53,6 +55,7 @@ apihandlers conn = homePage
                   :<|> contactServer
                   :<|> projectsServer
                   :<|> postHandlers conn
+                  :<|> adminHtmlHandlers conn
 
 -- Used in production
 type WithoutAssets =  WithHtml
@@ -82,7 +85,7 @@ withAssetsServer conn settings rs key =
   return (apihandlers conn
             :<|> loginServer conn settings rs key
             :<|> adminBackendHandlers conn
-            :<|> serveDirectory "assets")
+            :<|> serveDirectoryFileServer "assets")
 
 withAssetsApp :: Pool Connection -> AuthCookieSettings -> RandomSource -> PersistentServerKey -> IO Application
 withAssetsApp conn settings rs key = do

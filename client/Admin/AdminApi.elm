@@ -4,366 +4,486 @@ import Date exposing (..)
 
 import Exts.Date exposing (..)
 
-import Json.Decode exposing ((:=))
-import Json.Decode.Extra exposing ((|:))
+import Json.Decode exposing (..)
+import Json.Decode.Pipeline exposing (..)
 import Json.Encode
 import Http
 import String
-import Task
 
 
-type alias Author =
-  { aid : Int
-  , userid : Int
-  , firstName : String
-  , lastName : String
-  }
-
-decodeAuthor : Json.Decode.Decoder Author
-decodeAuthor =
-  Json.Decode.succeed Author
-    |: ("aid" := Json.Decode.int)
-    |: ("userid" := Json.Decode.int)
-    |: ("firstName" := Json.Decode.string)
-    |: ("lastName" := Json.Decode.string)
-
-getAdminUser : Task.Task Http.Error (List (Author))
+getAdminUser : Http.Request (List (Author))
 getAdminUser =
-  let
-    request =
-      { verb =
-          "GET"
-      , headers =
-          [("Content-Type", "application/json")]
-      , url =
-          "/" ++ "admin"
-          ++ "/" ++ "user"
-      , body =
-          Http.empty
-      }
-  in
-    Http.fromJson
-      (Json.Decode.list decodeAuthor)
-      (Http.send Http.defaultSettings request)
+    Http.request
+        { method =
+            "GET"
+        , headers =
+            []
+        , url =
+            String.join "/"
+                [ ""
+                , "admin"
+                , "user"
+                ]
+        , body =
+            Http.emptyBody
+        , expect =
+            Http.expectJson (list decodeAuthor)
+        , timeout =
+            Nothing
+        , withCredentials =
+            False
+        }
 
-getAdminUserById : Int -> Task.Task Http.Error (Author)
-getAdminUserById id =
-  let
-    request =
-      { verb =
-          "GET"
-      , headers =
-          [("Content-Type", "application/json")]
-      , url =
-          "/" ++ "admin"
-          ++ "/" ++ "user"
-          ++ "/" ++ (id |> toString |> Http.uriEncode)
-      , body =
-          Http.empty
-      }
-  in
-    Http.fromJson
-      decodeAuthor
-      (Http.send Http.defaultSettings request)
+getAdminUserById : Int -> Http.Request (Author)
+getAdminUserById capture_id =
+    Http.request
+        { method =
+            "GET"
+        , headers =
+            []
+        , url =
+            String.join "/"
+                [ ""
+                , "admin"
+                , "user"
+                , capture_id |> toString |> Http.encodeUri
+                ]
+        , body =
+            Http.emptyBody
+        , expect =
+            Http.expectJson decodeAuthor
+        , timeout =
+            Nothing
+        , withCredentials =
+            False
+        }
 
-encodeAuthor : Author -> Json.Encode.Value
-encodeAuthor x =
-  Json.Encode.object
-    [ ( "aid", Json.Encode.int x.aid )
-    , ( "userid", Json.Encode.int x.userid )
-    , ( "firstName", Json.Encode.string x.firstName )
-    , ( "lastName", Json.Encode.string x.lastName )
-    ]
-
-postAdminUser : Author -> Task.Task Http.Error (Author)
+postAdminUser : Author -> Http.Request (Author)
 postAdminUser body =
-  let
-    request =
-      { verb =
-          "POST"
-      , headers =
-          [("Content-Type", "application/json")]
-      , url =
-          "/" ++ "admin"
-          ++ "/" ++ "user"
-      , body =
-          Http.string (Json.Encode.encode 0 (encodeAuthor body))
-      }
-  in
-    Http.fromJson
-      decodeAuthor
-      (Http.send Http.defaultSettings request)
+    Http.request
+        { method =
+            "POST"
+        , headers =
+            []
+        , url =
+            String.join "/"
+                [ ""
+                , "admin"
+                , "user"
+                ]
+        , body =
+            Http.jsonBody (encodeAuthor body)
+        , expect =
+            Http.expectJson decodeAuthor
+        , timeout =
+            Nothing
+        , withCredentials =
+            False
+        }
 
-type alias ResultResp =
-  { status : String
-  , description : String
-  }
+putAdminUserById : Int -> Author -> Http.Request (ResultResp)
+putAdminUserById capture_id body =
+    Http.request
+        { method =
+            "PUT"
+        , headers =
+            []
+        , url =
+            String.join "/"
+                [ ""
+                , "admin"
+                , "user"
+                , capture_id |> toString |> Http.encodeUri
+                ]
+        , body =
+            Http.jsonBody (encodeAuthor body)
+        , expect =
+            Http.expectJson decodeResultResp
+        , timeout =
+            Nothing
+        , withCredentials =
+            False
+        }
 
-decodeResultResp : Json.Decode.Decoder ResultResp
-decodeResultResp =
-  Json.Decode.succeed ResultResp
-    |: ("status" := Json.Decode.string)
-    |: ("description" := Json.Decode.string)
+deleteAdminUserById : Int -> Http.Request (ResultResp)
+deleteAdminUserById capture_id =
+    Http.request
+        { method =
+            "DELETE"
+        , headers =
+            []
+        , url =
+            String.join "/"
+                [ ""
+                , "admin"
+                , "user"
+                , capture_id |> toString |> Http.encodeUri
+                ]
+        , body =
+            Http.emptyBody
+        , expect =
+            Http.expectJson decodeResultResp
+        , timeout =
+            Nothing
+        , withCredentials =
+            False
+        }
 
-putAdminUserById : Int -> Author -> Task.Task Http.Error (ResultResp)
-putAdminUserById id body =
-  let
-    request =
-      { verb =
-          "PUT"
-      , headers =
-          [("Content-Type", "application/json")]
-      , url =
-          "/" ++ "admin"
-          ++ "/" ++ "user"
-          ++ "/" ++ (id |> toString |> Http.uriEncode)
-      , body =
-          Http.string (Json.Encode.encode 0 (encodeAuthor body))
-      }
-  in
-    Http.fromJson
-      decodeResultResp
-      (Http.send Http.defaultSettings request)
-
-deleteAdminUserById : Int -> Task.Task Http.Error (ResultResp)
-deleteAdminUserById id =
-  let
-    request =
-      { verb =
-          "DELETE"
-      , headers =
-          [("Content-Type", "application/json")]
-      , url =
-          "/" ++ "admin"
-          ++ "/" ++ "user"
-          ++ "/" ++ (id |> toString |> Http.uriEncode)
-      , body =
-          Http.empty
-      }
-  in
-    Http.fromJson
-      decodeResultResp
-      (Http.send Http.defaultSettings request)
-
-type alias BlogPost =
-  { bid : Int
-  , authorId : Int
-  , seriesId : Maybe Int
-  , title : String
-  , body : Maybe String
-  , synopsis : Maybe String
-  , created : Date
-  , modified : Maybe Date
-  , pubdate : Maybe Date
-  , ordinal : Maybe Int
-  }
-
-encodeBlogPost : BlogPost -> Json.Encode.Value
-encodeBlogPost x =
-  Json.Encode.object
-    [ ( "bid", Json.Encode.int x.bid )
-    , ( "authorId", Json.Encode.int x.authorId )
-    , ( "seriesId", (Maybe.withDefault Json.Encode.null << Maybe.map Json.Encode.int) x.seriesId )
-    , ( "title", Json.Encode.string x.title )
-    , ( "body", (Maybe.withDefault Json.Encode.null << Maybe.map Json.Encode.string) x.body )
-    , ( "synopsis", (Maybe.withDefault Json.Encode.null << Maybe.map Json.Encode.string) x.synopsis )
-    , ( "created", (Json.Encode.string << Exts.Date.toISOString) x.created )
-    , ( "modified", (Maybe.withDefault Json.Encode.null << Maybe.map (Json.Encode.string << Exts.Date.toISOString)) x.modified )
-    , ( "pubdate", (Maybe.withDefault Json.Encode.null << Maybe.map (Json.Encode.string << Exts.Date.toISOString)) x.pubdate )
-    , ( "ordinal", (Maybe.withDefault Json.Encode.null << Maybe.map Json.Encode.int) x.ordinal )
-    ]
-
-decodeBlogPost : Json.Decode.Decoder BlogPost
-decodeBlogPost =
-  Json.Decode.succeed BlogPost
-    |: ("bid" := Json.Decode.int)
-    |: ("authorId" := Json.Decode.int)
-    |: ("seriesId" := Json.Decode.maybe Json.Decode.int)
-    |: ("title" := Json.Decode.string)
-    |: ("body" := Json.Decode.maybe Json.Decode.string)
-    |: ("synopsis" := Json.Decode.maybe Json.Decode.string)
-    |: ("created" := Json.Decode.Extra.date)
-    |: ("modified" := Json.Decode.maybe Json.Decode.Extra.date)
-    |: ("pubdate" := Json.Decode.maybe Json.Decode.Extra.date)
-    |: ("ordinal" := Json.Decode.maybe Json.Decode.int)
-
-postAdminPost : BlogPost -> Task.Task Http.Error (BlogPost)
+postAdminPost : BlogPost -> Http.Request (BlogPost)
 postAdminPost body =
-  let
-    request =
-      { verb =
-          "POST"
-      , headers =
-          [("Content-Type", "application/json")]
-      , url =
-          "/" ++ "admin"
-          ++ "/" ++ "post"
-      , body =
-          Http.string (Json.Encode.encode 0 (encodeBlogPost body))
-      }
-  in
-    Http.fromJson
-      decodeBlogPost
-      (Http.send Http.defaultSettings request)
+    Http.request
+        { method =
+            "POST"
+        , headers =
+            []
+        , url =
+            String.join "/"
+                [ ""
+                , "admin"
+                , "post"
+                ]
+        , body =
+            Http.jsonBody (encodeBlogPost body)
+        , expect =
+            Http.expectJson decodeBlogPost
+        , timeout =
+            Nothing
+        , withCredentials =
+            False
+        }
 
-putAdminPostById : Int -> BlogPost -> Task.Task Http.Error (ResultResp)
-putAdminPostById id body =
-  let
-    request =
-      { verb =
-          "PUT"
-      , headers =
-          [("Content-Type", "application/json")]
-      , url =
-          "/" ++ "admin"
-          ++ "/" ++ "post"
-          ++ "/" ++ (id |> toString |> Http.uriEncode)
-      , body =
-          Http.string (Json.Encode.encode 0 (encodeBlogPost body))
-      }
-  in
-    Http.fromJson
-      decodeResultResp
-      (Http.send Http.defaultSettings request)
+putAdminPostById : Int -> BlogPost -> Http.Request (ResultResp)
+putAdminPostById capture_id body =
+    Http.request
+        { method =
+            "PUT"
+        , headers =
+            []
+        , url =
+            String.join "/"
+                [ ""
+                , "admin"
+                , "post"
+                , capture_id |> toString |> Http.encodeUri
+                ]
+        , body =
+            Http.jsonBody (encodeBlogPost body)
+        , expect =
+            Http.expectJson decodeResultResp
+        , timeout =
+            Nothing
+        , withCredentials =
+            False
+        }
 
-deleteAdminPostById : Int -> Task.Task Http.Error (ResultResp)
-deleteAdminPostById id =
-  let
-    request =
-      { verb =
-          "DELETE"
-      , headers =
-          [("Content-Type", "application/json")]
-      , url =
-          "/" ++ "admin"
-          ++ "/" ++ "post"
-          ++ "/" ++ (id |> toString |> Http.uriEncode)
-      , body =
-          Http.empty
-      }
-  in
-    Http.fromJson
-      decodeResultResp
-      (Http.send Http.defaultSettings request)
+deleteAdminPostById : Int -> Http.Request (ResultResp)
+deleteAdminPostById capture_id =
+    Http.request
+        { method =
+            "DELETE"
+        , headers =
+            []
+        , url =
+            String.join "/"
+                [ ""
+                , "admin"
+                , "post"
+                , capture_id |> toString |> Http.encodeUri
+                ]
+        , body =
+            Http.emptyBody
+        , expect =
+            Http.expectJson decodeResultResp
+        , timeout =
+            Nothing
+        , withCredentials =
+            False
+        }
 
-getAdminPost : Task.Task Http.Error (List (BlogPost))
+getAdminPost : Http.Request (List (BlogPost))
 getAdminPost =
-  let
-    request =
-      { verb =
-          "GET"
-      , headers =
-          [("Content-Type", "application/json")]
-      , url =
-          "/" ++ "admin"
-          ++ "/" ++ "post"
-      , body =
-          Http.empty
-      }
-  in
-    Http.fromJson
-      (Json.Decode.list decodeBlogPost)
-      (Http.send Http.defaultSettings request)
+    Http.request
+        { method =
+            "GET"
+        , headers =
+            []
+        , url =
+            String.join "/"
+                [ ""
+                , "admin"
+                , "post"
+                ]
+        , body =
+            Http.emptyBody
+        , expect =
+            Http.expectJson (list decodeBlogPost)
+        , timeout =
+            Nothing
+        , withCredentials =
+            False
+        }
 
-getAdminPostById : Int -> Task.Task Http.Error (BlogPost)
-getAdminPostById id =
-  let
-    request =
-      { verb =
-          "GET"
-      , headers =
-          [("Content-Type", "application/json")]
-      , url =
-          "/" ++ "admin"
-          ++ "/" ++ "post"
-          ++ "/" ++ (id |> toString |> Http.uriEncode)
-      , body =
-          Http.empty
-      }
-  in
-    Http.fromJson
-      decodeBlogPost
-      (Http.send Http.defaultSettings request)
+getAdminPostById : Int -> Http.Request (BlogPost)
+getAdminPostById capture_id =
+    Http.request
+        { method =
+            "GET"
+        , headers =
+            []
+        , url =
+            String.join "/"
+                [ ""
+                , "admin"
+                , "post"
+                , capture_id |> toString |> Http.encodeUri
+                ]
+        , body =
+            Http.emptyBody
+        , expect =
+            Http.expectJson decodeBlogPost
+        , timeout =
+            Nothing
+        , withCredentials =
+            False
+        }
 
-type alias BlogSeries =
-  { sid : Int
-  , name : String
-  , description : String
-  , parentid : Maybe Int
-  }
-
-encodeBlogSeries : BlogSeries -> Json.Encode.Value
-encodeBlogSeries x =
-  Json.Encode.object
-    [ ( "sid", Json.Encode.int x.sid )
-    , ( "name", Json.Encode.string x.name )
-    , ( "description", Json.Encode.string x.description )
-    , ( "parentid", (Maybe.withDefault Json.Encode.null << Maybe.map Json.Encode.int) x.parentid )
-    ]
-
-decodeBlogSeries : Json.Decode.Decoder BlogSeries
-decodeBlogSeries =
-  Json.Decode.succeed BlogSeries
-    |: ("sid" := Json.Decode.int)
-    |: ("name" := Json.Decode.string)
-    |: ("description" := Json.Decode.string)
-    |: ("parentid" := Json.Decode.maybe Json.Decode.int)
-
-postAdminSeries : BlogSeries -> Task.Task Http.Error (BlogSeries)
+postAdminSeries : BlogSeries -> Http.Request (BlogSeries)
 postAdminSeries body =
-  let
-    request =
-      { verb =
-          "POST"
-      , headers =
-          [("Content-Type", "application/json")]
-      , url =
-          "/" ++ "admin"
-          ++ "/" ++ "series"
-      , body =
-          Http.string (Json.Encode.encode 0 (encodeBlogSeries body))
-      }
-  in
-    Http.fromJson
-      decodeBlogSeries
-      (Http.send Http.defaultSettings request)
+    Http.request
+        { method =
+            "POST"
+        , headers =
+            []
+        , url =
+            String.join "/"
+                [ ""
+                , "admin"
+                , "series"
+                ]
+        , body =
+            Http.jsonBody (encodeBlogSeries body)
+        , expect =
+            Http.expectJson decodeBlogSeries
+        , timeout =
+            Nothing
+        , withCredentials =
+            False
+        }
 
-putAdminSeriesById : Int -> BlogSeries -> Task.Task Http.Error (ResultResp)
-putAdminSeriesById id body =
-  let
-    request =
-      { verb =
-          "PUT"
-      , headers =
-          [("Content-Type", "application/json")]
-      , url =
-          "/" ++ "admin"
-          ++ "/" ++ "series"
-          ++ "/" ++ (id |> toString |> Http.uriEncode)
-      , body =
-          Http.string (Json.Encode.encode 0 (encodeBlogSeries body))
-      }
-  in
-    Http.fromJson
-      decodeResultResp
-      (Http.send Http.defaultSettings request)
+putAdminSeriesById : Int -> BlogSeries -> Http.Request (ResultResp)
+putAdminSeriesById capture_id body =
+    Http.request
+        { method =
+            "PUT"
+        , headers =
+            []
+        , url =
+            String.join "/"
+                [ ""
+                , "admin"
+                , "series"
+                , capture_id |> toString |> Http.encodeUri
+                ]
+        , body =
+            Http.jsonBody (encodeBlogSeries body)
+        , expect =
+            Http.expectJson decodeResultResp
+        , timeout =
+            Nothing
+        , withCredentials =
+            False
+        }
 
-deleteAdminSeriesById : Int -> Task.Task Http.Error (ResultResp)
-deleteAdminSeriesById id =
-  let
-    request =
-      { verb =
-          "DELETE"
-      , headers =
-          [("Content-Type", "application/json")]
-      , url =
-          "/" ++ "admin"
-          ++ "/" ++ "series"
-          ++ "/" ++ (id |> toString |> Http.uriEncode)
-      , body =
-          Http.empty
-      }
-  in
-    Http.fromJson
-      decodeResultResp
-      (Http.send Http.defaultSettings request)
+deleteAdminSeriesById : Int -> Http.Request (ResultResp)
+deleteAdminSeriesById capture_id =
+    Http.request
+        { method =
+            "DELETE"
+        , headers =
+            []
+        , url =
+            String.join "/"
+                [ ""
+                , "admin"
+                , "series"
+                , capture_id |> toString |> Http.encodeUri
+                ]
+        , body =
+            Http.emptyBody
+        , expect =
+            Http.expectJson decodeResultResp
+        , timeout =
+            Nothing
+        , withCredentials =
+            False
+        }
+
+getAdminMedia : Http.Request (List (Media))
+getAdminMedia =
+    Http.request
+        { method =
+            "GET"
+        , headers =
+            []
+        , url =
+            String.join "/"
+                [ ""
+                , "admin"
+                , "media"
+                ]
+        , body =
+            Http.emptyBody
+        , expect =
+            Http.expectJson (list decodeMedia)
+        , timeout =
+            Nothing
+        , withCredentials =
+            False
+        }
+
+getAdminMediaById : Int -> Http.Request (Media)
+getAdminMediaById capture_id =
+    Http.request
+        { method =
+            "GET"
+        , headers =
+            []
+        , url =
+            String.join "/"
+                [ ""
+                , "admin"
+                , "media"
+                , capture_id |> toString |> Http.encodeUri
+                ]
+        , body =
+            Http.emptyBody
+        , expect =
+            Http.expectJson decodeMedia
+        , timeout =
+            Nothing
+        , withCredentials =
+            False
+        }
+
+postAdminMedia : Http.Request (ResultResp)
+postAdminMedia =
+    Http.request
+        { method =
+            "POST"
+        , headers =
+            []
+        , url =
+            String.join "/"
+                [ ""
+                , "admin"
+                , "media"
+                ]
+        , body =
+            Http.emptyBody
+        , expect =
+            Http.expectJson decodeResultResp
+        , timeout =
+            Nothing
+        , withCredentials =
+            False
+        }
+
+putAdminMediaById : Int -> Media -> Http.Request (ResultResp)
+putAdminMediaById capture_id body =
+    Http.request
+        { method =
+            "PUT"
+        , headers =
+            []
+        , url =
+            String.join "/"
+                [ ""
+                , "admin"
+                , "media"
+                , capture_id |> toString |> Http.encodeUri
+                ]
+        , body =
+            Http.jsonBody (encodeMedia body)
+        , expect =
+            Http.expectJson decodeResultResp
+        , timeout =
+            Nothing
+        , withCredentials =
+            False
+        }
+
+deleteAdminMediaById : Int -> Http.Request (ResultResp)
+deleteAdminMediaById capture_id =
+    Http.request
+        { method =
+            "DELETE"
+        , headers =
+            []
+        , url =
+            String.join "/"
+                [ ""
+                , "admin"
+                , "media"
+                , capture_id |> toString |> Http.encodeUri
+                ]
+        , body =
+            Http.emptyBody
+        , expect =
+            Http.expectJson decodeResultResp
+        , timeout =
+            Nothing
+        , withCredentials =
+            False
+        }
+
+postAdminPostMediaByPidByMid : Int -> Int -> Http.Request (ResultResp)
+postAdminPostMediaByPidByMid capture_pid capture_mid =
+    Http.request
+        { method =
+            "POST"
+        , headers =
+            []
+        , url =
+            String.join "/"
+                [ ""
+                , "admin"
+                , "post"
+                , "media"
+                , capture_pid |> toString |> Http.encodeUri
+                , capture_mid |> toString |> Http.encodeUri
+                ]
+        , body =
+            Http.emptyBody
+        , expect =
+            Http.expectJson decodeResultResp
+        , timeout =
+            Nothing
+        , withCredentials =
+            False
+        }
+
+deleteAdminPostMediaByPidByMid : Int -> Int -> Http.Request (ResultResp)
+deleteAdminPostMediaByPidByMid capture_pid capture_mid =
+    Http.request
+        { method =
+            "DELETE"
+        , headers =
+            []
+        , url =
+            String.join "/"
+                [ ""
+                , "admin"
+                , "post"
+                , "media"
+                , capture_pid |> toString |> Http.encodeUri
+                , capture_mid |> toString |> Http.encodeUri
+                ]
+        , body =
+            Http.emptyBody
+        , expect =
+            Http.expectJson decodeResultResp
+        , timeout =
+            Nothing
+        , withCredentials =
+            False
+        }

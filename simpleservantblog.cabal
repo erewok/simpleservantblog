@@ -28,6 +28,8 @@ library
                      , Api.Admin.PostAdmin
                      , Api.Admin.SeriesAdmin
                      , Api.Admin.UserAdmin
+                     , Admin
+                     , Admin.Views
                      , Html.Home
                      , Html.About
                      , Html.Contact

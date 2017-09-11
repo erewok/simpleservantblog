@@ -1,5 +1,6 @@
 {-# LANGUAGE DataKinds         #-}
 {-# LANGUAGE DeriveGeneric     #-}
+{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeFamilies      #-}
 {-# LANGUAGE TypeOperators     #-}
 
@@ -7,28 +8,23 @@ module Api.Login where
 
 
 import           Control.Monad.IO.Class                  (liftIO)
-import qualified Data.ByteString.Char8                   as B
 import           Data.Pool                               (Pool, withResource)
 import           Data.Serialize                          (Serialize)
 import qualified Data.Text                               as T
 import           Database.PostgreSQL.Simple
-import           Database.PostgreSQL.Simple.Types        (Query (..))
 import           GHC.Generics
 import           Servant
-import           Servant.Elm
 import           Servant.HTML.Blaze
-import           Servant.Server.Experimental.Auth        (AuthHandler)
 import           Servant.Server.Experimental.Auth.Cookie
 import           Text.Blaze.Html5                        as H
 import           Text.Blaze.Html5.Attributes             as A
 import           Web.FormUrlEncoded                      (FromForm)
-import qualified Web.Users.Postgresql                    as WUP
 import qualified Web.Users.Types                         as WU
+import qualified Web.Users.Postgresql                    as WUP
 
 import           Html.Home                               (PageType (..),
                                                           pageSkeleton,
                                                           redirectPage)
-import           Models.Author                           (Author (..))
 
 
 newtype Username = Username { username :: String } deriving (Eq, Show, Generic)
@@ -71,11 +67,11 @@ loginPost loginF settings rs key conn = do
   authResult <- liftIO $ WU.authUser conn uname (WU.PasswordPlain $ lfPassword loginF) 12000000
   case authResult of
     Nothing -> return $ addHeader emptyEncryptedSession (loginPage False)
-    Just sessionid -> do
+    Just _ -> do
       userid <- liftIO $ WU.getUserIdByName conn uname
       case userid of
         Nothing -> return $ addHeader emptyEncryptedSession (loginPage False)
-        Just uid ->
+        Just _ ->
           addSession
             settings -- the settings
             rs       -- random source

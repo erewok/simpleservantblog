@@ -1,6 +1,8 @@
 {-# LANGUAGE DeriveGeneric         #-}
+{-# LANGUAGE DeriveDataTypeable    #-}
 {-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE NoImplicitPrelude     #-}
+{-# LANGUAGE OverloadedStrings     #-}
 {-# LANGUAGE QuasiQuotes           #-}
 
 module Models.Media (
@@ -14,6 +16,7 @@ module Models.Media (
 import           Control.Applicative                ((<$>), (<*>))
 import           Data.Aeson
 import qualified Data.ByteString.Char8              as B
+import           Data.Data
 import qualified Data.Text                          as T
 import           Database.PostgreSQL.Simple.FromRow (FromRow, field, fromRow)
 import           Database.PostgreSQL.Simple.SqlQQ
@@ -21,8 +24,8 @@ import           Database.PostgreSQL.Simple.ToField (toField)
 import           Database.PostgreSQL.Simple.ToRow   (ToRow, toRow)
 import           Database.PostgreSQL.Simple.Types   (Query (..))
 import           GHC.Generics
-import           Prelude                            (Bool, Eq, Int, Show, ($),
-                                                     (.))
+import           Prelude                            (Bool, Eq, Int, Show, ($))
+
 import           Servant.Elm
 
 
@@ -40,7 +43,7 @@ data Media = Media {
   , url         :: !T.Text
   , location    :: !T.Text
   , description :: !T.Text
-  } deriving (Eq, Show, Generic)
+  } deriving (Eq, Show, Generic, Data)
 instance ElmType Media
 instance ToJSON Media
 instance FromJSON Media

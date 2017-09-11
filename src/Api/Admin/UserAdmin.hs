@@ -1,6 +1,6 @@
-{-# LANGUAGE DataKinds     #-}
-{-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE DataKinds         #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TypeOperators     #-}
 
 module Api.Admin.UserAdmin
   ( UserAdminApi
@@ -14,8 +14,10 @@ import           Data.Pool                               (Pool, withResource)
 import           Database.PostgreSQL.Simple
 import           Database.PostgreSQL.Simple.Types        (Query (..))
 import           Servant
+import           Servant.Server.Experimental.Auth.Cookie
 
 import           Api.Errors                              (appJson404)
+import           Api.Login
 import           Api.Types  (ResultResp(..))
 import           Models.Author                           (Author (..))
 
@@ -32,12 +34,12 @@ userAdminHandlers conn = getUsersH
                          :<|> userAddH
                          :<|> userUpdateH
                          :<|> userDeleteH
-    where getUsersH _ = go getUsers
-          userDetailH userId _ = go $ getUserById userId
-          userAddH newUser _ = go $ addUser newUser
-          userUpdateH userId user _ = go $ updateUser userId user
-          userDeleteH userId _ = go $ deleteUser userId
-          go = withResource conn
+    where getUsersH :: WithMetadata Username -> Handler [Author]
+          getUsersH _ = withResource conn getUsers
+          userDetailH userId _ = withResource conn $ getUserById userId
+          userAddH newUser _ = withResource conn $ addUser newUser
+          userUpdateH userId user _ = withResource conn $ updateUser userId user
+          userDeleteH userId _ = withResource conn $ deleteUser userId
 
 
 getUsers :: Connection -> Handler [Author]

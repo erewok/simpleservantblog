@@ -1,5 +1,6 @@
-{-# LANGUAGE DataKinds     #-}
-{-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE DataKinds         #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TypeOperators     #-}
 
 module Api.Admin.PostAdmin
   ( PostAdminApi
@@ -34,12 +35,11 @@ postAdminHandlers conn = blogPostAddH
                          :<|> blogPostDeleteH
                          :<|> blogPostGetAllH
                          :<|> blogPostGetByIdH
-  where blogPostAddH newPost _ = go $ addPost newPost
-        blogPostUpdateH postId post _ = go $ updatePost postId post
-        blogPostDeleteH postId _ = go $ deletePost postId
-        blogPostGetAllH _ = go getAllPosts
-        blogPostGetByIdH postId _ = go $ getPostById postId
-        go = withResource conn
+  where blogPostAddH newPost _ = withResource conn $ addPost newPost
+        blogPostUpdateH postId post _ = withResource conn $ updatePost postId post
+        blogPostDeleteH postId _ = withResource conn $ deletePost postId
+        blogPostGetAllH _ = withResource conn getAllPosts
+        blogPostGetByIdH postId _ = withResource conn $ getPostById postId
 
 getAllPosts :: Connection -> Handler [Post.BlogPost]
 getAllPosts conn = liftIO $ query_ conn "select * from post"

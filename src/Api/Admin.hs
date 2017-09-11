@@ -1,20 +1,13 @@
-{-# LANGUAGE DataKinds     #-}
-{-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE DataKinds         #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TypeOperators     #-}
 
 module Api.Admin where
 
-import           Control.Exception                       (catch)
-import           Control.Monad.Except
-import           Control.Monad.IO.Class                  (liftIO)
-import           Data.Aeson
-import qualified Data.ByteString.Char8                   as B
 import           Data.Monoid                             ((<>))
-import           Data.Pool                               (Pool, withResource)
+import           Data.Pool                               (Pool)
 import qualified Data.Text                               as T
-import           Data.Time                               (getCurrentTime)
 import           Database.PostgreSQL.Simple
-import           Database.PostgreSQL.Simple.Types        (Query (..))
-import           GHC.Generics
 import           Servant
 
 import           Servant.HTML.Blaze
@@ -25,16 +18,10 @@ import           Text.Blaze.Html5                        as H
 import           Text.Blaze.Html5.Attributes             as A
 
 import           Api.Login                         (Username (..))
-import           Api.Errors
-import           Api.Types  (ResultResp(..))
 import           Api.Admin.MediaAdmin
 import           Api.Admin.PostAdmin
 import           Api.Admin.SeriesAdmin
 import           Api.Admin.UserAdmin
-import           Models.Author                           (Author (..))
-import qualified Models.Media                            as M
-import qualified Models.Post                             as Post
-
 
 
 -- Separated the HTML so we can use servant-elm to generate for APIs only below

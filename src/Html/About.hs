@@ -1,10 +1,10 @@
 {-# LANGUAGE DataKinds         #-}
-{-# LANGUAGE LambdaCase        #-}
 {-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Html.About where
 
-import           Data.Text                   (unlines)
+import           Data.Text                   (Text, unlines)
 import           Prelude                     (pure, ($))
 import           Text.Blaze.Html5            as H
 import           Text.Blaze.Html5.Attributes as A
@@ -38,5 +38,6 @@ aboutContent = H.div ! A.class_ "row main" $
             H.li "Surfing"
             H.li "Playing with Milo"
 
+aboutText1 :: Text
 aboutText1 = unlines ["Formerly an English teacher and freelance writer, Erik Aker is a ",
                       "web application developer in San Diego."]

@@ -1,10 +1,12 @@
 {-# LANGUAGE Arrows                #-}
 {-# LANGUAGE DataKinds             #-}
 {-# LANGUAGE DeriveGeneric         #-}
+{-# LANGUAGE DeriveDataTypeable    #-}
 {-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE NoImplicitPrelude     #-}
+{-# LANGUAGE OverloadedStrings     #-}
 {-# LANGUAGE QuasiQuotes           #-}
 {-# LANGUAGE TypeApplications      #-}
 {-# LANGUAGE TypeFamilies          #-}
@@ -24,6 +26,7 @@ import           Control.Applicative                ((<$>), (<*>))
 import           Control.Lens
 import           Data.Aeson                         hiding (Series)
 import qualified Data.ByteString.Char8              as B
+import           Data.Data
 import           Data.Int
 import           Data.Maybe
 import           Data.Proxy
@@ -105,7 +108,7 @@ data BlogPost = BlogPost {
   , modified :: Maybe UTCTime
   , pubdate  :: Maybe UTCTime
   , ordinal  :: Maybe Int
-  } deriving (Eq, Show, Generic)
+  } deriving (Eq, Show, Generic, Data)
 
 instance ElmType BlogPost
 instance FromJSON BlogPost
@@ -160,7 +163,7 @@ data BlogSeries = BlogSeries {
   , name        :: !T.Text
   , description :: !T.Text
   , parentid    :: Maybe Int
-} deriving (Eq, Show, Generic)
+} deriving (Eq, Show, Generic, Data)
 
 instance ElmType BlogSeries
 instance FromJSON BlogSeries

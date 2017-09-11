@@ -1,6 +1,7 @@
-{-# LANGUAGE DeriveGeneric     #-}
-{-# LANGUAGE NoImplicitPrelude #-}
-{-# LANGUAGE QuasiQuotes       #-}
+{-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE DeriveGeneric      #-}
+{-# LANGUAGE NoImplicitPrelude  #-}
+{-# LANGUAGE QuasiQuotes        #-}
 
 module Models.Author (
   Author(..)
@@ -9,6 +10,7 @@ module Models.Author (
 
 import           Control.Applicative                ((<$>), (<*>))
 import           Data.Aeson
+import           Data.Data
 import qualified Data.Text                          as T
 import           Database.PostgreSQL.Simple.FromRow (FromRow, field, fromRow)
 import           Database.PostgreSQL.Simple.SqlQQ
@@ -25,7 +27,7 @@ data Author = Author {
   , userid    :: !Int
   , firstName :: !T.Text
   , lastName  :: !T.Text
-  } deriving (Eq, Show, Generic)
+  } deriving (Eq, Show, Generic, Data)
 
 instance ElmType Author
 instance FromJSON Author

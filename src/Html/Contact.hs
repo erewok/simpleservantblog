@@ -1,5 +1,6 @@
 {-# LANGUAGE DataKinds         #-}
 {-# LANGUAGE DeriveGeneric     #-}
+{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeFamilies      #-}
 {-# LANGUAGE TypeOperators     #-}
 
@@ -18,7 +19,7 @@ import           Servant.HTML.Blaze
 import           System.Environment          (lookupEnv)
 import           Text.Blaze.Html5            as H
 import           Text.Blaze.Html5.Attributes as A
-import           Web.FormUrlEncoded          (FromForm, Form)
+import           Web.FormUrlEncoded          (FromForm)
 
 import           Html.Home                   (PageType (..), contactForm,
                                               homeSkeleton, redirectPage)
