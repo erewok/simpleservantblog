@@ -24,22 +24,38 @@ import qualified Models.Post                             as Post
 
 
 type AdminHtml = "admin" :> "edit" :> "posts" :> AuthProtect "cookie-auth" :> Get '[HTML] Html
+  :<|> "admin" :> "edit" :> "posts" :> Capture "postid" Int :> AuthProtect "cookie-auth" :> Get '[HTML] Html
   :<|> "admin" :> "edit" :> "series" :> AuthProtect "cookie-auth" :> Get '[HTML] Html
   :<|> "admin" :> "edit" :> "authors" :> AuthProtect "cookie-auth" :> Get '[HTML] Html
 
 adminHtmlHandlers :: Pool Connection -> Server AdminHtml
-adminHtmlHandlers conn = editAllPostsH :<|> editAllSeriesH :<|> editAllAuthorsH
+adminHtmlHandlers conn = editAllPostsH :<|> editOnePostH
+                         :<|> editAllSeriesH :<|> editAllAuthorsH
   where editAllPostsH uname = go $ editAllPosts uname
+        editOnePostH postId uname = go $ editOnePost uname postId
         editAllSeriesH uname = go $ editAllSeries uname
         editAllAuthorsH uname = go $ editAllAuthors uname
         go = withResource conn
-
 
 editAllPosts :: WithMetadata Username -> Connection -> Handler Html
 editAllPosts uname conn = do
   posts <- liftIO $ query_ conn "select * from post" :: Handler [Post.BlogPost]
   pure $ adminSkeleton (wmData uname) (adminEditTable "posts" posts)
 
+editOnePost ::  WithMetadata Username -> Int -> Connection -> Handler Html
+editOnePost uname postId conn = do
+  result <- liftIO $ getPost postId conn
+  case result of
+    Nothing -> throwError err404
+    Just post -> pure $ adminSkeleton (wmData uname) (adminEditSingle "posts" post)
+
+getPost :: Int -> Connection -> IO (Maybe Post.BlogPost)
+getPost postId conn = do
+  let q = "select * from post where id = ?"
+  result <- liftIO $ query conn q (Only postId)
+  case result of
+    (x:_)-> return $ Just x
+    _     -> return Nothing
 
 editAllSeries :: WithMetadata Username -> Connection -> Handler Html
 editAllSeries uname conn = do
@@ -56,6 +72,12 @@ adminEditTable :: (AdminRender a) => Text -> [a] -> Html
 adminEditTable editType models = H.div ! A.class_ "admin-edit-table" $ do
   addNew editType
   toTableView models
+
+adminEditSingle :: (AdminRender a) => Text -> a -> Html
+adminEditSingle editType model = H.div ! A.class_ "edit-main" $
+  H.div ! A.class_ "row" $
+    toEditSingleView model
+
 
 addNew :: Text -> Html
 addNew addType = H.div ! A.class_ "row" $
