@@ -30,7 +30,7 @@ seriesAdminHandlers :: Pool Connection -> Server SeriesAdminApi
 seriesAdminHandlers conn = blogSeriesAddH
                            :<|> blogSeriesUpdateH
                            :<|> blogSeriesDeleteH
-  where blogSeriesAddH newSeries _ = go $ addSeries newSeries
+  where blogSeriesAddH newSeries _ = withResource conn $ addSeries newSeries
         blogSeriesUpdateH seriesId series _ = go $ updateSeries seriesId series
         blogSeriesDeleteH seriesId _ = go $ deleteSeries seriesId
         go = withResource conn
