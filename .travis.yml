@@ -12,7 +12,9 @@ cache:
 os:
   - linux
 before_install:
-  - curl https://gist.github.com/erewok/dd2405a8958a9a1f9cbf5e8a33f478d8 | sh
+  - mkdir -p ~/.local/bin
+  - export PATH=$HOME/.local/bin:$PATH
+  - travis_retry curl -L https://www.stackage.org/stack/linux-x86_64 | tar xz --wildcards --strip-components=1 -C ~/.local/bin '*/stack'
 script:
   - stack setup
   - stack test
