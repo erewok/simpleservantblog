@@ -16,13 +16,9 @@ module Api
 
 
 import           Control.Lens
-import           Control.Monad.IO.Class                  (MonadIO, liftIO)
-import           Control.Monad.Reader                    (ReaderT, lift)
-import           Data.Pool                               (Pool)
 import           Data.Proxy
 import           Database.PostgreSQL.Simple              hiding ((:.))
 import           Network.Wai                             (Application, Request)
-import           Network.Wai.MakeAssets
 import           Servant
 import           Servant.Server.Experimental.Auth        (AuthHandler)
 import           Servant.Server.Experimental.Auth.Cookie

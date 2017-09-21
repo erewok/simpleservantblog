@@ -4,7 +4,7 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE RecordWildCards #-}
 
-module Admin.Forms where
+module Html.Admin.Forms where
 
 import Data.Aeson
 import Data.Data

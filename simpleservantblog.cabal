@@ -29,8 +29,8 @@ library
                      , Api.Admin.SeriesAdmin
                      , Api.Admin.UserAdmin
                      , Admin
-                     , Admin.Forms
-                     , Admin.Views
+                     , Html.Admin.Forms
+                     , Html.Admin.Views
                      , Html.Home
                      , Html.Contact
                      , Html.Projects

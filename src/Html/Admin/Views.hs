@@ -4,7 +4,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RankNTypes #-}
 
-module Admin.Views where
+module Html.Admin.Views where
 
 import Data.Data
 import Data.Maybe (isNothing)
@@ -15,7 +15,7 @@ import Data.Time (UTCTime)
 import Text.Blaze.Html5 as H
 import Text.Blaze.Html5.Attributes as A
 
-import Admin.Forms
+import Html.Admin.Forms
 import qualified Models.Author as A
 import qualified Models.Post as P
 

@@ -21,9 +21,9 @@ import           Servant.Server.Experimental.Auth.Cookie
 import           Text.Blaze.Html5                        as H
 import           Text.Blaze.Html5.Attributes             as A
 
-import           Admin.Forms
-import           Admin.Views
 import           Api.Login                               (Username (..))
+import           Html.Admin.Forms
+import           Html.Admin.Views
 import           Models                                  (ModelType(..))
 import qualified Models.Author                           as Author
 import qualified Models.Post                             as Post
