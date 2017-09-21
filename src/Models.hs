@@ -7,6 +7,14 @@ import GHC.Int
 import qualified Models.Media as M
 import qualified Models.Projects as P
 
+data ModelType = Authors
+               | Series
+               | Posts
+               | Media
+               | Projects
+               deriving (Eq, Show)
+
+
 execHandler :: SomeException -> IO ()
 execHandler e =  do
   print "It Blew up!\n"

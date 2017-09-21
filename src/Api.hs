@@ -15,6 +15,9 @@ module Api
     ) where
 
 
+import           Control.Lens
+import           Control.Monad.IO.Class                  (MonadIO, liftIO)
+import           Control.Monad.Reader                    (ReaderT, lift)
 import           Data.Pool                               (Pool)
 import           Data.Proxy
 import           Database.PostgreSQL.Simple              hiding ((:.))
@@ -29,14 +32,18 @@ import           Api.Admin
 import           Api.Login
 import           Api.Post
 import           Admin
-import           Html.About
-import           Html.Contact
-import           Html.Home
-import           Html.Projects
+import           Config
+import           Html.Contact                            (ContactApi, contactHandlers)
+import           Html.Home                               (HomePage, homePageHandlers,
+                                                          BlogMain, blogMainHandlers,
+                                                          AboutPage, aboutPageHandlers)
+import           Html.Projects                           (ProjectsApi, projectsHandlers)
 import           Models.Author                           (createAuthorTable)
 import           Models.Media                            (createPostMediaTable)
 import           Models.Post                             (createPostTable,
                                                           createSeriesTable)
+import           Types
+
 
 
 -- This one is separate so elm can generate for it
@@ -48,53 +55,52 @@ type WithHtml = HomePage
                 :<|> PostApi
                 :<|> AdminHtml
 
-apihandlers :: Pool Connection -> Server WithHtml
-apihandlers conn = homePage
-                  :<|> blogMain
-                  :<|> aboutPage
-                  :<|> contactServer
-                  :<|> projectsServer
-                  :<|> postHandlers conn
-                  :<|> adminHtmlHandlers conn
+apiHandlers :: ServerT WithHtml SimpleHandler
+apiHandlers = homePageHandlers
+              :<|> blogMainHandlers
+              :<|> aboutPageHandlers
+              :<|> contactHandlers
+              :<|> projectsHandlers
+              :<|> postHandlers
+              :<|> adminHtmlHandlers
 
 -- Used in production
 type WithoutAssets =  WithHtml
                     :<|> LoginApi
                     :<|> AdminBackend
 
-withoutAssetsServer :: Pool Connection -> AuthCookieSettings -> RandomSource -> PersistentServerKey -> IO (Server WithoutAssets)
-withoutAssetsServer conn settings rs key = return $ apihandlers conn
-                                      :<|> loginServer conn settings rs key
-                                      :<|> adminBackendHandlers conn
+withoutAssetsHandlers :: ServerT WithoutAssets SimpleHandler
+withoutAssetsHandlers = apiHandlers :<|> loginHandlers :<|> adminBackendHandlers
 
-withoutAssetsApp :: Pool Connection -> AuthCookieSettings -> RandomSource -> PersistentServerKey -> IO Application
-withoutAssetsApp conn settings rs key = do
-  let context = (defaultAuthHandler settings key :: AuthHandler Request (WithMetadata Username)) :. EmptyContext
-  server <- withoutAssetsServer conn settings rs key
-  return $ serveWithContext withoutAssets context server
+withoutAssetsServer :: SimpleApp -> Server WithoutAssets
+withoutAssetsServer simpleApp = enter (simpleHandlerToHandler simpleApp) withoutAssetsHandlers
+
+withoutAssetsApp :: SimpleApp -> IO Application
+withoutAssetsApp simpleApp = do
+  let context = getContext simpleApp
+  return $ serveWithContext withoutAssets context (withoutAssetsServer simpleApp)
 
 
 -- Used in development
-type WithAssets =  WithHtml
-                  :<|> LoginApi
-                  :<|> AdminBackend
-                  :<|> "assets" :> Raw
+type WithAssets =  WithoutAssets :<|> "assets" :> Raw
 
-withAssetsServer :: Pool Connection -> AuthCookieSettings -> RandomSource -> PersistentServerKey -> IO (Server WithAssets)
-withAssetsServer conn settings rs key =
-  return (apihandlers conn
-            :<|> loginServer conn settings rs key
-            :<|> adminBackendHandlers conn
-            :<|> serveDirectoryFileServer "assets")
+withAssetsServer :: SimpleApp -> Server WithAssets
+withAssetsServer simpleApp = withAssetsHandlers :<|> serveDirectoryFileServer "assets"
+  where withAssetsHandlers = withoutAssetsServer simpleApp
 
-withAssetsApp :: Pool Connection -> AuthCookieSettings -> RandomSource -> PersistentServerKey -> IO Application
-withAssetsApp conn settings rs key = do
-  let context = (defaultAuthHandler settings key :: AuthHandler Request (WithMetadata Username)) :. EmptyContext
-  server <- withAssetsServer conn settings rs key
-  return $ serveWithContext withAssets context server
+withAssetsApp :: SimpleApp -> IO Application
+withAssetsApp simpleApp = do
+  let context = getContext simpleApp
+  return $ serveWithContext withAssets context (withAssetsServer simpleApp)
 
 
 -- Auxiliary, helper things
+getContext :: SimpleApp -> Servant.Context '[AuthHandler Request (WithMetadata Username)]
+getContext simpleApp = (defaultAuthHandler settings key :: AuthHandler Request (WithMetadata Username)) :. EmptyContext
+  where settings = simpleApp ^. getConfig ^. getSecurity ^. cookieSettings
+        key = simpleApp ^. getConfig ^. getSecurity ^. serverKey
+
+
 createAllTables :: Connection -> IO ()
 createAllTables conn = initUserBackend conn >>
     execute_ conn createAuthorTable >>

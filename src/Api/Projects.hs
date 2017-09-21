@@ -13,6 +13,7 @@ import           Servant
 
 
 import           Api.Projects.TacoShop  (NameType (..), makeBertosName)
+import           Types
 
 
 data Project = Project {
@@ -24,10 +25,10 @@ type ProjectApi = "tacoshop" :> "random" :> Capture "len" Int :> Get '[JSON] Pro
 -- "tacoshop" :> "hmm" :> Capture "len" Int :> Get '[JSON] Project
 -- "tacoshop" :> "rnn" :> Capture "len" Int :> Get '[JSON] Project
 
-projectHandlers :: Server ProjectApi
+projectHandlers :: ServerT ProjectApi SimpleHandler
 projectHandlers = bertosH
 
-bertosH :: Int -> Handler Project
+bertosH :: Int -> SimpleHandler Project
 bertosH n = do
   value <- if n < 6
     then pure "bertos"

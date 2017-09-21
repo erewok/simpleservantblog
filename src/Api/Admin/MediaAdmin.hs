@@ -24,8 +24,10 @@ import           Servant.Multipart
 import           System.Directory                        (copyFile)
 
 import           Api.Errors                              (appJson404)
+import           Api.Login
 import           Api.Types                               (ResultResp(..), AttachForm(..))
 import qualified Models.Media                            as M
+import           Types
 
 
 type MediaAdminApi = "admin" :> "media" :> AuthProtect "cookie-auth" :> Get '[JSON] [M.Media]
@@ -36,25 +38,17 @@ type MediaAdminApi = "admin" :> "media" :> AuthProtect "cookie-auth" :> Get '[JS
   :<|> "admin" :> "post" :> "media" :> ReqBody '[JSON] AttachForm  :> AuthProtect "cookie-auth" :> Post '[JSON] ResultResp
   :<|> "admin" :> "post" :> "media" :> Capture "mid" Int :> Capture "pid" Int :> AuthProtect "cookie-auth" :> Delete '[JSON] ResultResp
 
-mediaAdminHandlers :: Pool Connection -> Server MediaAdminApi
-mediaAdminHandlers conn = mediaGetAllH
-                          :<|> mediaGetDetailH
-                          :<|> mediaPostH
-                          :<|> mediaPutH
-                          :<|> mediaDeleteH
-                          :<|> attachMediaToPostH
-                          :<|> deleteMediaFromPostH
-  where mediaGetAllH _ = withResource conn getAllMedia
-        mediaGetDetailH mediaId _ = withResource conn $ getMediaById mediaId
-        mediaPostH newMedia _ = go $ createMedia newMedia
-        mediaPutH mediaId editedMedia _ = go $ updateMedia mediaId editedMedia
-        mediaDeleteH mediaId _ = go $ deleteMedia mediaId
-        attachMediaToPostH attachForm _ = go $ attachPostMedia attachForm
-        deleteMediaFromPostH mid pid _ = go $ detachPostMedia mid pid
-        go = withResource conn
+mediaAdminHandlers :: ServerT MediaAdminApi SimpleHandler
+mediaAdminHandlers = mediaGetAllH
+                     :<|> mediaGetDetailH
+                     :<|> mediaPostH
+                     :<|> mediaPutH
+                     :<|> mediaDeleteH
+                     :<|> attachMediaToPostH
+                     :<|> deleteMediaFromPostH
 
-getAllMedia :: Connection -> Handler [M.Media]
-getAllMedia conn = liftIO $ query_ conn "select * from media"
+mediaGetAllH :: WithMetadata Username -> SimpleHandler [M.Media]
+mediaGetAllH uname = runHandlerDbHelper $ \conn -> liftIO $ query_ conn "select * from media"
 
 getMedia :: Int -> Connection -> IO (Maybe M.Media)
 getMedia mediaId conn = do
@@ -64,8 +58,8 @@ getMedia mediaId conn = do
     (x:_)-> return $ Just x
     _     -> return Nothing
 
-getMediaById :: Int -> Connection -> Handler M.Media
-getMediaById mediaId conn = do
+mediaGetDetailH :: Int -> WithMetadata Username -> SimpleHandler M.Media
+mediaGetDetailH mediaId uname = runHandlerDbHelper $ \conn -> do
   result <- liftIO $ getMedia mediaId conn
   case result of
     Nothing   -> throwError err404
@@ -85,15 +79,15 @@ createMediaWithLoc name path conn = do
   let q = "insert into media (name, location, url) values (?, ?, ?)"
   execute conn q (name, urlFromFileLoc path, path)
 
-createMedia :: MultipartData -> Connection -> Handler ResultResp
-createMedia multipartData conn = do
+mediaPostH :: MultipartData -> WithMetadata Username -> SimpleHandler ResultResp
+mediaPostH multipartData uname = runHandlerDbHelper $ \conn -> do
   fileLocs <- forM (files multipartData) $ \file -> do
     savedPath <- liftIO $ saveFileToStatic (fdFilePath file) (fdFileName file)
     liftIO $ createMediaWithLoc (fdFileName file) savedPath conn
   return $ ResultResp "success" "media saved"
 
-updateMedia :: Int -> M.Media -> Connection -> Handler ResultResp
-updateMedia mediaId editedMedia conn = do
+mediaPutH :: Int -> M.Media -> WithMetadata Username -> SimpleHandler ResultResp
+mediaPutH mediaId editedMedia uname = runHandlerDbHelper $ \conn -> do
   let q = "update media set name = ? where id = ?"
   result <- liftIO $ execute conn q (M.name editedMedia
                                    , mediaId)
@@ -102,8 +96,8 @@ updateMedia mediaId editedMedia conn = do
     _ -> return $ ResultResp "success" "media updated"
 
 
-deleteMedia :: Int -> Connection -> Handler ResultResp
-deleteMedia mediaId conn = do
+mediaDeleteH :: Int -> WithMetadata Username -> SimpleHandler ResultResp
+mediaDeleteH mediaId uname = runHandlerDbHelper $ \conn -> do
   -- must detach media from all posts where it's connected
   let deleteQ = "delete from postmedia where media_id = ?"
   result' <- liftIO $ execute conn deleteQ (Only mediaId)
@@ -116,14 +110,14 @@ deleteMedia mediaId conn = do
         0 -> throwError err400
         _ -> return $ ResultResp "success" "user deleted"
 
-attachPostMedia :: AttachForm -> Connection -> Handler ResultResp
-attachPostMedia (AttachForm postId mediaId) conn = do
+attachMediaToPostH :: AttachForm -> WithMetadata Username -> SimpleHandler ResultResp
+attachMediaToPostH (AttachForm postId mediaId) uname = runHandlerDbHelper $ \conn -> do
   let q = "insert into post_media (post_id, media_id) values (?, ?)"
   result <- liftIO $ execute conn q (postId, mediaId)
   pure $ ResultResp "success" "post Media created"
 
-detachPostMedia :: Int -> Int -> Connection -> Handler ResultResp
-detachPostMedia mediaId postId conn = do
+deleteMediaFromPostH :: Int -> Int -> WithMetadata Username -> SimpleHandler ResultResp
+deleteMediaFromPostH mediaId postId uname = runHandlerDbHelper $ \conn -> do
   let q = "delete from postmedia where post_id = ? and media_id = ?"
   result <- liftIO $ execute conn q (postId, mediaId)
   case result of

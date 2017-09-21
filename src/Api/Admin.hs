@@ -22,6 +22,7 @@ import           Api.Admin.MediaAdmin
 import           Api.Admin.PostAdmin
 import           Api.Admin.SeriesAdmin
 import           Api.Admin.UserAdmin
+import           Types
 
 
 -- Separated the HTML so we can use servant-elm to generate for APIs only below
@@ -29,18 +30,18 @@ type AdminBackend =
   "admin" :> AuthProtect "cookie-auth" :> Get '[HTML] Html
   :<|> AdminApi
 
-adminBackendHandlers :: Pool Connection -> Server AdminBackend
-adminBackendHandlers conn = adminPage :<|> adminHandlers conn
-
 type AdminApi = UserAdminApi :<|> PostAdminApi :<|> SeriesAdminApi :<|> MediaAdminApi
 
-adminHandlers :: Pool Connection -> Server AdminApi
-adminHandlers conn = userAdminHandlers conn
-                     :<|> postAdminHandlers conn
-                     :<|> seriesAdminHandlers conn
-                     :<|> mediaAdminHandlers conn
+adminBackendHandlers :: ServerT AdminBackend SimpleHandler
+adminBackendHandlers = adminPage :<|> adminHandlers
 
-adminPage :: WithMetadata Username -> Handler Html
+adminHandlers :: ServerT AdminApi SimpleHandler
+adminHandlers = userAdminHandlers
+                :<|> postAdminHandlers
+                :<|> seriesAdminHandlers
+                :<|> mediaAdminHandlers
+
+adminPage :: WithMetadata Username -> SimpleHandler Html
 adminPage uname = return $ docTypeHtml $ adminSkeleton $ wmData uname
 
 adminSkeleton :: Username -> H.Html

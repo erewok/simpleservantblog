@@ -23,6 +23,7 @@ import           Web.FormUrlEncoded          (FromForm)
 
 import           Html.Home                   (PageType (..), contactForm,
                                               homeSkeleton, redirectPage)
+import           Types
 
 data ContactForm = ContactForm
  { cname    :: !T.Text
@@ -38,15 +39,19 @@ data EmailCreds = EmailCreds
   , emailHost     :: !T.Text
 } deriving (Eq, Show)
 
-type ContactApi = "contact" :> ReqBody '[FormUrlEncoded] ContactForm
-                                   :> Post '[HTML] Html
-                :<|> "contact" :> Get '[HTML] Html
-                :<|> "thanks" :> Get '[HTML] Html
+type ContactApi = "contact" :> ReqBody '[FormUrlEncoded] ContactForm :> Post '[HTML] Html
+                  :<|> "contact" :> Get '[HTML] Html
+                  :<|> "thanks" :> Get '[HTML] Html
 
-contactServer :: Server ContactApi
-contactServer = contactPostH :<|> contactGetH :<|> thanksH
+contactHandlers :: ServerT ContactApi SimpleHandler
+contactHandlers = contactPostH :<|> contactGetH :<|> thanksH
   where contactGetH = return $ contactPage True
         thanksH = pure thanksPage
+
+contactPostH :: ContactForm -> SimpleHandler Html
+contactPostH contactF = do
+  liftIO $ sendContact contactF
+  pure $ redirectPage "/thanks"
 
 contactPage  :: Bool -> H.Html
 contactPage firstTime = docTypeHtml $ homeSkeleton $ NoJS $
@@ -55,11 +60,6 @@ contactPage firstTime = docTypeHtml $ homeSkeleton $ NoJS $
           H.div ! A.class_ "contact-page-box" $ do
             let formOrError = if firstTime then contactForm else H.p "Please fill in all fields"
             formOrError
-
-contactPostH :: ContactForm -> Handler Html
-contactPostH contactF = do
-  liftIO $ sendContact contactF
-  pure $ redirectPage "/thanks"
 
 thanksPage :: H.Html
 thanksPage = docTypeHtml $ homeSkeleton $ NoJS $

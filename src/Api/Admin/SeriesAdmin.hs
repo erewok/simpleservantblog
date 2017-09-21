@@ -16,40 +16,37 @@ import           Database.PostgreSQL.Simple.Types        (Query (..))
 import qualified Data.Text                               as T
 import           Data.Time                               (getCurrentTime)
 import           Servant
+import           Servant.Server.Experimental.Auth.Cookie
 
 import           Api.Errors                              (appJson404)
+import           Api.Login                               (Username (..))
 import           Api.Types                               (ResultResp(..))
 import qualified Models.Post                             as Post
-
+import           Types
 
 type SeriesAdminApi = "admin" :> "series" :> ReqBody '[JSON] Post.BlogSeries :> AuthProtect "cookie-auth" :> Post '[JSON] Post.BlogSeries
                       :<|> "admin" :> "series" :> Capture "id" Int :> ReqBody '[JSON] Post.BlogSeries :> AuthProtect "cookie-auth" :> Put '[JSON] ResultResp
                       :<|> "admin" :> "series" :> Capture "id" Int :> AuthProtect "cookie-auth" :> Delete '[JSON] ResultResp
 
-seriesAdminHandlers :: Pool Connection -> Server SeriesAdminApi
-seriesAdminHandlers conn = blogSeriesAddH
-                           :<|> blogSeriesUpdateH
-                           :<|> blogSeriesDeleteH
-  where blogSeriesAddH newSeries _ = withResource conn $ addSeries newSeries
-        blogSeriesUpdateH seriesId series _ = go $ updateSeries seriesId series
-        blogSeriesDeleteH seriesId _ = go $ deleteSeries seriesId
-        go = withResource conn
+seriesAdminHandlers :: ServerT SeriesAdminApi SimpleHandler
+seriesAdminHandlers = blogSeriesAddH
+                      :<|> blogSeriesUpdateH
+                      :<|> blogSeriesDeleteH
 
-
-addSeries :: Post.BlogSeries -> Connection -> Handler Post.BlogSeries
-addSeries newSeries conn = do
+blogSeriesAddH :: Post.BlogSeries -> WithMetadata Username -> SimpleHandler Post.BlogSeries
+blogSeriesAddH newSeries uname = runHandlerDbHelper $ \conn -> do
   let q = "insert into series (name, description, parentid) values (?, ?, ?) returning id"
   result <- liftIO $ query conn q (Post.name newSeries
                                   , Post.description newSeries
-                                  , Post.parentid newSeries) :: Handler [Only Int]
+                                  , Post.parentid newSeries) :: SimpleHandler [Only Int]
   case result of
     []    -> throwError err404
     (sid:_) -> do
       series <- liftIO $ query conn "select * from series where id = ?" sid
       if null series then throwError err404 else return $ Prelude.head series
 
-updateSeries :: Int -> Post.BlogSeries -> Connection -> Handler ResultResp
-updateSeries seriesId newSeries conn = do
+blogSeriesUpdateH :: Int -> Post.BlogSeries -> WithMetadata Username -> SimpleHandler ResultResp
+blogSeriesUpdateH seriesId newSeries uname = runHandlerDbHelper $ \conn -> do
   let q = Query $ B.unwords ["update series set name = ?, description = ?, parentid = ? "
                            , "where id = ?"]
   result <- liftIO $ execute conn q (Post.name newSeries
@@ -60,8 +57,8 @@ updateSeries seriesId newSeries conn = do
     0 -> throwError err400
     _ -> return $ ResultResp "success" "series updated"
 
-deleteSeries :: Int -> Connection -> Handler ResultResp
-deleteSeries seriesId conn = do
+blogSeriesDeleteH :: Int -> WithMetadata Username -> SimpleHandler ResultResp
+blogSeriesDeleteH seriesId uname = runHandlerDbHelper $ \conn -> do
   let q = "delete CASCADE from series where id = ?"
   result <- liftIO $ execute conn q (Only seriesId)
   case result of

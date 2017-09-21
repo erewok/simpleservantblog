@@ -16,11 +16,13 @@ import           Database.PostgreSQL.Simple.Types        (Query (..))
 import qualified Data.Text                               as T
 import           Data.Time                               (getCurrentTime)
 import           Servant
+import           Servant.Server.Experimental.Auth.Cookie
 
 import           Api.Errors                              (appJson404)
+import           Api.Login                               (Username (..))
 import           Api.Types  (ResultResp(..))
 import qualified Models.Post                             as Post
-
+import           Types
 
 type PostAdminApi =  "admin" :> "post" :> ReqBody '[JSON] Post.BlogPost :> AuthProtect "cookie-auth" :> Post '[JSON] Post.BlogPost
                      :<|> "admin" :> "post" :> Capture "id" Int :> ReqBody '[JSON] Post.BlogPost :> AuthProtect "cookie-auth" :> Put '[JSON] ResultResp
@@ -29,23 +31,18 @@ type PostAdminApi =  "admin" :> "post" :> ReqBody '[JSON] Post.BlogPost :> AuthP
                     :<|> "admin" :> "post" :> Capture "id" Int :> AuthProtect "cookie-auth" :> Get '[JSON] Post.BlogPost
 
 
-postAdminHandlers :: Pool Connection -> Server PostAdminApi
-postAdminHandlers conn = blogPostAddH
-                         :<|> blogPostUpdateH
-                         :<|> blogPostDeleteH
-                         :<|> blogPostGetAllH
-                         :<|> blogPostGetByIdH
-  where blogPostAddH newPost _ = withResource conn $ addPost newPost
-        blogPostUpdateH postId post _ = withResource conn $ updatePost postId post
-        blogPostDeleteH postId _ = withResource conn $ deletePost postId
-        blogPostGetAllH _ = withResource conn getAllPosts
-        blogPostGetByIdH postId _ = withResource conn $ getPostById postId
+postAdminHandlers :: ServerT PostAdminApi SimpleHandler
+postAdminHandlers = blogPostAddH
+                    :<|> blogPostUpdateH
+                    :<|> blogPostDeleteH
+                    :<|> blogPostGetAllH
+                    :<|> blogPostGetByIdH
 
-getAllPosts :: Connection -> Handler [Post.BlogPost]
-getAllPosts conn = liftIO $ query_ conn "select * from post"
+blogPostGetAllH :: WithMetadata Username -> SimpleHandler [Post.BlogPost]
+blogPostGetAllH uname = runHandlerDbHelper $ \conn -> liftIO $ query_ conn "select * from post"
 
-addPost :: Post.BlogPost -> Connection -> Handler Post.BlogPost
-addPost newPost conn = do
+blogPostAddH :: Post.BlogPost -> WithMetadata Username ->  SimpleHandler Post.BlogPost
+blogPostAddH newPost uname = runHandlerDbHelper $ \conn -> do
   result <- liftIO $ addPost' newPost conn
   case result of
     []    -> throwError err404
@@ -55,8 +52,8 @@ addPost newPost conn = do
         Just post -> return post
         Nothing   -> throwError err400
 
-getPostById :: Int -> Connection -> Handler Post.BlogPost
-getPostById postId conn = do
+blogPostGetByIdH :: Int -> WithMetadata Username -> SimpleHandler Post.BlogPost
+blogPostGetByIdH postId uname = runHandlerDbHelper $ \conn -> do
   result <- liftIO $ getPost postId conn
   case result of
     Nothing   -> throwError err404
@@ -89,8 +86,8 @@ addPost' newPost conn = do
                         , created
                         , modified) :: IO [(Int, T.Text)]
 
-updatePost :: Int -> Post.BlogPost -> Connection -> Handler ResultResp
-updatePost postId newPost conn = do
+blogPostUpdateH :: Int -> Post.BlogPost -> WithMetadata Username -> SimpleHandler ResultResp
+blogPostUpdateH postId newPost uname = runHandlerDbHelper $ \conn -> do
   let q = Query $ B.unwords ["update post set authorid = ?, title = ?, body = ?, "
                            , "seriesid = ?, synopsis = ?, pubdate = ?, ordinal = ? "
                            , "where id = ?"]
@@ -106,8 +103,8 @@ updatePost postId newPost conn = do
     0 -> throwError err400
     _ -> return $ ResultResp "success" "blogpost updated"
 
-deletePost :: Int -> Connection -> Handler ResultResp
-deletePost postId conn = do
+blogPostDeleteH :: Int -> WithMetadata Username -> SimpleHandler ResultResp
+blogPostDeleteH postId uname = runHandlerDbHelper $ \conn -> do
   let q = "delete from post where id = ?"
   result <- liftIO $ execute conn q (Only postId)
   case result of

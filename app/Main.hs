@@ -12,11 +12,12 @@ import           Data.Proxy
 import           Network.Wai.Handler.Warp                as Warp
 import           Servant.Server.Experimental.Auth.Cookie
 import           System.Environment                      (lookupEnv)
+import           System.Log.FastLogger                   (defaultBufSize, withFastLogger, LogType(..))
 import           Web.Users.Types                         (UserStorageBackend (..))
 
 
 import qualified Api                                     as A
-import qualified Config                                  as C
+import           Config
 
 
 -- This is just for testing in a local Environment, so we don't have to run
@@ -42,20 +43,31 @@ main = do
     Just p  -> pure $ read p
   environ <- lookupEnv "ENVIRONMENT"
   environment <- case environ of
-    Nothing  -> pure C.Production
-    Just env -> pure (read env :: C.Environment)
+    Nothing  -> pure Production
+    Just env -> pure (read env :: Environment)
   rs <- mkRandomSource drgNew 1000
   sk <-  generateRandomBytes 24
   let key = mkPersistentServerKey sk
-  pool <- C.makePool
-  -- let cfg = C.Config { C.getPool = pool
-  --                    , C.getEnv =  environment}
-  let logger = C.setLogger environment
+  pool <- makePool
+
   cookieSettings <- case environment of
-    C.Local -> pure localCookieSettings
+    Local -> pure localCookieSettings
     _       -> def  -- From Default Library, uses Default instance
 
+  let stdErrLog = withFastLogger (LogStderr defaultBufSize)
+  let stdOutLog = withFastLogger (LogStdout defaultBufSize)
+  let loggers = AppLoggers { _stdErrLogger = stdErrLog
+                           , _stdOutLogger = stdOutLog }
+  let security = AppSecurity {
+        _cookieSettings = cookieSettings
+        , _randomSource = rs
+        , _serverKey = key }
+  let cfg = SimpleAppConfig { _getEnv =  environment
+                            , _getSecurity = security }
+  let simpleApp = SimpleApp { _getPool = pool
+                            , _getConfig = cfg
+                            , _getLoggers = loggers }
   withResource pool housekeepBackend -- Housekeeping: eliminate old sessions
-  let app = if environment == C.Local then A.withAssetsApp else A.withoutAssetsApp
+  let app = if environment == Local then A.withAssetsApp else A.withoutAssetsApp
   putStrLn $ "SimpleServantBlog up on port " ++ show port ++ " and ready to accept requests"
-  app pool cookieSettings rs key >>= Warp.run port <$> logger
+  app simpleApp >>= Warp.run port <$> setRequestLogger environment

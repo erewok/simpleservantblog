@@ -4,6 +4,7 @@
 module Html.Home where
 
 import           Control.Monad.Except
+import           Data.Text                   (Text)
 import qualified Data.Text                   as T
 import           Text.Blaze.Html5            as H
 import           Text.Blaze.Html5.Attributes as A
@@ -11,16 +12,24 @@ import           Text.Blaze.Html5.Attributes as A
 import           Servant
 import           Servant.HTML.Blaze
 
+import           Types
+
 
 type HomePage = Get '[HTML] Html
 type BlogMain = Get '[HTML] Html
-type ContactPage = Get '[HTML] Html
+type AboutPage = Get '[HTML] Html
 
 data PageType a = NoJS a
               | HighlightElm a
 
-homePage :: Handler Html
-homePage = pure $ homeSkeleton $ NoJS homeContent
+homePageHandlers :: SimpleHandler Html
+homePageHandlers = pure $ homeSkeleton $ NoJS homeContent
+
+blogMainHandlers :: SimpleHandler Html
+blogMainHandlers = pure $ pageSkeleton $ HighlightElm elmApp
+
+aboutPageHandlers :: SimpleHandler Html
+aboutPageHandlers = pure $ docTypeHtml $ pageSkeleton $ NoJS aboutContent
 
 homeContent :: H.Html
 homeContent = consulting
@@ -37,10 +46,6 @@ homeSkeleton pageType@(NoJS content) = docTypeHtml $ do
     H.div ! A.class_ "container" $ topNav
     content
     pageFooter
-
-
-blogMain :: Handler Html
-blogMain = pure $ pageSkeleton $ HighlightElm elmApp
 
 pageSkeleton :: PageType H.Html -> H.Html
 pageSkeleton pageType@(NoJS content) = docTypeHtml $ do
@@ -199,6 +204,29 @@ redirectPage uri = pageSkeleton $ NoJS $ do
     H.p $ do
       void "If your browser does not refresh the page click "
       H.a ! A.href (H.toValue uri) $ "here"
+
+
+aboutContent :: H.Html
+aboutContent = H.div ! A.class_ "row main" $
+  H.div ! A.id "about-page" $
+    H.div ! A.class_ "about-page-box" $ do
+      H.div ! A.class_ "six columns left-about" $
+        H.div ! A.class_ "about-page-photo" $
+          H.div ! A.class_ "about-page-photo-overlay" $ ""
+      H.div ! A.class_ "six columns right-about" $
+        H.div ! A.class_ "about-page-content" $ do
+          H.h4 "Erik Aker"
+          H.p $ H.text aboutText1
+          H.p "His interests include the following: "
+          H.ul $ do
+            H.li "Functional Programming"
+            H.li "Natural Language Processing"
+            H.li "Surfing"
+            H.li "Playing with Milo"
+
+aboutText1 :: Text
+aboutText1 = T.unlines ["Formerly an English teacher and freelance writer, Erik Aker is a ",
+                        "web application developer in San Diego."]
 
 
 ga :: T.Text

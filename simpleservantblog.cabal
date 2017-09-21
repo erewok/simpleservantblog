@@ -29,9 +29,9 @@ library
                      , Api.Admin.SeriesAdmin
                      , Api.Admin.UserAdmin
                      , Admin
+                     , Admin.Forms
                      , Admin.Views
                      , Html.Home
-                     , Html.About
                      , Html.Contact
                      , Html.Projects
                      , Models
@@ -39,6 +39,7 @@ library
                      , Models.Projects
                      , Models.Media
                      , Models.Author
+                     , Types
   build-depends:       base >= 4.7 && < 5
                      , aeson
                      , blaze-html
@@ -47,11 +48,14 @@ library
                      , cryptonite
                      , directory
                      , elm-export
+                     , exceptions
+                     , fast-logger
                      , http-api-data
                      , http-media
                      , http-types
                      , lens
                      , mime-mail
+                     , monad-control
                      , monad-logger
                      , mtl
                      , opaleye
@@ -70,6 +74,7 @@ library
                      , text
                      , time
                      , transformers
+                     , transformers-base
                      , users
                      , users-postgresql-simple
                      , wai
@@ -87,6 +92,7 @@ executable simpleservantblog-exe
                      , simpleservantblog
                      , cryptonite
                      , data-default
+                     , fast-logger
                      , resource-pool
                      , servant-auth-cookie
                      , users

@@ -40,6 +40,7 @@ import           Database.PostgreSQL.Simple.Types   (Query (..))
 import           GHC.Generics
 import           Prelude                            (Eq, Int, Show, ($), (.))
 import           Servant.Elm
+import           Web.FormUrlEncoded                 (FromForm)
 
 --
 -- Api Helpers for Frontend --
@@ -110,6 +111,7 @@ data BlogPost = BlogPost {
   , ordinal  :: Maybe Int
   } deriving (Eq, Show, Generic, Data)
 
+instance FromForm BlogPost
 instance ElmType BlogPost
 instance FromJSON BlogPost
 instance ToJSON BlogPost

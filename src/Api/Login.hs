@@ -7,7 +7,9 @@
 module Api.Login where
 
 
+import           Control.Lens
 import           Control.Monad.IO.Class                  (liftIO)
+import           Control.Monad.Reader                    (ask)
 import           Data.Pool                               (Pool, withResource)
 import           Data.Serialize                          (Serialize)
 import qualified Data.Text                               as T
@@ -22,12 +24,14 @@ import           Web.FormUrlEncoded                      (FromForm)
 import qualified Web.Users.Types                         as WU
 import qualified Web.Users.Postgresql                    as WUP
 
+import           Config
 import           Html.Home                               (PageType (..),
                                                           pageSkeleton,
                                                           redirectPage)
+import           Types
 
 
-newtype Username = Username { username :: String } deriving (Eq, Show, Generic)
+data Username = Username { username :: String, userid :: Int } deriving (Eq, Show, Generic)
 
 instance Serialize Username
 
@@ -49,36 +53,36 @@ data LoginForm = LoginForm
 
 instance FromForm LoginForm
 
-loginServer :: Pool Connection -> AuthCookieSettings -> RandomSource -> PersistentServerKey -> Server LoginApi
-loginServer conn settings rs key = loginPageH
-            :<|> loginPostH
-            where
-              loginPageH = return $ loginPage True
-              loginPostH loginF = withResource conn $ loginPost loginF settings rs key
+loginHandlers :: ServerT LoginApi SimpleHandler
+loginHandlers = loginPageH :<|> loginPostH
 
-loginPost :: LoginForm
-            -> AuthCookieSettings
-            -> RandomSource
-            -> PersistentServerKey
-            -> Connection
-            -> Handler (Headers '[Header "set-cookie" EncryptedSession] Html)
-loginPost loginF settings rs key conn = do
-  let uname = lfUsername (loginF :: LoginForm)
-  authResult <- liftIO $ WU.authUser conn uname (WU.PasswordPlain $ lfPassword loginF) 12000000
-  case authResult of
-    Nothing -> return $ addHeader emptyEncryptedSession (loginPage False)
-    Just _ -> do
-      userid <- liftIO $ WU.getUserIdByName conn uname
-      case userid of
-        Nothing -> return $ addHeader emptyEncryptedSession (loginPage False)
-        Just _ ->
-          addSession
-            settings -- the settings
-            rs       -- random source
-            key      -- server key
-            (Username $ T.unpack uname)
-            (redirectPage "/admin")
+loginPageH :: SimpleHandler Html
+loginPageH = pure $ loginPage True
 
+loginPostH :: LoginForm -> SimpleHandler (Headers '[Header "set-cookie" EncryptedSession] Html)
+loginPostH loginF = do
+  appConfig <- ask
+  let conn = appConfig ^. getPool
+      security = appConfig ^. getConfig ^. getSecurity
+      uname = lfUsername (loginF :: LoginForm)
+      settings = security ^. cookieSettings
+      rs = security ^. randomSource
+      key = security ^. serverKey
+  withResource conn $ \db -> do
+    authResult <- liftIO $ WU.authUser db uname (WU.PasswordPlain $ lfPassword loginF) 12000000
+    case authResult of
+      Nothing -> return $ addHeader emptyEncryptedSession (loginPage False)
+      Just _ -> do
+        userid <- liftIO $ WU.getUserIdByName db uname
+        case userid of
+          Nothing -> return $ addHeader emptyEncryptedSession (loginPage False)
+          Just uid ->
+            addSession
+              settings -- the settings
+              rs       -- random source
+              key      -- server key
+              (Username (T.unpack uname) (fromIntegral uid))
+              (redirectPage "/admin")
 
 loginPage :: Bool -> H.Html
 loginPage firstTime = docTypeHtml $ pageSkeleton $ NoJS $

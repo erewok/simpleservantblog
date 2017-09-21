@@ -1,3 +1,5 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Api.Projects.TacoShop
   ( NameType(..)
   , makeBertosName
