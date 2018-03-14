@@ -32,7 +32,7 @@ import           Types
 
 type MediaAdminApi = "admin" :> "media" :> AuthProtect "cookie-auth" :> Get '[JSON] [M.Media]
   :<|> "admin" :> "media" :> Capture "id" Int  :> AuthProtect "cookie-auth" :> Get '[JSON] M.Media
-  :<|> "admin" :> "media" :> MultipartForm MultipartData :> AuthProtect "cookie-auth" :> Post '[JSON] ResultResp
+  :<|> "admin" :> "media" :> MultipartForm Tmp (MultipartData Tmp) :> AuthProtect "cookie-auth" :> Post '[JSON] ResultResp
   :<|> "admin" :> "media" :> Capture "id" Int :> ReqBody '[JSON] M.Media :> AuthProtect "cookie-auth" :> Put '[JSON] ResultResp
   :<|> "admin" :> "media" :> Capture "id" Int :> AuthProtect "cookie-auth" :> Delete '[JSON] ResultResp
   :<|> "admin" :> "post" :> "media" :> ReqBody '[JSON] AttachForm  :> AuthProtect "cookie-auth" :> Post '[JSON] ResultResp
@@ -79,10 +79,10 @@ createMediaWithLoc name path conn = do
   let q = "insert into media (name, location, url) values (?, ?, ?)"
   execute conn q (name, urlFromFileLoc path, path)
 
-mediaPostH :: MultipartData -> WithMetadata Username -> SimpleHandler ResultResp
+mediaPostH :: MultipartData Tmp -> WithMetadata Username -> SimpleHandler ResultResp
 mediaPostH multipartData uname = runHandlerDbHelper $ \conn -> do
   fileLocs <- forM (files multipartData) $ \file -> do
-    savedPath <- liftIO $ saveFileToStatic (fdFilePath file) (fdFileName file)
+    savedPath <- liftIO $ saveFileToStatic (fdPayload file) (fdFileName file)
     liftIO $ createMediaWithLoc (fdFileName file) savedPath conn
   return $ ResultResp "success" "media saved"
 
