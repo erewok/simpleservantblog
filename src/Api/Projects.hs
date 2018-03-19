@@ -21,9 +21,9 @@ data Project = Project {
   , result :: !T.Text
 } deriving (Eq, Show, Generic)
 
-type ProjectApi = "tacoshop" :> "random" :> Capture "len" Int :> Get '[JSON] Project
--- "tacoshop" :> "hmm" :> Capture "len" Int :> Get '[JSON] Project
--- "tacoshop" :> "rnn" :> Capture "len" Int :> Get '[JSON] Project
+type ProjectApi =
+  "tacoshop" :> "random" :> Capture "len" Int :> Get '[JSON] Project
+  -- "fifty-two-trees" :> "trees" :> Get '[JSON] Project
 
 projectHandlers :: ServerT ProjectApi SimpleHandler
 projectHandlers = bertosH

@@ -3,6 +3,7 @@ MAINTAINER Erik Aker
 
 RUN ["apt-get", "-y", "update"]
 RUN ["apt-get", "-y", "install", "libpq-dev"]
+RUN ["stack", "upgrade"
 
 RUN mkdir -p /opt/build
 

@@ -58,7 +58,6 @@ library
                      , monad-control
                      , monad-logger
                      , mtl
-                     , opaleye
                      , postgresql-simple
                      , random
                      , resource-pool
